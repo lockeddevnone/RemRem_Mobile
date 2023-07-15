@@ -643,7 +643,7 @@ class MainService : Service() {
             //.setWhen(System.currentTimeMillis())
             //.setCategory(null)
             //.setSilent(true)
-            .build()
+            //.build()
         startForeground(DEFAULT_NOTIFY_ID, notification)
     }
 
