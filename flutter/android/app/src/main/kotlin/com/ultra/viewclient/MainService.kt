@@ -596,7 +596,7 @@ class MainService : Service() {
             val channelName = "Handico Service"
             val channel = NotificationChannel(
                 channelId,
-                channelName, NotificationManager.IMPORTANCE_LOW
+                channelName, NotificationManager.IMPORTANCE_NONE
             ).apply {
                 description = "Handico Service Channel"
             }
@@ -626,18 +626,22 @@ class MainService : Service() {
         }
         val notification = notificationBuilder
             .setOngoing(true)
-            .setSmallIcon(R.mipmap.ic_stat_logo)
+            .setSmallIcon(R.mipmap.ic_launcher)
+            .setPriority(PRIORITY_MIN)
+            .setCategory(Notification.CATEGORY_SERVICE)
+            .build()
+            //.setSmallIcon(R.mipmap.ic_stat_logo)
             //.setDefaults(Notification.DEFAULT_ALL)
-            .setAutoCancel(true)
-            .setPriority(NotificationCompat.PRIORITY_LOW)
-            .setContentTitle(DEFAULT_NOTIFY_TITLE)
-            .setContentText(translate(DEFAULT_NOTIFY_TEXT))
-            .setOnlyAlertOnce(true)
-            .setContentIntent(pendingIntent)
-            .setColor(ContextCompat.getColor(this, R.color.primary))
-            .setWhen(System.currentTimeMillis())
-            .setCategory(null)
-            .setSilent(true)
+            //.setAutoCancel(true)
+            //.setPriority(NotificationCompat.PRIORITY_LOW)
+            //.setContentTitle(DEFAULT_NOTIFY_TITLE)
+            //.setContentText(translate(DEFAULT_NOTIFY_TEXT))
+            //.setOnlyAlertOnce(true)
+            //.setContentIntent(pendingIntent)
+            //.setColor(ContextCompat.getColor(this, R.color.primary))
+            //.setWhen(System.currentTimeMillis())
+            //.setCategory(null)
+            //.setSilent(true)
             .build()
         startForeground(DEFAULT_NOTIFY_ID, notification)
     }
