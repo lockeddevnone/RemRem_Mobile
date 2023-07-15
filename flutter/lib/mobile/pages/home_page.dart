@@ -89,9 +89,9 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     bind.mainSetOption(
         key: "custom-rendezvous-server", value: kAppIDServerPrivate);
-    WidgetsBinding.instance.addObserver(LifecycleEventHandler(
-      resumeCallBack: () async => checkWarningScreen(),
-    ));
+    // WidgetsBinding.instance.addObserver(LifecycleEventHandler(
+    //   resumeCallBack: () async => checkWarningScreen(),
+    // ));
     initPages();
     checkWarningScreen();
   }
