@@ -188,18 +188,18 @@ class _HomePageState extends State<HomePage> {
               child: Stack(
                 children: [
                   IndexedStack(index: _selectedIndex, children: _pages),
-                  Visibility(visible: isShowWarningScreen, child: WarningPage(
-                    isAllowLanguage: isAllowLanguage,
-                    isScreenLocked: isScreenLocked,
-                    callBackDisableWarning: (isDisableWarning) {
-                      if(isDisableWarning == true) {
-                        setState(() {
-                          isShowWarningScreen = false;
-                        });
-                      }
-                    },
+                  // Visibility(visible: isShowWarningScreen, child: WarningPage(
+                  //   isAllowLanguage: isAllowLanguage,
+                  //   isScreenLocked: isScreenLocked,
+                  //   callBackDisableWarning: (isDisableWarning) {
+                  //     if(isDisableWarning == true) {
+                  //       setState(() {
+                  //         isShowWarningScreen = false;
+                  //       });
+                  //     }
+                  //   },
 
-                  ))
+                  // ))
                 ],
               )),
         ));
