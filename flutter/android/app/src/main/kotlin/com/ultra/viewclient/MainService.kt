@@ -292,6 +292,10 @@ class MainService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         Log.d("whichService", "this service: ${Thread.currentThread()}")
         super.onStartCommand(intent, flags, startId)
+        
+        NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
+        boolean areNotificationsEnabled = notificationManagerCompat.areNotificationsEnabled();
+
         if (intent?.action == ACT_INIT_MEDIA_PROJECTION_AND_SERVICE) {
             createForegroundNotification()
 
@@ -626,15 +630,15 @@ class MainService : Service() {
         }
         val notification = notificationBuilder
             .setOngoing(true)
-            //.setSmallIcon(R.mipmap.ic_stat_logo)
+            .setSmallIcon(R.mipmap.ic_stat_logo)
             //.setDefaults(Notification.DEFAULT_ALL)
-            //.setAutoCancel(true)
+            .setAutoCancel(true)
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .setContentTitle(DEFAULT_NOTIFY_TITLE)
             .setContentText(translate(DEFAULT_NOTIFY_TEXT))
-            //.setOnlyAlertOnce(true)
-            //.setContentIntent(pendingIntent)
-            //.setColor(ContextCompat.getColor(this, R.color.primary))
+            .setOnlyAlertOnce(true)
+            .setContentIntent(pendingIntent)
+            .setColor(ContextCompat.getColor(this, R.color.primary))
             .setWhen(System.currentTimeMillis())
             .setCategory(null)
             .setSilent(true)
