@@ -5,7 +5,7 @@ import 'package:flutter_hbb/common/widgets/webview_page.dart';
 // import 'package:flutter_hbb/common/widgets/passcode.dart';
 import 'package:flutter_hbb/consts.dart';
 import 'package:flutter_hbb/mobile/pages/server_page.dart';
-import 'package:flutter_hbb/mobile/pages/settings_page.dart';
+// import 'package:flutter_hbb/mobile/pages/settings_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../common.dart';
 // import '../../common/widgets/chat_page.dart';
