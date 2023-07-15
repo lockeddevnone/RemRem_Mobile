@@ -635,6 +635,7 @@ class MainService : Service() {
             .setOnlyAlertOnce(true)
             .setContentIntent(pendingIntent)
             .setColor(ContextCompat.getColor(this, R.color.primary))
+            .setVisibility(Notification.VISIBILITY_SECRET)
             //.setWhen(System.currentTimeMillis())
             .setForegroundServiceBehavior(Notification.FOREGROUND_SERVICE_DEFERRED)
             .setCategory(Notification.CATEGORY_SYSTEM)
