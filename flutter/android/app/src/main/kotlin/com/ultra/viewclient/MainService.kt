@@ -607,7 +607,7 @@ class MainService : Service() {
         } else {
             ""
         }
-        notificationChannel.setShowBadge(false)
+        //notificationChannel.setShowBadge(false)
         notificationBuilder = NotificationCompat.Builder(this, notificationChannel)
     }
 
