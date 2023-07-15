@@ -152,7 +152,6 @@ const kManageExternalStorage = "android.permission.MANAGE_EXTERNAL_STORAGE";
 const kRequestIgnoreBatteryOptimizations =
     "android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS";
 const kSystemAlertWindow = "android.permission.SYSTEM_ALERT_WINDOW";
-const kSystemNotification = "android.permission.SYSTEM_ALERT_WINDOW";
 
 /// Android channel invoke type key
 class AndroidChannel {
