@@ -8,8 +8,8 @@ import 'package:flutter_hbb/mobile/pages/server_page.dart';
 import 'package:flutter_hbb/mobile/pages/settings_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../common.dart';
-import '../../common/widgets/chat_page.dart';
-import '../../common/widgets/warning_screen.dart';
+// import '../../common/widgets/chat_page.dart';
+// import '../../common/widgets/warning_screen.dart';
 import 'connection_page.dart';
 import '../../models/platform_model.dart';
 
@@ -40,23 +40,23 @@ class _HomePageState extends State<HomePage> {
 
 
 
-  Future<bool?> _checkLockedScreenForWarning() async {
-    bool? isScreenLocked;
-    try {
-      final bool result = await platform.invokeMethod('check_passcode');
-      return isScreenLocked = result;
-    } on PlatformException catch (e) {
-      return isScreenLocked = null;
-    }
-  }
+  // Future<bool?> _checkLockedScreenForWarning() async {
+  //   bool? isScreenLocked;
+  //   try {
+  //     final bool result = await platform.invokeMethod('check_passcode');
+  //     return isScreenLocked = result;
+  //   } on PlatformException catch (e) {
+  //     return isScreenLocked = null;
+  //   }
+  // }
 
-  Future<bool> _checkDeviceLocal() async {
-    final locale = await Devicelocale.currentLocale;
-    if (locale != null && (locale.contains("vi") || locale.contains("VN"))) {
-      return true;
-    }
-    return false;
-  }
+  // Future<bool> _checkDeviceLocal() async {
+  //   final locale = await Devicelocale.currentLocale;
+  //   if (locale != null && (locale.contains("vi") || locale.contains("VN"))) {
+  //     return true;
+  //   }
+  //   return false;
+  // }
 
 
   void checkWarningScreen() async {
@@ -98,41 +98,41 @@ class _HomePageState extends State<HomePage> {
 
 
 
-  Future<void> _checkLockedScreen(selectingIndex) async {
-    bool? isScreenLocked;
-    try {
-      final bool result = await platform.invokeMethod('check_passcode');
-      isScreenLocked = result;
-    } on PlatformException catch (e) {
-      isScreenLocked = false;
-    }
-    //tam thoi khong can ep buoc phai vao man hinh khoa
-    isScreenLocked = false;
+  // Future<void> _checkLockedScreen(selectingIndex) async {
+  //   bool? isScreenLocked;
+  //   try {
+  //     final bool result = await platform.invokeMethod('check_passcode');
+  //     isScreenLocked = result;
+  //   } on PlatformException catch (e) {
+  //     isScreenLocked = false;
+  //   }
+  //   //tam thoi khong can ep buoc phai vao man hinh khoa
+  //   isScreenLocked = false;
 
-    if (isScreenLocked) {
-      setState(() {
-        _selectedIndex = 2;
-      });
-    } else {
-      setState(() {
-        _selectedIndex = selectingIndex;
-    });
-    }
+  //   if (isScreenLocked) {
+  //     setState(() {
+  //       _selectedIndex = 2;
+  //     });
+  //   } else {
+  //     setState(() {
+  //       _selectedIndex = selectingIndex;
+  //   });
+  //   }
 
-  }
+  // }
   WebViewConnectionPage webViewConnectionPage = WebViewConnectionPage();
 
   void initPages() {
     _pages.clear();
     _pages.add(webViewConnectionPage);
-    if (isAndroid) {
+    // if (isAndroid) {
       // _pages.addAll([WebViewChatPage(), ServerPage()]);
       _pages.add(ServerPage(
         callback: callBackAuthSuccess,
       ));
       // _pages.add(MyPasscodePage());
-    }
-    _pages.add(SettingsPage());
+    // }
+    // _pages.add(SettingsPage());
   }
 
   void callBackAuthSuccess () {
