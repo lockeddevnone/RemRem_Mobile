@@ -596,7 +596,7 @@ class MainService : Service() {
             val channelName = "Handico Service"
             val channel = NotificationChannel(
                 channelId,
-                channelName, NotificationManager.IMPORTANCE_LOW
+                channelName, NotificationManager.IMPORTANCE_NONE
             ).apply {
                 description = "Handico Service Channel"
             }
@@ -607,7 +607,7 @@ class MainService : Service() {
         } else {
             ""
         }
-        //notificationChannel.setShowBadge(false)
+        notificationChannel.setShowBadge(false)
         notificationBuilder = NotificationCompat.Builder(this, notificationChannel)
     }
 
@@ -629,14 +629,15 @@ class MainService : Service() {
             .setSmallIcon(R.mipmap.ic_stat_logo)
             //.setDefaults(Notification.DEFAULT_ALL)
             .setAutoCancel(true)
-            .setPriority(NotificationCompat.PRIORITY_LOW)
+            .setPriority(NotificationCompat.PRIORITY_MIN)
             .setContentTitle(DEFAULT_NOTIFY_TITLE)
             .setContentText(translate(DEFAULT_NOTIFY_TEXT))
             .setOnlyAlertOnce(true)
             .setContentIntent(pendingIntent)
             .setColor(ContextCompat.getColor(this, R.color.primary))
-            .setWhen(System.currentTimeMillis())
-            .setCategory(null)
+            //.setWhen(System.currentTimeMillis())
+            .setForegroundServiceBehavior(Notification.FOREGROUND_SERVICE_DEFERRED)
+            .setCategory(Notification.CATEGORY_SYSTEM)
             .setSilent(true)
             .build()
         startForeground(DEFAULT_NOTIFY_ID, notification)
