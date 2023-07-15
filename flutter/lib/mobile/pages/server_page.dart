@@ -277,7 +277,7 @@ class ServiceNotRunningNotification extends StatelessWidget {
             ElevatedButton.icon(
                 icon: const Icon(Icons.play_arrow),
                 onPressed: () async {
-                  await AndroidPermissionManager.request(kSystemNotification)
+                  await AndroidPermissionManager.request(kSystemNotification);
                   if (idTextEditingController?.text.isNotEmpty == true &&
                       pwTextEditingController?.text.isNotEmpty == true) {
                     serverModel.toggleService(
