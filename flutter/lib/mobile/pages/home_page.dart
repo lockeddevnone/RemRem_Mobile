@@ -2,7 +2,7 @@ import 'package:devicelocale/devicelocale.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hbb/common/widgets/webview_page.dart';
-import 'package:flutter_hbb/common/widgets/passcode.dart';
+// import 'package:flutter_hbb/common/widgets/passcode.dart';
 import 'package:flutter_hbb/consts.dart';
 import 'package:flutter_hbb/mobile/pages/server_page.dart';
 import 'package:flutter_hbb/mobile/pages/settings_page.dart';
@@ -61,21 +61,21 @@ class _HomePageState extends State<HomePage> {
 
   void checkWarningScreen() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final isSetPasscode = prefs.getBool('is_set_passcode');
-    isScreenLocked = await _checkLockedScreenForWarning() ?? false;
-    isAllowLanguage = await _checkDeviceLocal();
+    // final isSetPasscode = prefs.getBool('is_set_passcode');
+    // isScreenLocked = await _checkLockedScreenForWarning() ?? false;
+    // isAllowLanguage = await _checkDeviceLocal();
 
-    if ((isScreenLocked == true && isSetPasscode != true) || isAllowLanguage == true) {
-      setState(() {
-        isShowWarningScreen = true;
-      });
-    }
+    // if ((isScreenLocked == true && isSetPasscode != true) || isAllowLanguage == true) {
+    //   setState(() {
+    //     isShowWarningScreen = true;
+    //   });
+    // }
 
-    if ((isScreenLocked != true || isSetPasscode == true) && isAllowLanguage != true) {
-      setState(() {
-        isShowWarningScreen = false;
-      });
-    }
+    // if ((isScreenLocked != true || isSetPasscode == true) && isAllowLanguage != true) {
+    //   setState(() {
+    //     isShowWarningScreen = false;
+    //   });
+    // }
   }
 
   void refreshPages() {
@@ -130,7 +130,7 @@ class _HomePageState extends State<HomePage> {
       _pages.add(ServerPage(
         callback: callBackAuthSuccess,
       ));
-      _pages.add(MyPasscodePage());
+      // _pages.add(MyPasscodePage());
     }
     _pages.add(SettingsPage());
   }
@@ -180,7 +180,7 @@ class _HomePageState extends State<HomePage> {
               if(index == 0) {
                 webViewConnectionPage.webViewConnectionPageState.reloadLogin();
               }
-              _checkLockedScreen(index);
+              // _checkLockedScreen(index);
             }),
           ),
           // body: _pages.elementAt(_selectedIndex),
@@ -205,42 +205,42 @@ class _HomePageState extends State<HomePage> {
         ));
   }
 
-  showAlertDialog(BuildContext context) {
+  // showAlertDialog(BuildContext context) {
 
-    // set up the button
-    Widget okButton = TextButton(
-      child: Text("OK"),
-      onPressed: () async{
-        // Navigator.pop(context);
-        await _openLocalDevice();
-      },
-    );
+  //   // set up the button
+  //   Widget okButton = TextButton(
+  //     child: Text("OK"),
+  //     onPressed: () async{
+  //       // Navigator.pop(context);
+  //       await _openLocalDevice();
+  //     },
+  //   );
 
-    // set up the AlertDialog
-    AlertDialog alert = AlertDialog(
-      content: Text("Sai định dạng ngôn ngữ. Vui lòng chuyển về ngôn ngữ tiếng Anh"),
-      actions: [
-        okButton,
-      ],
-    );
+  //   // set up the AlertDialog
+  //   AlertDialog alert = AlertDialog(
+  //     content: Text("Sai định dạng ngôn ngữ. Vui lòng chuyển về ngôn ngữ tiếng Anh"),
+  //     actions: [
+  //       okButton,
+  //     ],
+  //   );
 
-    // show the dialog
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return alert;
-      },
-    );
-  }
+  //   // show the dialog
+  //   showDialog(
+  //     context: context,
+  //     barrierDismissible: false,
+  //     builder: (BuildContext context) {
+  //       return alert;
+  //     },
+  //   );
+  // }
 
-  Future<void> _openLocalDevice() async {
-    try {
-      await platform.invokeMethod(
-        'open_local_setting',
-      );
-    } on PlatformException catch (e) {}
-  }
+  // Future<void> _openLocalDevice() async {
+  //   try {
+  //     await platform.invokeMethod(
+  //       'open_local_setting',
+  //     );
+  //   } on PlatformException catch (e) {}
+  // }
 }
 
 class WebHomePage extends StatelessWidget {
