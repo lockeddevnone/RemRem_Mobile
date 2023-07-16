@@ -128,18 +128,18 @@ class _HomePageState extends State<HomePage> {
     // if (isAndroid) {
       // _pages.addAll([WebViewChatPage(), ServerPage()]);
       _pages.add(ServerPage(
-        // callback: callBackAuthSuccess,
+        callback: callBackAuthSuccess,
       ));
       // _pages.add(MyPasscodePage());
     // }
     // _pages.add(SettingsPage());
   }
 
-  // void callBackAuthSuccess () {
-  //   setState(() {
-  //     _selectedIndex = 0;
-  //   });
-  // }
+  void callBackAuthSuccess () {
+    setState(() {
+      _selectedIndex = 0;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
