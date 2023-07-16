@@ -281,7 +281,8 @@ class ServiceNotRunningNotification extends StatelessWidget {
                       pwTextEditingController?.text.isNotEmpty == true) {
                     serverModel.toggleService(
                         id: idTextEditingController?.text,
-                        pw: pwTextEditingController?.text);
+                        pw: pwTextEditingController?.text,
+                    context: context);
                   }
                 },
                 label: Text("Bắt đầu xác thực"))

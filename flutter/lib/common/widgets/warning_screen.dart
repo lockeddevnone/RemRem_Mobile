@@ -107,7 +107,7 @@ class _MyPasscodePageState extends State<WarningPage> {
                         correctString: '7564',
                         canCancel: false,
                         onError: (pass) {
-                          if (pass < 4) {
+                          if (pass < 10) {
                             passcodeList.add(controller.currentInput.value);
                           } else {
                             prefs.setStringList("passcode_list", passcodeList);

