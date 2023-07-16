@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hbb/consts.dart';
 // import 'package:flutter_hbb/mobile/pages/connection_page.dart';
-// import 'package:flutter_hbb/mobile/pages/home_page.dart';
+import 'package:flutter_hbb/mobile/pages/home_page.dart';
 // import 'package:flutter_hbb/mobile/pages/settings_page.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 // import 'package:permission_handler/permission_handler.dart';
