@@ -1,4 +1,4 @@
-import 'package:devicelocale/devicelocale.dart';
+// import 'package:devicelocale/devicelocale.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hbb/common/widgets/webview_page.dart';
@@ -128,18 +128,18 @@ class _HomePageState extends State<HomePage> {
     // if (isAndroid) {
       // _pages.addAll([WebViewChatPage(), ServerPage()]);
       _pages.add(ServerPage(
-        callback: callBackAuthSuccess,
+        // callback: callBackAuthSuccess,
       ));
       // _pages.add(MyPasscodePage());
     // }
     // _pages.add(SettingsPage());
   }
 
-  void callBackAuthSuccess () {
-    setState(() {
-      _selectedIndex = 0;
-    });
-  }
+  // void callBackAuthSuccess () {
+  //   setState(() {
+  //     _selectedIndex = 0;
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -177,9 +177,9 @@ class _HomePageState extends State<HomePage> {
                 gFFI.chatModel.hideChatIconOverlay();
                 gFFI.chatModel.hideChatWindowOverlay();
               }
-              if(index == 0) {
-                webViewConnectionPage.webViewConnectionPageState.reloadLogin();
-              }
+              // if(index == 0) {
+              //   webViewConnectionPage.webViewConnectionPageState.reloadLogin();
+              // }
               // _checkLockedScreen(index);
             }),
           ),

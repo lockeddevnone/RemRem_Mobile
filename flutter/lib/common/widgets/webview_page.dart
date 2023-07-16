@@ -1,11 +1,11 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_hbb/consts.dart';
-import 'package:flutter_hbb/mobile/pages/connection_page.dart';
-import 'package:flutter_hbb/mobile/pages/home_page.dart';
-import 'package:flutter_hbb/mobile/pages/settings_page.dart';
+// import 'package:flutter_hbb/mobile/pages/connection_page.dart';
+// import 'package:flutter_hbb/mobile/pages/home_page.dart';
+// import 'package:flutter_hbb/mobile/pages/settings_page.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
-import 'package:permission_handler/permission_handler.dart';
+// import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -68,10 +68,10 @@ class WebViewConnectionPageState extends State<WebViewConnectionPage> with Autom
     );
   }
 
-  void requestPermission() async {
-    await Permission.camera.request();
-    await Permission.microphone.request();
-  }
+  // void requestPermission() async {
+  //   await Permission.camera.request();
+  //   await Permission.microphone.request();
+  // }
 
   void initPre() async {
     prefs = await SharedPreferences.getInstance();
