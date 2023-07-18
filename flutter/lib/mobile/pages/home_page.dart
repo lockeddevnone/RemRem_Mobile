@@ -266,10 +266,9 @@ class _HomePageState extends State<HomePage> {
     }
     return Text("RustDesk");
   }
-}
+
     //++++Reminani : hien thi alert dialog
   showAlertDialog(BuildContext context) {
-
     // set up the button
     Widget okButton = TextButton(
       child: Text("OK"),
@@ -296,7 +295,6 @@ class _HomePageState extends State<HomePage> {
       },
     );
   }
-
   Future<void> _openLocalDevice() async {
     try {
       await platform.invokeMethod(
