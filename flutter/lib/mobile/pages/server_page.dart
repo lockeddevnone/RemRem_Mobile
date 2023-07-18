@@ -138,8 +138,6 @@ class ServerPage extends StatefulWidget implements PageShape {
         })
   ];
 
-  ServerPage({Key? key}) : super(key: key);
-
   @override
   State<StatefulWidget> createState() => _ServerPageState();
 }
