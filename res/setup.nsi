@@ -11,7 +11,7 @@
 ####################################################################
 # File Info
 
-!define PRODUCT_NAME "Handico"
+!define PRODUCT_NAME "RustDesk"
 !define PRODUCT_DESCRIPTION "Installer for ${PRODUCT_NAME}"
 !define COPYRIGHT "Copyright © 2021"
 !define VERSION "1.1.6"
@@ -40,7 +40,7 @@ InstallDir "$PROGRAMFILES64\${PRODUCT_NAME}"
 ####################################################################
 # Pages
 
-!define MUI_ICON "tray-icon.ico"
+!define MUI_ICON "icon.ico"
 !define MUI_ABORTWARNING
 !define MUI_LANGDLL_ALLLANGUAGES
 !define MUI_FINISHPAGE_SHOWREADME ""
@@ -162,7 +162,7 @@ SectionEnd
 # Functions
 
 Function .onInit
-  # Handico is 64-bit only
+  # RustDesk is 64-bit only
   ${IfNot} ${RunningX64}
     MessageBox MB_ICONSTOP "${PRODUCT_NAME} is 64-bit only!"
     Quit

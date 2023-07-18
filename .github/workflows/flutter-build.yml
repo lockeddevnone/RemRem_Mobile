@@ -13,16 +13,17 @@ on:
 env:
   CARGO_NDK_VERSION: "3.1.2"
   LLVM_VERSION: "15.0.6"
-  FLUTTER_VERSION: "3.10.1"
+  FLUTTER_VERSION: "3.10.5"
   FLUTTER_RUST_BRIDGE_VERSION: "1.75.3"
-  FLUTTER_ELINUX_VERSION: "3.10.1"
+  # for arm64 linux
+  FLUTTER_ELINUX_VERSION: "3.10.5"
   FLUTTER_ELINUX_COMMIT_ID: "410b3ca42f2cd0c485edf517a1666652bab442d4"
   TAG_NAME: '1.1.0.3_mobile_${{ github.ref_name }}'
   #TAG_NAME: '1.0.0.21_build_vaynhanh_callonline'
-  # vcpkg version: 2022.05.10
+  # vcpkg version: 2023.04.15
   # for multiarch gcc compatibility
   VCPKG_COMMIT_ID: "501db0f17ef6df184fcdbfbe0f87cde2313b6ab1"
-  VERSION: "1.2.0"
+  VERSION: "1.2.1"
   NDK_VERSION: "r25c"
   #signing keys env variable checks
   ANDROID_SIGNING_KEY: '${{ secrets.ANDROID_SIGNING_KEY }}'
@@ -409,7 +410,7 @@ jobs:
         shell: bash
         run: |
           pushd /opt
-          sudo git clone https://github.com/Kingtous/rustdesk_thirdparty_lib.git --depth=1
+          sudo git clone https://github.com/rustdesk-org/rustdesk_thirdparty_lib.git --depth=1
 
       - name: Restore bridge files
         uses: actions/download-artifact@master
@@ -429,11 +430,6 @@ jobs:
         with:
           prefix-key: rustdesk-lib-cache
           key: ${{ matrix.job.target }}-${{ matrix.job.extra-build-features }}
-
-      - name: Disable rust bridge build
-        shell: bash
-        run: |
-          sed -i build.rs.bak "s/gen_flutter_rust_bridge();/\/\//g" build.rs
 
       - name: Build rustdesk lib
         env:
@@ -521,7 +517,7 @@ jobs:
         shell: bash
         run: |
           pushd /opt
-          git clone https://github.com/Kingtous/rustdesk_thirdparty_lib.git --depth=1
+          git clone https://github.com/rustdesk-org/rustdesk_thirdparty_lib.git --depth=1
 
       - name: Restore bridge files
         uses: actions/download-artifact@master
@@ -540,10 +536,6 @@ jobs:
         with:
           prefix-key: rustdesk-lib-cache
           key: ${{ matrix.job.target }}-${{ matrix.job.extra-build-features }}
-
-      - name: Disable rust bridge build
-        run: |
-          sed -i "s/gen_flutter_rust_bridge();/\/\//g" build.rs
 
       - name: Build rustdesk lib
         env:

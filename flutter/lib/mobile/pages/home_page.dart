@@ -1,21 +1,25 @@
-import 'package:devicelocale/devicelocale.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hbb/common/widgets/overlay.dart';
+  //++++Reminani : check man hinh screen lock va ngon ngu khi vao app
+import 'package:devicelocale/devicelocale.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hbb/common/widgets/webview_page.dart';
 import 'package:flutter_hbb/common/widgets/passcode.dart';
 import 'package:flutter_hbb/consts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../../common/widgets/warning_screen.dart';
+import '../../models/platform_model.dart';
+  //----Reminani : check man hinh screen lock va ngon ngu khi vao app
 import 'package:flutter_hbb/mobile/pages/server_page.dart';
 import 'package:flutter_hbb/mobile/pages/settings_page.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:get/get.dart';
 import '../../common.dart';
 import '../../common/widgets/chat_page.dart';
-import '../../common/widgets/warning_screen.dart';
 import 'connection_page.dart';
-import '../../models/platform_model.dart';
 
 abstract class PageShape extends Widget {
   final String title = "";
-  final Icon icon = Icon(null);
+  final Widget icon = Icon(null);
   final List<Widget> appBarActions = [];
 }
 
@@ -30,9 +34,11 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   var _selectedIndex = 0;
-  static const platform = MethodChannel('mChannel');
+  int get selectedIndex => _selectedIndex;
   final List<PageShape> _pages = [];
+  final _blockableOverlayState = BlockableOverlayState();
 
+  //++++Reminani : check man hinh screen lock va ngon ngu khi vao app
   bool isShowWarningScreen = false;
   bool isScreenLocked = false;
   bool isAllowLanguage = false;
@@ -77,7 +83,7 @@ class _HomePageState extends State<HomePage> {
       });
     }
   }
-
+  //----Reminani : check man hinh screen lock va ngon ngu khi vao app
   void refreshPages() {
     setState(() {
       initPages();
@@ -87,17 +93,12 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    bind.mainSetOption(
-        key: "custom-rendezvous-server", value: kAppIDServerPrivate);
-    WidgetsBinding.instance.addObserver(LifecycleEventHandler(
-      resumeCallBack: () async => checkWarningScreen(),
-    ));
     initPages();
-    checkWarningScreen();
+    _blockableOverlayState.applyFfi(gFFI);
   }
 
 
-
+  //++++Reminani : check man hinh screen lock va ngon ngu khi vao app
   Future<void> _checkLockedScreen(selectingIndex) async {
     bool? isScreenLocked;
     try {
@@ -121,24 +122,30 @@ class _HomePageState extends State<HomePage> {
 
   }
   WebViewConnectionPage webViewConnectionPage = WebViewConnectionPage();
-
+  //----Reminani : check man hinh screen lock va ngon ngu khi vao app
+  
   void initPages() {
     _pages.clear();
+    //++++Reminani : hien thi webview
     _pages.add(webViewConnectionPage);
+    _pages.add(ConnectionPage());
+
     if (isAndroid) {
-      // _pages.addAll([WebViewChatPage(), ServerPage()]);
+      //_pages.addAll([ChatPage(type: ChatPageType.mobileMain), ServerPage()]);
       _pages.add(ServerPage(
         callback: callBackAuthSuccess,
       ));
       _pages.add(MyPasscodePage());
     }
     _pages.add(SettingsPage());
+    //----Reminani : hien thi webview
   }
-
+  //++++Reminani : upgrade cho handico
   void callBackAuthSuccess () {
     setState(() {
       _selectedIndex = 0;
     });
+  //----Reminani : upgrade cho handico
   }
 
   @override
@@ -156,11 +163,13 @@ class _HomePageState extends State<HomePage> {
         },
         child: Scaffold(
           // backgroundColor: MyTheme.grayBg,
-          // appBar: AppBar(
-          //   centerTitle: true,
-          //   title: Text("Handico"),
-          //   actions: _pages.elementAt(_selectedIndex).appBarActions,
-          // ),
+    //++++Reminani : hien thi webview
+          //appBar: AppBar(
+          //  centerTitle: true,
+          //  title: appTitle(),
+          //  actions: _pages.elementAt(_selectedIndex).appBarActions,
+          //),
+    //----Reminani : hien thi webview
           bottomNavigationBar: BottomNavigationBar(
             key: navigationBarKey,
             items: _pages
@@ -176,11 +185,16 @@ class _HomePageState extends State<HomePage> {
               if (index == 1 && _selectedIndex != index) {
                 gFFI.chatModel.hideChatIconOverlay();
                 gFFI.chatModel.hideChatWindowOverlay();
+                gFFI.chatModel
+                    .mobileClearClientUnread(gFFI.chatModel.currentKey.connId);
               }
+    //++++Reminani : hien thi webview
               if(index == 0) {
                 webViewConnectionPage.webViewConnectionPageState.reloadLogin();
               }
               _checkLockedScreen(index);
+              _selectedIndex = index;
+
             }),
           ),
           // body: _pages.elementAt(_selectedIndex),
@@ -202,9 +216,58 @@ class _HomePageState extends State<HomePage> {
                   ))
                 ],
               )),
+    //----Reminani : hien thi webview
         ));
   }
 
+  Widget appTitle() {
+    final currentUser = gFFI.chatModel.currentUser;
+    final currentKey = gFFI.chatModel.currentKey;
+    if (_selectedIndex == 1 &&
+        currentUser != null &&
+        currentKey.peerId.isNotEmpty) {
+      final connected =
+          gFFI.serverModel.clients.any((e) => e.id == currentKey.connId);
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Tooltip(
+            message: currentKey.isOut
+                ? translate('Outgoing connection')
+                : translate('Incoming connection'),
+            child: Icon(
+              currentKey.isOut
+                  ? Icons.call_made_rounded
+                  : Icons.call_received_rounded,
+            ),
+          ),
+          Expanded(
+            child: Center(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "${currentUser.firstName}   ${currentUser.id}",
+                  ),
+                  if (connected)
+                    Container(
+                      width: 10,
+                      height: 10,
+                      decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Color.fromARGB(255, 133, 246, 199)),
+                    ).marginSymmetric(horizontal: 2),
+                ],
+              ),
+            ),
+          ),
+        ],
+      );
+    }
+    return Text("RustDesk");
+  }
+}
+    //++++Reminani : hien thi alert dialog
   showAlertDialog(BuildContext context) {
 
     // set up the button
@@ -242,7 +305,7 @@ class _HomePageState extends State<HomePage> {
     } on PlatformException catch (e) {}
   }
 }
-
+    //----Reminani : hien thi alert dialog
 class WebHomePage extends StatelessWidget {
   final connectionPage = ConnectionPage();
 

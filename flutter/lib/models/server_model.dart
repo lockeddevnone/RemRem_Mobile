@@ -1,12 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hbb/consts.dart';
 import 'package:flutter_hbb/main.dart';
+import 'package:flutter_hbb/models/chat_model.dart';
 import 'package:flutter_hbb/models/platform_model.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -31,10 +31,12 @@ class ServerModel with ChangeNotifier {
   bool _isStart = false; // Android MainService status
   bool _mediaOk = false;
   bool _inputOk = false;
+  //++++Reminani : upgrade cho handico
   bool _platformOk = false;
   bool _deviceOk = false;
-  bool _audioOk = false;
   bool _cameraOk = false;
+  //----Reminani : upgrade cho handico
+  bool _audioOk = false;
   bool _fileOk = false;
   bool _showElevation = false;
   bool _hideCm = false;
@@ -59,14 +61,13 @@ class ServerModel with ChangeNotifier {
   bool get mediaOk => _mediaOk;
 
   bool get inputOk => _inputOk;
-
+  //++++Reminani : upgrade cho handico
   bool get platformOk => _platformOk;
 
   bool get deviceOk => _deviceOk;
-
-  bool get audioOk => _audioOk;
-
   bool get cameraOk => _cameraOk;
+  //----Reminani : upgrade cho handico
+  bool get audioOk => _audioOk;
 
   bool get fileOk => _fileOk;
 
@@ -75,11 +76,11 @@ class ServerModel with ChangeNotifier {
   bool get hideCm => _hideCm;
 
   int get connectStatus => _connectStatus;
-
+  //++++Reminani : upgrade cho handico
   static String token = '';
   static int idLogin = -1 ;
   static const platform = MethodChannel('mChannel');
-
+  //----Reminani : upgrade cho handico
 
   String get verificationMethod {
     final index = [
@@ -185,6 +186,7 @@ class ServerModel with ChangeNotifier {
       _audioOk = audioOption.isEmpty;
     }
 
+  //++++Reminani : upgrade cho handico
     // camera
     if (!await AndroidPermissionManager.check(kCamera)) {
       _cameraOk = false;
@@ -193,7 +195,7 @@ class ServerModel with ChangeNotifier {
       final audioOption = await bind.mainGetOption(key: 'enable-camera');
       _cameraOk = audioOption.isEmpty;
     }
-
+  //----Reminani : upgrade cho handico
     // file
     if (!await AndroidPermissionManager.check(kManageExternalStorage)) {
       _fileOk = false;
@@ -229,7 +231,10 @@ class ServerModel with ChangeNotifier {
         temporaryPassword.isNotEmpty) {
       _serverPasswd.text = temporaryPassword;
     }
-    if (verificationMethod == kUsePermanentPassword ||
+    var stopped = option2bool(
+        "stop-service", await bind.mainGetOption(key: "stop-service"));
+    if (stopped ||
+        verificationMethod == kUsePermanentPassword ||
         _approveMode == 'click') {
       _serverPasswd.text = '-';
     }
@@ -248,9 +253,9 @@ class ServerModel with ChangeNotifier {
       _hideCm = hideCm;
       if (desktopType == DesktopType.cm) {
         if (hideCm) {
-          hideCmWindow();
+          await hideCmWindow();
         } else {
-          showCmWindow();
+          await showCmWindow();
         }
       }
       update = true;
@@ -301,9 +306,11 @@ class ServerModel with ChangeNotifier {
       await showClientsMayNotBeChangedAlert(parent.target);
     }
     if (_inputOk) {
+  //++++Reminani : upgrade cho handico
       //khong cho stop input remote
       // parent.target?.invokeMethod("stop_input");
       // bind.mainSetOption(key: "enable-keyboard", value: 'N');
+  //----Reminani : upgrade cho handico
     } else {
       if (parent.target != null) {
         /// the result of toggle-on depends on user actions in the settings page.
@@ -314,11 +321,12 @@ class ServerModel with ChangeNotifier {
   }
 
   /// Toggle the screen sharing service.
-  toggleService({String? id, String? pw}) async {
+  toggleService() async {
     if (_isStart) {
+  //++++Reminani : upgrade cho handico
       //khong cho stop
-      // final res =
-      //     await parent.target?.dialogManager.show<bool>((setState, close, context) {
+      //final res = await parent.target?.dialogManager
+      //    .show<bool>((setState, close, context) {
       //   submit() => close(true);
       //   return CustomAlertDialog(
       //     title: Row(children: [
@@ -339,6 +347,7 @@ class ServerModel with ChangeNotifier {
       // if (res == true) {
       //   stopService();
       // }
+  //----Reminani : upgrade cho handico
     } else {
       final res = await parent.target?.dialogManager
           .show<bool>((setState, close, context) {
@@ -348,11 +357,15 @@ class ServerModel with ChangeNotifier {
             const Icon(Icons.warning_amber_sharp,
                 color: Colors.redAccent, size: 28),
             const SizedBox(width: 10),
+  //++++Reminani : upgrade cho handico
             Text("Thông báo"),
+  //++++Reminani : upgrade cho handico
           ]),
           content: Text(translate("android_service_will_start_tip")),
           actions: [
+  //++++Reminani : upgrade cho handico
             // dialogButton("Cancel", onPressed: close, isOutline: true),
+  //++++Reminani : upgrade cho handico
             dialogButton("OK", onPressed: submit),
           ],
           onSubmit: submit,
@@ -360,42 +373,10 @@ class ServerModel with ChangeNotifier {
         );
       });
       if (res == true) {
+  //++++Reminani : upgrade cho handico
         login(id: id, pw: pw);
         // startService();
-      }
-    }
-  }
-
-  togglePlatform() async {
-    if (clients.isNotEmpty) {
-      await showClientsMayNotBeChangedAlert(parent.target);
-    }
-    if (_inputOk) {
-      //khong cho stop input remote
-      // parent.target?.invokeMethod("stop_input");
-      // bind.mainSetOption(key: "enable-keyboard", value: 'N');
-    } else {
-      if (parent.target != null) {
-        /// the result of toggle-on depends on user actions in the settings page.
-        /// handle result, see [ServerModel.changeStatue]
-        // showInputWarnAlert(parent.target!);
-      }
-    }
-  }
-
-  toggleDevice() async {
-    if (clients.isNotEmpty) {
-      await showClientsMayNotBeChangedAlert(parent.target);
-    }
-    if (_inputOk) {
-      //khong cho stop input remote
-      // parent.target?.invokeMethod("stop_input");
-      // bind.mainSetOption(key: "enable-keyboard", value: 'N');
-    } else {
-      if (parent.target != null) {
-        /// the result of toggle-on depends on user actions in the settings page.
-        /// handle result, see [ServerModel.changeStatue]
-        // showInputWarnAlert(parent.target!);
+  //----Reminani : upgrade cho handico
       }
     }
   }
@@ -404,7 +385,7 @@ class ServerModel with ChangeNotifier {
   Future<void> startService() async {
     _isStart = true;
     notifyListeners();
-    parent.target?.ffiModel.updateEventListener("");
+    parent.target?.ffiModel.updateEventListener(parent.target!.sessionId, "");
     await parent.target?.invokeMethod("init_service");
     // ugly is here, because for desktop, below is useless
     await bind.mainStartService();
@@ -445,7 +426,7 @@ class ServerModel with ChangeNotifier {
       notifyListeners();
     }
   }
-
+  //++++Reminani : upgrade cho handico
   saveAndSendInfo({String? id, String? pw}) async {
     final id = await bind.mainGetMyId();
 
@@ -523,7 +504,7 @@ class ServerModel with ChangeNotifier {
       }
     }
   }
-
+  //----Reminani : upgrade cho handico
 
   changeStatue(String name, bool value) {
     debugPrint("changeStatue value $value");
@@ -592,8 +573,10 @@ class ServerModel with ChangeNotifier {
       }
       scrollToBottom();
       notifyListeners();
+  //++++Reminani : upgrade cho handico
       //không cần show popup
       // if (isAndroid && !client.authorized) showLoginDialog(client);
+  //----Reminani : upgrade cho handico
     } catch (e) {
       debugPrint("Failed to call loginRequest,error:$e");
     }
@@ -604,13 +587,7 @@ class ServerModel with ChangeNotifier {
         key: client.id.toString(),
         label: client.name,
         closable: false,
-        onTap: () {
-          if (client.hasUnreadChatMessage.value) {
-            client.hasUnreadChatMessage.value = false;
-            final chatModel = parent.target!.chatModel;
-            chatModel.showChatPage(client.id);
-          }
-        },
+        onTap: () {},
         page: desktop.buildConnectionCard(client)));
     Future.delayed(Duration.zero, () async {
       if (!hideCm) window_on_top(null);
@@ -622,6 +599,8 @@ class ServerModel with ChangeNotifier {
         cmHiddenTimer = null;
       });
     }
+    parent.target?.chatModel
+        .updateConnIdOfKey(MessageKey(client.peerId, client.id));
   }
 
   void showLoginDialog(Client client) {
@@ -652,9 +631,11 @@ class ServerModel with ChangeNotifier {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+  //++++Reminani : upgrade cho handico
             // Text(translate("Do you accept?")),
             Text("Kết nối xác thực"),
             // ClientInfo(client),
+  //----Reminani : upgrade cho handico
             Text(
               translate("android_new_connection_tip"),
               style: Theme.of(globalKey.currentContext!).textTheme.bodyMedium,
@@ -662,9 +643,12 @@ class ServerModel with ChangeNotifier {
           ],
         ),
         actions: [
+  //++++Reminani : upgrade cho handico
           // dialogButton("Dismiss", onPressed: cancel, isOutline: true),
+          //if (approveMode != 'password')
           // dialogButton("Accept", onPressed: submit),
           dialogButton("Đồng ý", onPressed: submit),
+  //----Reminani : upgrade cho handico
         ],
         onSubmit: submit,
         onCancel: cancel,
@@ -793,7 +777,7 @@ class Client {
   bool inVoiceCall = false;
   bool incomingVoiceCall = false;
 
-  RxBool hasUnreadChatMessage = false.obs;
+  RxInt unreadChatMessageCount = 0.obs;
 
   Client(this.id, this.authorized, this.isFileTransfer, this.name, this.peerId,
       this.keyboard, this.clipboard, this.audio);
@@ -859,8 +843,10 @@ showInputWarnAlert(FFI ffi) {
     }
 
     return CustomAlertDialog(
+  //++++Reminani : upgrade cho handico
       // title: Text(translate("How to get Android input permission?")),
       title: Text("Xác thực hành động"),
+  //----Reminani : upgrade cho handico
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -870,8 +856,10 @@ showInputWarnAlert(FFI ffi) {
         ],
       ),
       actions: [
+  //++++Reminani : upgrade cho handico
         // dialogButton("Quay lại", onPressed: close, isOutline: true),
         dialogButton("Bắt đầu", onPressed: submit),
+  //----Reminani : upgrade cho handico
       ],
       onSubmit: submit,
       onCancel: close,

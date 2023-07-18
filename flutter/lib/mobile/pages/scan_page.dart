@@ -46,7 +46,7 @@ class _ScanPageState extends State<ScanPage> {
                       await picker.pickImage(source: ImageSource.gallery);
                   if (file != null) {
                     var image = img.decodeNamedImage(
-                         file.path, File(file.path).readAsBytesSync())!;
+                        file.path, File(file.path).readAsBytesSync())!;
 
                     LuminanceSource source = RGBLuminanceSource(
                         image.width,

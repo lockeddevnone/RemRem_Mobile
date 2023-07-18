@@ -24,20 +24,18 @@ RustDesk приветствует вклад каждого. Ознакомьт�
 
 [**СКАЧАТЬ ПРИЛОЖЕНИЕ**](https://github.com/rustdesk/rustdesk/releases)
 
-[<img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png" alt="Get it on F-Droid" height="80">](https://f-droid.org/en/packages/com.ultra.viewclient)
+[**ночные сборки (актуальные)**](https://github.com/rustdesk/rustdesk/releases/tag/nightly)
+
+[<img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png" alt="Get it on F-Droid" height="80">](https://f-droid.org/en/packages/com.carriez.flutter_hbb)
 
 ## Бесплатные общедоступные серверы
 
 Ниже приведены бесплатные публичные сервера, используемые по умолчанию. Имейте ввиду, они могут меняться со временем. Также стоит отметить, что скорость работы сети зависит от вашего местоположения и расстояния до серверов. Подключение происходит к ближайшему доступному.
 | Расположение | Поставщик | Технические характеристики |
 | --------- | ------------- | ------------------ |
-| Сеул | AWS lightsail | 1 vCPU / 0.5GB RAM |
-| Сингапур | Vultr | 1 vCPU / 1GB RAM |
-| Даллас | Vultr | 1 vCPU / 1GB RAM |
 | Германия | Hetzner | 2 vCPU / 4GB RAM |
 | Германия | Codext | 4 vCPU / 8GB RAM |
-| Финляндия (Хельсинки) | 0x101 Cyber Security | 4 vCPU / 8GB RAM |
-| США (Эшберн) | 0x101 Cyber Security | 4 vCPU / 8GB RAM |
+| Россия (Москва) | [nt-vps](https://nt-vps.ru) | 8 vCPU / 8GB RAM |
 
 ## Зависимости
 
@@ -55,8 +53,8 @@ RustDesk приветствует вклад каждого. Ознакомьт�
 
 - Установите [vcpkg](https://github.com/microsoft/vcpkg), и правильно установите переменную `VCPKG_ROOT`
 
-  - Windows: vcpkg install libvpx:x64-windows-static libyuv:x64-windows-static opus:x64-windows-static
-  - Linux/MacOS: vcpkg install libvpx libyuv opus
+  - Windows: vcpkg install libvpx:x64-windows-static libyuv:x64-windows-static opus:x64-windows-static aom:x64-windows-static
+  - Linux/MacOS: vcpkg install libvpx libyuv opus aom
 
 - Запустите `cargo run`
 
@@ -85,11 +83,11 @@ sudo pacman -Syu --needed unzip git cmake gcc curl wget yasm nasm zip make pkg-c
 ```sh
 git clone https://github.com/microsoft/vcpkg
 cd vcpkg
-git checkout 2021.12.01
+git checkout 2023.04.15
 cd ..
 vcpkg/bootstrap-vcpkg.sh
 export VCPKG_ROOT=$HOME/vcpkg
-vcpkg/vcpkg install libvpx libyuv opus
+vcpkg/vcpkg install libvpx libyuv opus aom
 ```
 
 ### Исправление libvpx (для Fedora)

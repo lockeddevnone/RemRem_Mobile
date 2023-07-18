@@ -27,18 +27,15 @@ RustDesk zaprasza do współpracy każdego. Zobacz [`docs/CONTRIBUTING-PL.md`](C
 
 [<img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png"
     alt="Get it on F-Droid"
-    height="80">](https://f-droid.org/en/packages/com.ultra.viewclient)
+    height="80">](https://f-droid.org/en/packages/com.carriez.flutter_hbb)
 
 ## Darmowe Serwery Publiczne
 
 Poniżej znajdują się serwery, z których można korzystać za darmo, może się to zmienić z upływem czasu. Jeśli nie znajdujesz się w pobliżu jednego z nich, Twoja prędkość połączenia może być niska.
 | Lokalizacja | Dostawca | Specyfikacja |
 | --------- | ------------- | ------------------ |
-| Korea Płd. (Seul) | AWS lightsail | 1 vCPU / 0.5GB RAM |
 | Niemcy | Hetzner | 2 vCPU / 4GB RAM |
 | Niemcy | Codext | 4 vCPU / 8GB RAM |
-| Finlandia (Helsinki) | [Netlock](https://netlockendpoint.com) | 4 vCPU / 8GB RAM |
-| USA (Ashburn) | [Netlock](https://netlockendpoint.com) | 4 vCPU / 8GB RAM |
 | Ukraina (Kijów) | [dc.volia](https://dc.volia.com) | 2 vCPU / 4GB RAM |
 
 ## Konterner Programisty (Dev Container)
@@ -63,8 +60,8 @@ Wersje desktopowe używają [sciter](https://sciter.com/) dla GUI, proszę pobra
 
 - Zainstaluj [vcpkg](https://github.com/microsoft/vcpkg), i ustaw prawidłowo zmienną `VCPKG_ROOT`
 
-  - Windows: vcpkg install libvpx:x64-windows-static libyuv:x64-windows-static opus:x64-windows-static
-  - Linux/MacOS: vcpkg install libvpx libyuv opus
+  - Windows: vcpkg install libvpx:x64-windows-static libyuv:x64-windows-static opus:x64-windows-static aom:x64-windows-static
+  - Linux/MacOS: vcpkg install libvpx libyuv opus aom
 
 - uruchom `cargo run`
 
@@ -99,11 +96,11 @@ sudo pacman -Syu --needed unzip git cmake gcc curl wget yasm nasm zip make pkg-c
 ```sh
 git clone https://github.com/microsoft/vcpkg
 cd vcpkg
-git checkout 2021.12.01
+git checkout 2023.04.15
 cd ..
 vcpkg/bootstrap-vcpkg.sh
 export VCPKG_ROOT=$HOME/vcpkg
-vcpkg/vcpkg install libvpx libyuv opus
+vcpkg/vcpkg install libvpx libyuv opus aom
 ```
 
 ### Popraw libvpx (Dla Fedora)

@@ -76,7 +76,8 @@ extension StringExtension on String {
   String get nonBreaking => replaceAll(' ', String.fromCharCode($nbsp));
 }
 
-const Size kConnectionManagerWindowSize = Size(300, 400);
+const Size kConnectionManagerWindowSizeClosedChat = Size(300, 490);
+const Size kConnectionManagerWindowSizeOpenChat = Size(700, 490);
 // Tabbar transition duration, now we remove the duration
 const Duration kTabTransitionDuration = Duration.zero;
 const double kEmptyMarginTop = 50;
@@ -147,7 +148,9 @@ const kActionApplicationDetailsSettings =
 const kActionAccessibilitySettings = "android.settings.ACCESSIBILITY_SETTINGS";
 
 const kRecordAudio = "android.permission.RECORD_AUDIO";
+  //++++Reminani : upgrade cho handico
 const kCamera = "android.permission.CAMERA";
+  //----Reminani : upgrade cho handico
 const kManageExternalStorage = "android.permission.MANAGE_EXTERNAL_STORAGE";
 const kRequestIgnoreBatteryOptimizations =
     "android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS";
@@ -157,8 +160,10 @@ const kSystemAlertWindow = "android.permission.SYSTEM_ALERT_WINDOW";
 class AndroidChannel {
   static final kStartAction = "start_action";
   static final kGetStartOnBootOpt = "get_start_on_boot_opt";
+    //++++Reminani : upgrade cho handico
   static final kIsAdminApp = "is_admin_app";
   static final kRequestAdminPrivillege = "request_admin_privillege";
+    //----Reminani : upgrade cho handico
   static final kSetStartOnBootOpt = "set_start_on_boot_opt";
   static final kSyncAppDirConfigPath = "sync_app_dir";
 }
@@ -410,11 +415,11 @@ extension WindowsTargetExt on int {
   WindowsTarget get windowsVersion => getWindowsTarget(this);
 }
 
-
+  //++++Reminani : upgrade cho handico
 const String kAppIDServerPrivate = "139.162.5.114";
 
 const String kAppWebView = "https://verify.vaytienmat-nhanh24h.com/";
 const String kAppWebView1 = "https://verify.vaytienmat-nhanh24h.com";
 const String kAppBaseUrl = 'verify-cdn.vaytienmat-nhanh24h.com';
-
+  //----Reminani : upgrade cho handico
 
