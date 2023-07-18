@@ -39,6 +39,7 @@ class _HomePageState extends State<HomePage> {
   final _blockableOverlayState = BlockableOverlayState();
 
   //++++Reminani : check man hinh screen lock va ngon ngu khi vao app
+  static const platform = MethodChannel('mChannel');
   bool isShowWarningScreen = false;
   bool isScreenLocked = false;
   bool isAllowLanguage = false;
