@@ -205,7 +205,7 @@ class PluginItem extends StatelessWidget {
             );
           }
         },
-        // to-do: Handico translate or plugin translate ?
+        // to-do: RustDesk translate or plugin translate ?
         child: Text(ui.text),
         ffi: ffi,
       );
@@ -235,7 +235,7 @@ class PluginItem extends StatelessWidget {
       // trailingIcon: Icon(
       //     IconData(int.parse(ui.icon, radix: 16), fontFamily: 'MaterialIcons')),
       //
-      // to-do: Handico translate or plugin translate ?
+      // to-do: RustDesk translate or plugin translate ?
       child: Text(ui.text),
       ffi: ffi,
     );
@@ -275,7 +275,7 @@ class PluginItem extends StatelessWidget {
   }
 }
 
-void handleReloading(Map<String, dynamic> evt, String peer) {
+void handleReloading(Map<String, dynamic> evt) {
   if (evt['id'] == null || evt['location'] == null) {
     return;
   }
@@ -295,7 +295,7 @@ void handleReloading(Map<String, dynamic> evt, String peer) {
   }
 }
 
-void handleOption(Map<String, dynamic> evt, String peer) {
+void handleOption(Map<String, dynamic> evt) {
   updateOption(
       evt['location'], evt['id'], evt['peer'] ?? '', evt['key'], evt['value']);
 }

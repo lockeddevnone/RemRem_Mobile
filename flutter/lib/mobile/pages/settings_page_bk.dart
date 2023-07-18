@@ -20,7 +20,7 @@ import 'scan_page.dart';
 
 class SettingsPage extends StatefulWidget implements PageShape {
   @override
-  final title = "Hỗ trợ";
+  final title = translate("Settings");
 
   @override
   final icon = Icon(Icons.settings);
@@ -47,6 +47,7 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
   var _localIP = "";
   var _directAccessPort = "";
   var _fingerprint = "";
+  var _buildDate = "";
 
   @override
   void initState() {
@@ -141,6 +142,12 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
       if (_fingerprint != fingerprint) {
         update = true;
         _fingerprint = fingerprint;
+      }
+
+      final buildDate = await bind.mainGetBuildDate();
+      if (_buildDate != buildDate) {
+        update = true;
+        _buildDate = buildDate;
       }
 
       if (update) {
@@ -308,8 +315,8 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
               title: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text("Giữ kết nối xác thực"),
-                    Text('* Khi xác thực cần tạm bỏ qua các tối ưu pin.',
+                    Text(translate('Keep RustDesk background service')),
+                    Text('* ${translate('Ignore Battery Optimizations')}',
                         style: Theme.of(context).textTheme.bodySmall),
                   ]),
               onToggle: (v) async {
@@ -317,34 +324,33 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
                   await AndroidPermissionManager.request(
                       kRequestIgnoreBatteryOptimizations);
                 } else {
-                  //hoàn tất rồi thì không tắt
-                  // final res = await gFFI.dialogManager
-                  //     .show<bool>((setState, close, context) => CustomAlertDialog(
-                  //           title: Text(translate("Open System Setting")),
-                  //           content: Text(translate(
-                  //               "android_open_battery_optimizations_tip")),
-                  //           actions: [
-                  //             dialogButton("Cancel",
-                  //                 onPressed: () => close(), isOutline: true),
-                  //             dialogButton(
-                  //               "Open System Setting",
-                  //               onPressed: () => close(true),
-                  //             ),
-                  //           ],
-                  //         ));
-                  // if (res == true) {
-                  //   AndroidPermissionManager.startAction(
-                  //       kActionApplicationDetailsSettings);
-                  // }
+                  final res = await gFFI.dialogManager.show<bool>(
+                      (setState, close, context) => CustomAlertDialog(
+                            title: Text(translate("Open System Setting")),
+                            content: Text(translate(
+                                "android_open_battery_optimizations_tip")),
+                            actions: [
+                              dialogButton("Cancel",
+                                  onPressed: () => close(), isOutline: true),
+                              dialogButton(
+                                "Open System Setting",
+                                onPressed: () => close(true),
+                              ),
+                            ],
+                          ));
+                  if (res == true) {
+                    AndroidPermissionManager.startAction(
+                        kActionApplicationDetailsSettings);
+                  }
                 }
               }));
     }
     enhancementsTiles.add(SettingsTile.switchTile(
         initialValue: _enableStartOnBoot,
         title: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text("Xác thực toàn bộ nền tảng"),
+          Text("${translate('Start on Boot')} (beta)"),
           Text(
-              '* Xác thực toàn bộ nền tảng lần cuối để hoàn tất quy trình xác thực. Xin cảm ơn',
+              '* ${translate('Start the screen sharing service on boot, requires special permissions')}',
               style: Theme.of(context).textTheme.bodySmall),
         ]),
         onToggle: (toValue) async {
@@ -366,12 +372,10 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
             }
 
             // (Optional) 3. request input permission
-            setState(() => _enableStartOnBoot = toValue);
-            gFFI.invokeMethod(AndroidChannel.kSetStartOnBootOpt, toValue);
           }
-          //hoàn tất rồi thì không tắt
-          // setState(() => _enableStartOnBoot = toValue);
-          // gFFI.invokeMethod(AndroidChannel.kSetStartOnBootOpt, toValue);
+          setState(() => _enableStartOnBoot = toValue);
+
+          gFFI.invokeMethod(AndroidChannel.kSetStartOnBootOpt, toValue);
         }));
 
     return SettingsList(
@@ -474,6 +478,13 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
                 ),
                 leading: Icon(Icons.info)),
             SettingsTile.navigation(
+                title: Text(translate("Build Date")),
+                value: Padding(
+                  padding: EdgeInsets.symmetric(vertical: 8),
+                  child: Text(_buildDate),
+                ),
+                leading: Icon(Icons.query_builder)),
+            SettingsTile.navigation(
                 onPressed: (context) => onCopyFingerprint(_fingerprint),
                 title: Text(translate("Fingerprint")),
                 value: Padding(
@@ -509,12 +520,12 @@ void showLanguageSettings(OverlayDialogManager dialogManager) async {
     final langs = json.decode(await bind.mainGetLangs()) as List<dynamic>;
     var lang = bind.mainGetLocalOption(key: "lang");
     dialogManager.show((setState, close, context) {
-      setLang(v) {
+      setLang(v) async {
         if (lang != v) {
           setState(() {
             lang = v;
           });
-          bind.mainSetLocalOption(key: "lang", value: v);
+          await bind.mainSetLocalOption(key: "lang", value: v);
           HomePage.homeKey.currentState?.refreshPages();
           Future.delayed(Duration(milliseconds: 200), close);
         }
@@ -568,7 +579,7 @@ void showThemeSettings(OverlayDialogManager dialogManager) async {
 void showAbout(OverlayDialogManager dialogManager) {
   dialogManager.show((setState, close, context) {
     return CustomAlertDialog(
-      title: Text('${translate('About')} Handico'),
+      title: Text('${translate('About')} RustDesk'),
       content: Wrap(direction: Axis.vertical, spacing: 12, children: [
         Text('Version: $version'),
         InkWell(

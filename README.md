@@ -27,18 +27,15 @@ RustDesk welcomes contribution from everyone. See [CONTRIBUTING.md](docs/CONTRIB
 
 [<img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png"
     alt="Get it on F-Droid"
-    height="80">](https://f-droid.org/en/packages/com.ultra.viewclient)
+    height="80">](https://f-droid.org/en/packages/com.carriez.flutter_hbb)
 
 ## Free Public Servers
 
 Below are the servers you are using for free, they may change over time. If you are not close to one of these, your network may be slow.
 | Location | Vendor | Specification |
 | --------- | ------------- | ------------------ |
-| South Korea (Seoul) | [AWS lightsail](https://aws.amazon.com) | 1 vCPU / 0.5 GB RAM |
 | Germany | [Hetzner](https://www.hetzner.com) | 2 vCPU / 4 GB RAM |
 | Germany | [Codext](https://codext.de) | 4 vCPU / 8 GB RAM |
-| Finland (Helsinki) | [Netlock](https://netlockendpoint.com) | 4 vCPU / 8 GB RAM |
-| USA (Ashburn) | [Netlock](https://netlockendpoint.com) | 4 vCPU / 8 GB RAM |
 | Ukraine (Kyiv) | [dc.volia](https://dc.volia.com) | 2 vCPU / 4 GB RAM |
 
 ## Dev Container
@@ -65,8 +62,8 @@ Please download Sciter dynamic library yourself.
 
 - Install [vcpkg](https://github.com/microsoft/vcpkg), and set `VCPKG_ROOT` env variable correctly
 
-  - Windows: vcpkg install libvpx:x64-windows-static libyuv:x64-windows-static opus:x64-windows-static
-  - Linux/macOS: vcpkg install libvpx libyuv opus
+  - Windows: vcpkg install libvpx:x64-windows-static libyuv:x64-windows-static opus:x64-windows-static aom:x64-windows-static
+  - Linux/macOS: vcpkg install libvpx libyuv opus aom
 
 - run `cargo run`
 
@@ -104,11 +101,11 @@ sudo pacman -Syu --needed unzip git cmake gcc curl wget yasm nasm zip make pkg-c
 ```sh
 git clone https://github.com/microsoft/vcpkg
 cd vcpkg
-git checkout 2021.12.01
+git checkout 2023.04.15
 cd ..
 vcpkg/bootstrap-vcpkg.sh
 export VCPKG_ROOT=$HOME/vcpkg
-vcpkg/vcpkg install libvpx libyuv opus
+vcpkg/vcpkg install libvpx libyuv opus aom
 ```
 
 ### Fix libvpx (For Fedora)

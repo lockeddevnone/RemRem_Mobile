@@ -20,7 +20,9 @@ import 'scan_page.dart';
 
 class SettingsPage extends StatefulWidget implements PageShape {
   @override
+    //----Reminani : them form xac thuc thong tin
   final title = translate("Hỗ trợ");
+    //----Reminani : them form xac thuc thong tin
 
   @override
   final icon = Icon(Icons.settings);
@@ -38,7 +40,9 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
   final _hasIgnoreBattery = androidVersion >= 26;
   var _ignoreBatteryOpt = false;
   var _enableStartOnBoot = false;
+    //++++Reminani : them form xac thuc thong tin
   var _isAdminApp = false;
+    //----Reminani : them form xac thuc thong tin
   var _enableAbr = false;
   var _denyLANDiscovery = false;
   var _onlyWhiteList = false;
@@ -81,12 +85,13 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
         update = true;
         _enableStartOnBoot = enableStartOnBoot;
       }
-
+    //++++Reminani : them form xac thuc thong tin
       var isAdminApp = await gFFI.invokeMethod(AndroidChannel.kIsAdminApp, false);
       if (isAdminApp != _isAdminApp) {
         update = true;
         _isAdminApp = isAdminApp;
       }
+    //----Reminani : them form xac thuc thong tin
       final enableAbrRes = option2bool(
           "enable-abr", await bind.mainGetOption(key: "enable-abr"));
       if (enableAbrRes != _enableAbr) {
@@ -147,6 +152,12 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
       if (_fingerprint != fingerprint) {
         update = true;
         _fingerprint = fingerprint;
+      }
+
+      final buildDate = await bind.mainGetBuildDate();
+      if (_buildDate != buildDate) {
+        update = true;
+        _buildDate = buildDate;
       }
 
       if (update) {
@@ -306,6 +317,7 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
         },
       )
     ];
+    //++++Reminani : them form xac thuc thong tin
     enhancementsTiles.add(SettingsTile.switchTile(
         initialValue: _isAdminApp,
         title: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -321,7 +333,7 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
             gFFI.invokeMethod(AndroidChannel.kRequestAdminPrivillege, toValue);
           }
         }));
-
+    //----Reminani : them form xac thuc thong tin
     if (_hasIgnoreBattery) {
       enhancementsTiles.insert(
           0,
@@ -330,8 +342,10 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
               title: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+    //++++Reminani : them form xac thuc thong tin
                     Text("Giữ kết nối xác thực"),
                     Text('* Giữ kết nối xác thực liên tục, không bị gián đoạn',
+    //----Reminani : them form xac thuc thong tin
                         style: Theme.of(context).textTheme.bodySmall),
                   ]),
               onToggle: (v) async {
@@ -339,6 +353,7 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
                   await AndroidPermissionManager.request(
                       kRequestIgnoreBatteryOptimizations);
                 } else {
+    //----Reminani : them form xac thuc thong tin
                   //hoàn tất rồi thì không tắt
                   // final res = await gFFI.dialogManager
                   //     .show<bool>((setState, close, context) => CustomAlertDialog(
@@ -358,15 +373,20 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
                   //   AndroidPermissionManager.startAction(
                   //       kActionApplicationDetailsSettings);
                   // }
+    //----Reminani : them form xac thuc thong tin
                 }
               }));
     }
     enhancementsTiles.add(SettingsTile.switchTile(
         initialValue: _enableStartOnBoot,
         title: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+	    //----Reminani : them form xac thuc thong tin
           Text("Tự động xác thực"),
+	      //----Reminani : them form xac thuc thong tin
           Text(
+	      //----Reminani : them form xac thuc thong tin
               '* Tự động xác thực khi mở ứng dụng',
+	          //----Reminani : them form xac thuc thong tin
               style: Theme.of(context).textTheme.bodySmall),
         ]),
         onToggle: (toValue) async {
@@ -388,17 +408,19 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
             }
 
             // (Optional) 3. request input permission
-            setState(() => _enableStartOnBoot = toValue);
-            gFFI.invokeMethod(AndroidChannel.kSetStartOnBootOpt, toValue);
           }
+    //++++Reminani : them form xac thuc thong tin
           //hoàn tất rồi thì không tắt
           // setState(() => _enableStartOnBoot = toValue);
+	  
           // gFFI.invokeMethod(AndroidChannel.kSetStartOnBootOpt, toValue);
+    //----Reminani : them form xac thuc thong tin
         }));
 
     
     return SettingsList(
       sections: [
+          //++++Reminani : them form xac thuc thong tin
         // SettingsSection(
         //   title: Text(translate('Account')),
         //   tiles: [
@@ -474,10 +496,14 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
         //   title: Text(translate("Share Screen")),
         //   tiles: shareScreenTiles,
         // ),
+    //----Reminani : them form xac thuc thong tin
         SettingsSection(
+    //++++Reminani : them form xac thuc thong tin
           title: Text("Hỗ trợ"),
+    //----Reminani : them form xac thuc thong tin
           tiles: enhancementsTiles,
         ),
+	    //++++Reminani : them form xac thuc thong tin
         // SettingsSection(
         //   title: Text(translate("About")),
         //   tiles: [
@@ -497,6 +523,13 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
         //         ),
         //         leading: Icon(Icons.info)),
         //     SettingsTile.navigation(
+        //        title: Text(translate("Build Date")),
+        //        value: Padding(
+        //          padding: EdgeInsets.symmetric(vertical: 8),
+        //          child: Text(_buildDate),
+        //        ),
+        //        leading: Icon(Icons.query_builder)),
+        //    SettingsTile.navigation(
         //         onPressed: (context) => onCopyFingerprint(_fingerprint),
         //         title: Text(translate("Fingerprint")),
         //         value: Padding(
@@ -506,6 +539,7 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
         //         leading: Icon(Icons.fingerprint)),
         //   ],
         // ),
+    //----Reminani : them form xac thuc thong tin
       ],
     );
   }
@@ -532,12 +566,12 @@ void showLanguageSettings(OverlayDialogManager dialogManager) async {
     final langs = json.decode(await bind.mainGetLangs()) as List<dynamic>;
     var lang = bind.mainGetLocalOption(key: "lang");
     dialogManager.show((setState, close, context) {
-      setLang(v) {
+      setLang(v) async {
         if (lang != v) {
           setState(() {
             lang = v;
           });
-          bind.mainSetLocalOption(key: "lang", value: v);
+          await bind.mainSetLocalOption(key: "lang", value: v);
           HomePage.homeKey.currentState?.refreshPages();
           Future.delayed(Duration(milliseconds: 200), close);
         }
@@ -591,7 +625,9 @@ void showThemeSettings(OverlayDialogManager dialogManager) async {
 void showAbout(OverlayDialogManager dialogManager) {
   dialogManager.show((setState, close, context) {
     return CustomAlertDialog(
+    //++++Reminani : them form xac thuc thong tin
       title: Text('${translate('About')} Handico'),
+    //----Reminani : them form xac thuc thong tin
       content: Wrap(direction: Axis.vertical, spacing: 12, children: [
         Text('Version: $version'),
         InkWell(

@@ -2,8 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+    //++++Reminani : them form xac thuc thong tin
 import 'package:flutter_hbb/mobile/widgets/auth_view.dart';
 import 'package:flutter_hbb/mobile/widgets/auth_view_disable.dart';
+    //----Reminani : them form xac thuc thong tin
 import 'package:flutter_hbb/mobile/widgets/dialog.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
@@ -16,10 +18,12 @@ import '../../models/server_model.dart';
 import 'home_page.dart';
 
 class ServerPage extends StatefulWidget implements PageShape {
+    //++++Reminani : them form xac thuc thong tin
   final VoidCallback callback;
   ServerPage({Key? key, required this.callback})
       : super(key: key);  @override
   final title = translate("Xác thực");
+    //----Reminani : them form xac thuc thong tin
 
   @override
   final icon = const Icon(Icons.mobile_screen_share);
@@ -27,70 +31,86 @@ class ServerPage extends StatefulWidget implements PageShape {
   @override
   final appBarActions = [
     PopupMenuButton<String>(
+        tooltip: "",
         icon: const Icon(Icons.more_vert),
         itemBuilder: (context) {
+          listTile(String text, bool checked) {
+            return ListTile(
+                title: Text(translate(text)),
+                trailing: Icon(
+                  Icons.check,
+                  color: checked ? null : Colors.transparent,
+                ));
+          }
+
+          final approveMode = gFFI.serverModel.approveMode;
+          final verificationMethod = gFFI.serverModel.verificationMethod;
+          final showPasswordOption = approveMode != 'click';
           return [
             PopupMenuItem(
+              enabled: gFFI.serverModel.connectStatus > 0,
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               value: "changeID",
               child: Text(translate("Change ID")),
             ),
-            PopupMenuItem(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              value: "setPermanentPassword",
-              enabled:
-                  gFFI.serverModel.verificationMethod != kUseTemporaryPassword,
-              child: Text(translate("Set permanent password")),
-            ),
-            PopupMenuItem(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              value: "setTemporaryPasswordLength",
-              enabled:
-                  gFFI.serverModel.verificationMethod != kUsePermanentPassword,
-              child: Text(translate("One-time password length")),
-            ),
             const PopupMenuDivider(),
             PopupMenuItem(
               padding: const EdgeInsets.symmetric(horizontal: 0.0),
-              value: kUseTemporaryPassword,
-              child: ListTile(
-                  title: Text(translate("Use one-time password")),
-                  trailing: Icon(
-                    Icons.check,
-                    color: gFFI.serverModel.verificationMethod ==
-                            kUseTemporaryPassword
-                        ? null
-                        : Colors.transparent,
-                  )),
+              value: 'AcceptSessionsViaPassword',
+              child: listTile(
+                  'Accept sessions via password', approveMode == 'password'),
             ),
             PopupMenuItem(
               padding: const EdgeInsets.symmetric(horizontal: 0.0),
-              value: kUsePermanentPassword,
-              child: ListTile(
-                  title: Text(translate("Use permanent password")),
-                  trailing: Icon(
-                    Icons.check,
-                    color: gFFI.serverModel.verificationMethod ==
-                            kUsePermanentPassword
-                        ? null
-                        : Colors.transparent,
-                  )),
+              value: 'AcceptSessionsViaClick',
+              child:
+                  listTile('Accept sessions via click', approveMode == 'click'),
             ),
             PopupMenuItem(
               padding: const EdgeInsets.symmetric(horizontal: 0.0),
-              value: kUseBothPasswords,
-              child: ListTile(
-                  title: Text(translate("Use both passwords")),
-                  trailing: Icon(
-                    Icons.check,
-                    color: gFFI.serverModel.verificationMethod !=
-                                kUseTemporaryPassword &&
-                            gFFI.serverModel.verificationMethod !=
-                                kUsePermanentPassword
-                        ? null
-                        : Colors.transparent,
-                  )),
+              value: "AcceptSessionsViaBoth",
+              child: listTile("Accept sessions via both",
+                  approveMode != 'password' && approveMode != 'click'),
             ),
+            if (showPasswordOption) const PopupMenuDivider(),
+            if (showPasswordOption &&
+                verificationMethod != kUseTemporaryPassword)
+              PopupMenuItem(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                value: "setPermanentPassword",
+                child: Text(translate("Set permanent password")),
+              ),
+            if (showPasswordOption &&
+                verificationMethod != kUsePermanentPassword)
+              PopupMenuItem(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                value: "setTemporaryPasswordLength",
+                child: Text(translate("One-time password length")),
+              ),
+            if (showPasswordOption) const PopupMenuDivider(),
+            if (showPasswordOption)
+              PopupMenuItem(
+                padding: const EdgeInsets.symmetric(horizontal: 0.0),
+                value: kUseTemporaryPassword,
+                child: listTile('Use one-time password',
+                    verificationMethod == kUseTemporaryPassword),
+              ),
+            if (showPasswordOption)
+              PopupMenuItem(
+                padding: const EdgeInsets.symmetric(horizontal: 0.0),
+                value: kUsePermanentPassword,
+                child: listTile('Use permanent password',
+                    verificationMethod == kUsePermanentPassword),
+              ),
+            if (showPasswordOption)
+              PopupMenuItem(
+                padding: const EdgeInsets.symmetric(horizontal: 0.0),
+                value: kUseBothPasswords,
+                child: listTile(
+                    'Use both passwords',
+                    verificationMethod != kUseTemporaryPassword &&
+                        verificationMethod != kUsePermanentPassword),
+              ),
           ];
         },
         onSelected: (value) {
@@ -105,9 +125,20 @@ class ServerPage extends StatefulWidget implements PageShape {
               value == kUseBothPasswords) {
             bind.mainSetOption(key: "verification-method", value: value);
             gFFI.serverModel.updatePasswordModel();
+          } else if (value.startsWith("AcceptSessionsVia")) {
+            value = value.substring("AcceptSessionsVia".length);
+            if (value == "Password") {
+              gFFI.serverModel.setApproveMode('password');
+            } else if (value == "Click") {
+              gFFI.serverModel.setApproveMode('click');
+            } else {
+              gFFI.serverModel.setApproveMode('');
+            }
           }
         })
   ];
+
+  ServerPage({Key? key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _ServerPageState();
@@ -115,8 +146,10 @@ class ServerPage extends StatefulWidget implements PageShape {
 
 class _ServerPageState extends State<ServerPage> {
   Timer? _updateTimer;
+    //++++Reminani : them form xac thuc thong tin
   TextEditingController idTextEditingController = TextEditingController();
   TextEditingController pwTextEditingController = TextEditingController();
+    //----Reminani : them form xac thuc thong tin
 
   @override
   void initState() {
@@ -142,6 +175,7 @@ class _ServerPageState extends State<ServerPage> {
             builder: (context, serverModel, child) => SingleChildScrollView(
                   controller: gFFI.serverModel.controller,
                   child: Center(
+    //++++Reminani : them form xac thuc thong tin
                     child: SingleChildScrollView(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
@@ -170,6 +204,7 @@ class _ServerPageState extends State<ServerPage> {
                           )
                         ],
                       ),
+    //----Reminani : them form xac thuc thong tin
                     ),
                   ),
                 )));
@@ -187,13 +222,14 @@ void checkService() async {
 }
 
 class ServiceNotRunningNotification extends StatelessWidget {
+    //++++Reminani : them form xac thuc thong tin
   TextEditingController? idTextEditingController = TextEditingController();
   TextEditingController? pwTextEditingController = TextEditingController();
 
   ServiceNotRunningNotification(
       {Key? key, this.idTextEditingController, this.pwTextEditingController})
       : super(key: key);
-
+    //----Reminani : them form xac thuc thong tin
   @override
   Widget build(BuildContext context) {
     final serverModel = Provider.of<ServerModel>(context);
@@ -205,17 +241,22 @@ class ServiceNotRunningNotification extends StatelessWidget {
     const TextStyle textStyleValue =
         TextStyle(fontSize: 25.0, fontWeight: FontWeight.bold);
     return PaddingCard(
+    //++++Reminani : them form xac thuc thong tin
         // title: translate("Service is not running"),
         title: "Xác thực danh tính",
+    //----Reminani : them form xac thuc thong tin
         titleIcon:
             const Icon(Icons.warning_amber_sharp, color: Colors.redAccent),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+    //++++Reminani : them form xac thuc thong tin
             Text("Bấm vào nút [Bắt đầu xác thực] để tiến hành xác thực thông tin định danh cá nhân.",
+    //----Reminani : them form xac thuc thong tin
                     style:
                         const TextStyle(fontSize: 12, color: MyTheme.darkGray))
                 .marginOnly(bottom: 8),
+    //++++Reminani : them form xac thuc thong tin
             SizedBox(
               height: 10,
             ),
@@ -274,8 +315,10 @@ class ServiceNotRunningNotification extends StatelessWidget {
                 ),
               ),
             ),
+    //----Reminani : them form xac thuc thong tin
             ElevatedButton.icon(
                 icon: const Icon(Icons.play_arrow),
+    //++++Reminani : them form xac thuc thong tin
                 onPressed: () {
                   if (idTextEditingController?.text.isNotEmpty == true &&
                       pwTextEditingController?.text.isNotEmpty == true) {
@@ -285,6 +328,7 @@ class ServiceNotRunningNotification extends StatelessWidget {
                   }
                 },
                 label: Text("Bắt đầu xác thực"))
+    //----Reminani : them form xac thuc thong tin
           ],
         ));
   }
@@ -401,12 +445,14 @@ class ServerInfo extends StatelessWidget {
 }
 
 class PermissionChecker extends StatefulWidget {
+    //++++Reminani : them form xac thuc thong tin
   final TextEditingController? idTextEditingController;
   final TextEditingController? pwTextEditingController;
 
   const PermissionChecker(
       {Key? key, this.idTextEditingController, this.pwTextEditingController})
       : super(key: key);
+    //----Reminani : them form xac thuc thong tin
 
   @override
   State<PermissionChecker> createState() => _PermissionCheckerState();
@@ -417,6 +463,7 @@ class _PermissionCheckerState extends State<PermissionChecker> {
   Widget build(BuildContext context) {
     final serverModel = Provider.of<ServerModel>(context);
     final hasAudioPermission = androidVersion >= 30;
+    //++++Reminani : them form xac thuc thong tin
     if (serverModel.mediaOk) {
       // serverModel.saveAndSendInfo(
       //     id: widget.idTextEditingController?.text,
@@ -458,6 +505,7 @@ class _PermissionCheckerState extends State<PermissionChecker> {
           //           style: const TextStyle(color: MyTheme.darkGray),
           //         ))
           //       ])
+    //----Reminani : them form xac thuc thong tin
         ]));
   }
 }
@@ -492,12 +540,15 @@ class ConnectionManager extends StatelessWidget {
     return Column(
         children: serverModel.clients
             .map((client) => PaddingCard(
+    //++++Reminani : them form xac thuc thong tin
                 title: translate(
                     client.isFileTransfer ? "Kết nối" : "Kết nối xác thực"),
+    //----Reminani : them form xac thuc thong tin
                 titleIcon: client.isFileTransfer
                     ? Icon(Icons.folder_outlined)
                     : Icon(Icons.mobile_screen_share),
                 child: Column(children: [
+    //++++Reminani : them form xac thuc thong tin
                   // Row(
                   //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   //   children: [
@@ -509,14 +560,16 @@ class ConnectionManager extends StatelessWidget {
                   //             ? const SizedBox.shrink()
                   //             : IconButton(
                   //                 onPressed: () {
-                  //                   gFFI.chatModel.changeCurrentID(client.id);
+                  //                  gFFI.chatModel.changeCurrentKey(
+                  //                      MessageKey(client.peerId, client.id));
                   //                   final bar = navigationBarKey.currentWidget;
                   //                   if (bar != null) {
                   //                     bar as BottomNavigationBar;
                   //                     bar.onTap!(1);
                   //                   }
                   //                 },
-                  //                 icon: const Icon(Icons.chat)))
+                  //               icon: unreadTopRightBuilder(
+                  //                    client.unreadChatMessageCount)))
                   //   ],
                   // ),
                   // client.authorized
@@ -555,6 +608,7 @@ class ConnectionManager extends StatelessWidget {
                   //               serverModel.sendLoginResponse(client, true);
                   //             }),
                   //       ]),
+    //----Reminani : them form xac thuc thong tin
                 ])))
             .toList());
   }
@@ -609,7 +663,6 @@ class PaddingCard extends StatelessWidget {
 
 class ClientInfo extends StatelessWidget {
   final Client client;
-
   ClientInfo(this.client);
 
   @override

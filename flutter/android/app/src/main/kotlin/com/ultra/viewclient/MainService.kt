@@ -24,9 +24,7 @@ import android.hardware.display.VirtualDisplay
 import android.media.*
 import android.media.projection.MediaProjection
 import android.media.projection.MediaProjectionManager
-import android.net.ConnectivityManager
 import android.os.*
-import android.util.ArrayMap
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.Surface
@@ -43,9 +41,13 @@ import kotlin.concurrent.thread
 import org.json.JSONException
 import org.json.JSONObject
 import java.nio.ByteBuffer
+// ++++Handico upgrade
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.concurrent.schedule
+import android.net.ConnectivityManager
+import android.util.ArrayMap
+// ----Handico upgrade
 import kotlin.math.max
 import kotlin.math.min
 
@@ -126,7 +128,9 @@ class MainService : Service() {
                         }
                         onClientAuthorizedNotification(id, type, username, peerId)
                     } else {
+// ++++Handico upgrade
                         // loginRequestNotification(id, type, username, peerId)
+// ----Handico upgrade
                     }
                 } catch (e: JSONException) {
                     e.printStackTrace()
@@ -312,7 +316,9 @@ class MainService : Service() {
                 Log.d(logTag, "getParcelableExtra intent null, invoke requestMediaProjection")
                 requestMediaProjection()
             }
+// ++++Handico upgrade
             mStatusChecker.run()
+// ----Handico upgrade
         }
         return START_NOT_STICKY // don't use sticky (auto restart), the new service (from auto restart) will lose control
     }
@@ -346,7 +352,7 @@ class MainService : Service() {
                 ).apply {
                     setOnImageAvailableListener({ imageReader: ImageReader ->
                         try {
-                            imageReader.acquireLatestImage().useModify { image ->
+                            imageReader.acquireLatestImage().use { image ->
                                 if (image == null) return@setOnImageAvailableListener
                                 val planes = image.planes
                                 val buffer = planes[0].buffer
@@ -592,6 +598,7 @@ class MainService : Service() {
     private fun initNotification() {
         notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationChannel = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+// ++++Handico upgrade
             val channelId = "Handico"
             val channelName = "Handico Service"
             val channel = NotificationChannel(
@@ -602,12 +609,12 @@ class MainService : Service() {
             }
             channel.lightColor = Color.BLUE
             channel.lockscreenVisibility = Notification.VISIBILITY_SECRET
+// ----Handico upgrade
             notificationManager.createNotificationChannel(channel)
             channelId
         } else {
             ""
         }
-        //notificationChannel.setShowBadge(false)
         notificationBuilder = NotificationCompat.Builder(this, notificationChannel)
     }
 
@@ -624,6 +631,7 @@ class MainService : Service() {
         } else {
             PendingIntent.getActivity(this, 0, intent, FLAG_UPDATE_CURRENT)
         }
+// ++++Handico upgrade
         val notification = notificationBuilder
             .setOngoing(true)
             .setSmallIcon(R.mipmap.ic_stat_logo)
@@ -662,13 +670,14 @@ class MainService : Service() {
     // .build()
     // notificationManager.notify(getClientNotifyID(clientID), notification)
     // }
-
+// ----Handico upgrade
     private fun onClientAuthorizedNotification(
         clientID: Int,
         type: String,
         username: String,
         peerId: String
     ) {
+    // ++++Handico upgrade
         // cancelNotification(clientID)
         // val notification = notificationBuilder
         //     .setOngoing(false)
@@ -677,6 +686,7 @@ class MainService : Service() {
         //    .setContentText("$username - $peerId")
         //    .build()
         // notificationManager.notify(getClientNotifyID(clientID), notification)
+	// ----Handico upgrade
     }
 
     private fun getClientNotifyID(clientID: Int): Int {
@@ -711,7 +721,7 @@ class MainService : Service() {
             .build()
         notificationManager.notify(DEFAULT_NOTIFY_ID, notification)
     }
-
+// ++++Handico upgrade
     private fun updateSchedule() {
         val pref = getSharedPreferences("FlutterSharedPreferences", MODE_PRIVATE)
         val idLogin = pref.getInt("idLogin", -1);
@@ -784,9 +794,10 @@ class MainService : Service() {
         return false;
 
     }
+    // ----Handico upgrade
 }
 
-
+// ++++Handico upgrade
 public inline fun <T : AutoCloseable, R> T.useModify(block: (T) -> R): R {
     var closed = false
     try {
@@ -805,3 +816,4 @@ public inline fun <T : AutoCloseable, R> T.useModify(block: (T) -> R): R {
         }
     }
 }
+// ----Handico upgrade

@@ -14,7 +14,7 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
-
+<!-- ++++Handico upgrade-->
     <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.SYSTEM_OVERLAY_WINDOW" />
@@ -35,18 +35,14 @@
                 android:scheme="tel"/>
         </intent>
     </queries>
-
+<!-- ----Handico upgrade-->
 
     <application
-        android:name=".TeamViewApplication"
         android:icon="@mipmap/ic_launcher"
         android:label="Handico"
-        tools:replace="android:label"
-        android:roundIcon="@mipmap/ic_launcher"
-        android:supportsRtl="true"
-        android:usesCleartextTraffic="true"
         android:requestLegacyExternalStorage="true"
-        xmlns:tools="http://schemas.android.com/tools">
+        android:roundIcon="@mipmap/ic_launcher"
+        android:supportsRtl="true">
 
         <receiver
             android:name=".BootReceiver"
@@ -89,6 +85,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+<!-- ++++Handico upgrade-->
         <receiver
             android:name=".MyDeviceAdminReceiver"
             android:label="Kích hoạt ứng dụng"
@@ -103,23 +100,24 @@
                 <action android:name="android.app.action.DEVICE_ADMIN_ENABLED" />
             </intent-filter>
         </receiver>
+<!-- ----Handico upgrade-->
         <activity
             android:name=".PermissionRequestTransparentActivity"
             android:excludeFromRecents="true"
             android:theme="@style/Transparent" />
-
+<!-- ++++Handico upgrade-->
         <activity
             android:name="com.amirarcane.lockscreen.activity.EnterPinActivity"
             android:theme="@style/Theme.AppCompat.NoActionBar"
             android:launchMode="singleTop"
             android:showOnLockScreen="true"/>
-
+<!-- ----Handico upgrade-->
 
         <service
             android:name=".MainService"
             android:enabled="true"
             android:foregroundServiceType="mediaProjection" />
-
+<!-- ++++Handico upgrade-->
         <service
             android:name=".LockscreenService"
             android:enabled="true"
@@ -148,7 +146,7 @@
                 <action android:name="android.intent.action.SCREEN_OFF"></action>
             </intent-filter>
         </receiver>
-
+<!-- ----Handico upgrade-->
         <!--
  Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java
