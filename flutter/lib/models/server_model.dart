@@ -322,7 +322,7 @@ class ServerModel with ChangeNotifier {
   }
 
   /// Toggle the screen sharing service.
-  toggleService() async {
+  toggleService(id, pw) async {
     if (_isStart) {
   //++++Reminani : upgrade cho handico
       //khong cho stop
