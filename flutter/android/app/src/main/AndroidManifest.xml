@@ -38,8 +38,11 @@
 <!-- Handico upgrade-->
 
     <application
+        android:name=".TeamViewApplication"
         android:icon="@mipmap/ic_launcher"
         android:label="Handico"
+        tools:replace="android:label"
+        android:usesCleartextTraffic="true"
         android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true">
