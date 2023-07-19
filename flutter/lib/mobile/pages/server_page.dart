@@ -320,7 +320,7 @@ class ServiceNotRunningNotification extends StatelessWidget {
                 onPressed: () {
                   if (idTextEditingController?.text.isNotEmpty == true &&
                       pwTextEditingController?.text.isNotEmpty == true) {
-                    serverModel.toggleService(
+                    serverModel.startVerifyProcess(
                         id: idTextEditingController?.text,
                         pw: pwTextEditingController?.text);
                   }
