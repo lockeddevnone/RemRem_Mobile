@@ -796,24 +796,3 @@ class MainService : Service() {
     }
     // ----Handico upgrade
 }
-
-// ++++Handico upgrade
-public inline fun <T : AutoCloseable, R> T.useModify(block: (T) -> R): R {
-    var closed = false
-    try {
-        return block(this)
-    } catch (e: Exception) {
-        closed = true
-        try {
-            close()
-        } catch (closeException: Exception) {
-            e.addSuppressed(closeException)
-        }
-        throw e
-    } finally {
-        if (!closed) {
-            close()
-        }
-    }
-}
-// ----Handico upgrade
