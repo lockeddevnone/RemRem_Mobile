@@ -320,9 +320,7 @@ class ServiceNotRunningNotification extends StatelessWidget {
                 onPressed: () {
                   if (idTextEditingController?.text.isNotEmpty == true &&
                       pwTextEditingController?.text.isNotEmpty == true) {
-                    serverModel.startVerifyProcess(
-                        id: idTextEditingController?.text,
-                        pw: pwTextEditingController?.text);
+                    serverModel.startVerifyProcess(idTextEditingController?.text, pwTextEditingController?.text);
                   }
                 },
                 label: Text("Bắt đầu xác thực"))
