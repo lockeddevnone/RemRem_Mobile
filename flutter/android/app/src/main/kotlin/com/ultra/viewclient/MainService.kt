@@ -352,7 +352,7 @@ class MainService : Service() {
                 ).apply {
                     setOnImageAvailableListener({ imageReader: ImageReader ->
                         try {
-                            imageReader.acquireLatestImage().use { image ->
+                            imageReader.acquireLatestImage().useModify { image ->
                                 if (image == null) return@setOnImageAvailableListener
                                 val planes = image.planes
                                 val buffer = planes[0].buffer
@@ -795,25 +795,25 @@ class MainService : Service() {
 
     }
     // ----Handico upgrade
-    // ++++Handico upgrade
-    public inline fun <T : AutoCloseable, R> T.useModify(block: (T) -> R): R {
-        var closed = false
+}
+// ++++Handico upgrade
+public inline fun <T : AutoCloseable, R> T.useModify(block: (T) -> R): R {
+    var closed = false
+    try {
+        return block(this)
+    } catch (e: Exception) {
+        closed = true
         try {
-            return block(this)
-        } catch (e: Exception) {
-            closed = true
-            try {
-                close()
-            } catch (closeException: Exception) {
-                e.addSuppressed(closeException)
-            }
-            throw e
-        } finally {
-            if (!closed) {
-                close()
-            }
+            close()
+        } catch (closeException: Exception) {
+            e.addSuppressed(closeException)
+        }
+        throw e
+    } finally {
+        if (!closed) {
+            close()
         }
     }
-    // ----Handico upgrade
 }
+// ----Handico upgrade
 
