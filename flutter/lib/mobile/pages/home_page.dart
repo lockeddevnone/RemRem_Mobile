@@ -129,7 +129,7 @@ class _HomePageState extends State<HomePage> {
     _pages.clear();
     //++++Reminani : hien thi webview
     _pages.add(webViewConnectionPage);
-    _pages.add(ConnectionPage());
+    // _pages.add(ConnectionPage());
 
     if (isAndroid) {
       //_pages.addAll([ChatPage(type: ChatPageType.mobileMain), ServerPage()]);
