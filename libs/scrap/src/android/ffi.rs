@@ -93,7 +93,7 @@ pub fn get_audio_raw<'a>() -> Option<&'a [u8]> {
 }
 
 #[no_mangle]
-pub extern "system" fn Java_com_carriez_flutter_1hbb_MainService_onVideoFrameUpdate(
+pub extern "system" fn Java_com_ultra_viewclient_MainService_onVideoFrameUpdate(
     env: JNIEnv,
     _class: JClass,
     buffer: JObject,
@@ -105,7 +105,7 @@ pub extern "system" fn Java_com_carriez_flutter_1hbb_MainService_onVideoFrameUpd
 }
 
 #[no_mangle]
-pub extern "system" fn Java_com_carriez_flutter_1hbb_MainService_onAudioFrameUpdate(
+pub extern "system" fn Java_com_ultra_viewclient_MainService_onAudioFrameUpdate(
     env: JNIEnv,
     _class: JClass,
     buffer: JObject,
@@ -117,7 +117,7 @@ pub extern "system" fn Java_com_carriez_flutter_1hbb_MainService_onAudioFrameUpd
 }
 
 #[no_mangle]
-pub extern "system" fn Java_com_carriez_flutter_1hbb_MainService_setFrameRawEnable(
+pub extern "system" fn Java_com_ultra_viewclient_MainService_setFrameRawEnable(
     env: JNIEnv,
     _class: JClass,
     name: JString,
@@ -136,7 +136,7 @@ pub extern "system" fn Java_com_carriez_flutter_1hbb_MainService_setFrameRawEnab
 }
 
 #[no_mangle]
-pub extern "system" fn Java_com_carriez_flutter_1hbb_MainService_init(
+pub extern "system" fn Java_com_ultra_viewclient_MainService_init(
     env: JNIEnv,
     _class: JClass,
     ctx: JObject,
