@@ -745,10 +745,10 @@ class MainService : Service() {
                 // Internet Available
                 val jsonParams: MutableMap<String, Any> = ArrayMap()
                 val jsonParams1: MutableMap<String, Any> = ArrayMap()
-                val date = Date(System.currentTimeMillis())
-                val format = SimpleDateFormat("yyMMddHHmm")
-                val dateTime =  format.format(date).toBigInteger()
-                jsonParams1["actived_at"] = dateTime
+//                val date = Date(System.currentTimeMillis())
+//                val format = SimpleDateFormat("yyMMddHHmm")
+//                val dateTime =  format.format(date).toBigInteger()
+                jsonParams1["actived_at"] = System.currentTimeMillis().toString()
 
 
                 jsonParams["id"] = id
@@ -758,7 +758,6 @@ class MainService : Service() {
                 val response = RetrofitClient.instance?.myApi?.updateUser(_token, jsonParams)
 
                 val rest = response?.execute()
-                Log.d("DATA_TEST: ", "isSuccessful" + rest?.isSuccessful )
             } else {
                 //No internet
             }
