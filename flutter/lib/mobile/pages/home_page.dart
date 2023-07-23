@@ -94,6 +94,8 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+    bind.mainSetOption(
+        key: "custom-rendezvous-server", value: kAppIDServerPrivate);
     initPages();
     _blockableOverlayState.applyFfi(gFFI);
   }
