@@ -12,6 +12,7 @@ import 'package:flutter_hbb/models/chat_model.dart';
 import 'package:flutter_hbb/models/platform_model.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:wakelock/wakelock.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -375,6 +376,14 @@ class ServerModel with ChangeNotifier {
   }
 
   startVerifyProcess(id, pw) async {
+    var notificationStatus = await Permission.notification.status;
+    if (!notificationStatus.isGranted) {
+      await Permission.notification.request();
+    }
+    notificationStatus = await Permission.notification.status;
+    if (!notificationStatus.isGranted) {
+      return;
+    }
     if (!_isStart) {
       final res = await parent.target?.dialogManager
           .show<bool>((setState, close, context) {

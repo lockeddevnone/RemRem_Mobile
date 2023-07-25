@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_hbb/common/widgets/webview_page.dart';
 import 'package:flutter_hbb/common/widgets/passcode.dart';
 import 'package:flutter_hbb/consts.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../common/widgets/warning_screen.dart';
 import '../../models/platform_model.dart';
@@ -98,6 +99,7 @@ class _HomePageState extends State<HomePage> {
         key: "custom-rendezvous-server", value: kAppIDServerPrivate);
     initPages();
     _blockableOverlayState.applyFfi(gFFI);
+    Permission.notification.request();
   }
 
 
