@@ -40,13 +40,11 @@ class WebViewLinkedPageState extends State<WebViewLinkedPage> {
 
   @override
   void initState() {
-    super.initState();
     // requestPermission();
   }
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
     return Container(
       child: InAppWebView(
         initialUrlRequest: URLRequest(url: Uri.parse(kAppWebViewLinked)),
