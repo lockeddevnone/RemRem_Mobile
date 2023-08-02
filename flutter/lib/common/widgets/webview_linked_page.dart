@@ -17,7 +17,7 @@ class WebViewLinkedPage extends StatefulWidget implements PageShape {
   late WebViewLinkedPageState webViewLinkedPageState;
 
   @override
-  final icon = const Icon(Icons.home);
+  final icon = const Icon(Icons.settings);
 
   @override
   final title = translate("Liên kết");
