@@ -154,12 +154,13 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
         _fingerprint = fingerprint;
       }
 
-      final buildDate = await bind.mainGetBuildDate();
-      if (_buildDate != buildDate) {
-        update = true;
-        _buildDate = buildDate;
-      }
-
+      //----Reminani : them form xac thuc thong tin
+      //final buildDate = await bind.mainGetBuildDate();
+      //if (_buildDate != buildDate) {
+      //  update = true;
+      //  _buildDate = buildDate;
+      //}
+      //----Reminani : them form xac thuc thong tin
       if (update) {
         setState(() {});
       }

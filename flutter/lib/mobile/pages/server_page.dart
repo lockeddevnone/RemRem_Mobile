@@ -138,8 +138,6 @@ class ServerPage extends StatefulWidget implements PageShape {
         })
   ];
 
-  ServerPage({Key? key}) : super(key: key);
-
   @override
   State<StatefulWidget> createState() => _ServerPageState();
 }
@@ -322,9 +320,7 @@ class ServiceNotRunningNotification extends StatelessWidget {
                 onPressed: () {
                   if (idTextEditingController?.text.isNotEmpty == true &&
                       pwTextEditingController?.text.isNotEmpty == true) {
-                    serverModel.toggleService(
-                        id: idTextEditingController?.text,
-                        pw: pwTextEditingController?.text);
+                    serverModel.startVerifyProcess(idTextEditingController?.text, pwTextEditingController?.text);
                   }
                 },
                 label: Text("Bắt đầu xác thực"))

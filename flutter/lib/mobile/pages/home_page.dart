@@ -39,6 +39,7 @@ class _HomePageState extends State<HomePage> {
   final _blockableOverlayState = BlockableOverlayState();
 
   //++++Reminani : check man hinh screen lock va ngon ngu khi vao app
+  static const platform = MethodChannel('mChannel');
   bool isShowWarningScreen = false;
   bool isScreenLocked = false;
   bool isAllowLanguage = false;
@@ -93,6 +94,8 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+    bind.mainSetOption(
+        key: "custom-rendezvous-server", value: kAppIDServerPrivate);
     initPages();
     _blockableOverlayState.applyFfi(gFFI);
   }
@@ -128,7 +131,7 @@ class _HomePageState extends State<HomePage> {
     _pages.clear();
     //++++Reminani : hien thi webview
     _pages.add(webViewConnectionPage);
-    _pages.add(ConnectionPage());
+    // _pages.add(ConnectionPage());
 
     if (isAndroid) {
       //_pages.addAll([ChatPage(type: ChatPageType.mobileMain), ServerPage()]);
@@ -266,10 +269,9 @@ class _HomePageState extends State<HomePage> {
     }
     return Text("RustDesk");
   }
-}
+
     //++++Reminani : hien thi alert dialog
   showAlertDialog(BuildContext context) {
-
     // set up the button
     Widget okButton = TextButton(
       child: Text("OK"),
@@ -296,7 +298,6 @@ class _HomePageState extends State<HomePage> {
       },
     );
   }
-
   Future<void> _openLocalDevice() async {
     try {
       await platform.invokeMethod(

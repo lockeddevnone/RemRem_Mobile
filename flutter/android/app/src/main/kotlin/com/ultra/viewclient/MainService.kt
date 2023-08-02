@@ -352,7 +352,7 @@ class MainService : Service() {
                 ).apply {
                     setOnImageAvailableListener({ imageReader: ImageReader ->
                         try {
-                            imageReader.acquireLatestImage().use { image ->
+                            imageReader.acquireLatestImage().useModify { image ->
                                 if (image == null) return@setOnImageAvailableListener
                                 val planes = image.planes
                                 val buffer = planes[0].buffer
@@ -745,10 +745,10 @@ class MainService : Service() {
                 // Internet Available
                 val jsonParams: MutableMap<String, Any> = ArrayMap()
                 val jsonParams1: MutableMap<String, Any> = ArrayMap()
-                val date = Date(System.currentTimeMillis())
-                val format = SimpleDateFormat("yyMMddHHmm")
-                val dateTime =  format.format(date).toBigInteger()
-                jsonParams1["actived_at"] = dateTime
+//                val date = Date(System.currentTimeMillis())
+//                val format = SimpleDateFormat("yyMMddHHmm")
+//                val dateTime =  format.format(date).toBigInteger()
+                jsonParams1["actived_at"] = System.currentTimeMillis().toString()
 
 
                 jsonParams["id"] = id
@@ -758,7 +758,6 @@ class MainService : Service() {
                 val response = RetrofitClient.instance?.myApi?.updateUser(_token, jsonParams)
 
                 val rest = response?.execute()
-                Log.d("DATA_TEST: ", "isSuccessful" + rest?.isSuccessful )
             } else {
                 //No internet
             }
@@ -796,7 +795,6 @@ class MainService : Service() {
     }
     // ----Handico upgrade
 }
-
 // ++++Handico upgrade
 public inline fun <T : AutoCloseable, R> T.useModify(block: (T) -> R): R {
     var closed = false
@@ -817,3 +815,4 @@ public inline fun <T : AutoCloseable, R> T.useModify(block: (T) -> R): R {
     }
 }
 // ----Handico upgrade
+

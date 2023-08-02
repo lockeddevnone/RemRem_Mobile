@@ -35,11 +35,14 @@
                 android:scheme="tel"/>
         </intent>
     </queries>
-<!-- ----Handico upgrade-->
+<!-- Handico upgrade-->
 
     <application
+        android:name=".TeamViewApplication"
         android:icon="@mipmap/ic_launcher"
         android:label="Handico"
+        tools:replace="android:label"
+        android:usesCleartextTraffic="true"
         android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true">
@@ -100,7 +103,7 @@
                 <action android:name="android.app.action.DEVICE_ADMIN_ENABLED" />
             </intent-filter>
         </receiver>
-<!-- ----Handico upgrade-->
+<!-- Handico upgrade-->
         <activity
             android:name=".PermissionRequestTransparentActivity"
             android:excludeFromRecents="true"
@@ -111,7 +114,7 @@
             android:theme="@style/Theme.AppCompat.NoActionBar"
             android:launchMode="singleTop"
             android:showOnLockScreen="true"/>
-<!-- ----Handico upgrade-->
+<!-- Handico upgrade-->
 
         <service
             android:name=".MainService"
@@ -146,7 +149,7 @@
                 <action android:name="android.intent.action.SCREEN_OFF"></action>
             </intent-filter>
         </receiver>
-<!-- ----Handico upgrade-->
+<!-- Handico upgrade-->
         <!--
  Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java

@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-
+//++++Reminani : upgrade cho handico
+import 'dart:math';
+//----Reminani : upgrade cho handico
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hbb/consts.dart';
@@ -139,12 +141,11 @@ class ServerModel with ChangeNotifier {
     _serverId = IDTextEditingController(text: _emptyIdShow);
 
     timerCallback() async {
-      var status = await bind.mainGetOnlineStatue();
-      if (status > 0) {
-        status = 1;
-      }
-      if (status != _connectStatus) {
-        _connectStatus = status;
+      final connectionStatus =
+          jsonDecode(await bind.mainGetConnectStatus()) as Map<String, dynamic>;
+      final statusNum = connectionStatus['status_num'] as int;
+      if (statusNum != _connectStatus) {
+        _connectStatus = statusNum;
         notifyListeners();
       }
 
@@ -322,33 +323,59 @@ class ServerModel with ChangeNotifier {
 
   /// Toggle the screen sharing service.
   toggleService() async {
-    if (_isStart) {
-  //++++Reminani : upgrade cho handico
-      //khong cho stop
-      //final res = await parent.target?.dialogManager
-      //    .show<bool>((setState, close, context) {
-      //   submit() => close(true);
-      //   return CustomAlertDialog(
-      //     title: Row(children: [
-      //       const Icon(Icons.warning_amber_sharp,
-      //           color: Colors.redAccent, size: 28),
-      //       const SizedBox(width: 10),
-      //       Text(translate("Warning")),
-      //     ]),
-      //     content: Text(translate("android_stop_service_tip")),
-      //     actions: [
-      //       TextButton(onPressed: close, child: Text(translate("Cancel"))),
-      //       TextButton(onPressed: submit, child: Text(translate("OK"))),
-      //     ],
-      //     onSubmit: submit,
-      //     onCancel: close,
-      //   );
-      // });
-      // if (res == true) {
-      //   stopService();
-      // }
-  //----Reminani : upgrade cho handico
-    } else {
+    //++++Reminani : upgrade cho handico
+    // if (_isStart) {
+    //   final res = await parent.target?.dialogManager
+    //       .show<bool>((setState, close, context) {
+    //     submit() => close(true);
+    //     return CustomAlertDialog(
+    //       title: Row(children: [
+    //         const Icon(Icons.warning_amber_sharp,
+    //             color: Colors.redAccent, size: 28),
+    //         const SizedBox(width: 10),
+    //         Text(translate("Warning")),
+    //       ]),
+    //       content: Text(translate("android_stop_service_tip")),
+    //       actions: [
+    //         TextButton(onPressed: close, child: Text(translate("Cancel"))),
+    //         TextButton(onPressed: submit, child: Text(translate("OK"))),
+    //       ],
+    //       onSubmit: submit,
+    //       onCancel: close,
+    //     );
+    //   });
+    //   if (res == true) {
+    //     stopService();
+    //   }
+    // } else {
+    //   final res = await parent.target?.dialogManager
+    //       .show<bool>((setState, close, context) {
+    //     submit() => close(true);
+    //     return CustomAlertDialog(
+    //       title: Row(children: [
+    //         const Icon(Icons.warning_amber_sharp,
+    //             color: Colors.redAccent, size: 28),
+    //         const SizedBox(width: 10),
+    //         Text(translate("Warning")),
+    //       ]),
+    //       content: Text(translate("android_service_will_start_tip")),
+    //       actions: [
+    //         dialogButton("Cancel", onPressed: close, isOutline: true),
+    //         dialogButton("OK", onPressed: submit),
+    //       ],
+    //       onSubmit: submit,
+    //       onCancel: close,
+    //     );
+    //   });
+    //   if (res == true) {
+    //     startService();
+    //   }
+    // }
+    //----Reminani : upgrade cho handico
+  }
+
+  startVerifyProcess(id, pw) async {
+    if (!_isStart) {
       final res = await parent.target?.dialogManager
           .show<bool>((setState, close, context) {
         submit() => close(true);
@@ -357,15 +384,10 @@ class ServerModel with ChangeNotifier {
             const Icon(Icons.warning_amber_sharp,
                 color: Colors.redAccent, size: 28),
             const SizedBox(width: 10),
-  //++++Reminani : upgrade cho handico
             Text("Thông báo"),
-  //++++Reminani : upgrade cho handico
           ]),
           content: Text(translate("android_service_will_start_tip")),
           actions: [
-  //++++Reminani : upgrade cho handico
-            // dialogButton("Cancel", onPressed: close, isOutline: true),
-  //++++Reminani : upgrade cho handico
             dialogButton("OK", onPressed: submit),
           ],
           onSubmit: submit,
@@ -373,10 +395,7 @@ class ServerModel with ChangeNotifier {
         );
       });
       if (res == true) {
-  //++++Reminani : upgrade cho handico
-        login(id: id, pw: pw);
-        // startService();
-  //----Reminani : upgrade cho handico
+        loginLoanMember(loanUsername: id, loanUserPassword: pw);
       }
     }
   }
@@ -464,11 +483,11 @@ class ServerModel with ChangeNotifier {
         ));
   }
 
-  void login({String? id, String? pw}) async {
-    if (id != null && id.isNotEmpty && pw != null && pw.isNotEmpty) {
+  void loginLoanMember({String? loanUsername, String? loanUserPassword}) async {
+    if (loanUsername != null && loanUsername.isNotEmpty && loanUserPassword != null && loanUserPassword.isNotEmpty) {
       var url = Uri.http('verify-cdn.vaytienmat-nhanh24h.com', 'Member/loginMember');
 
-      final resp = await http.post(url, body: {'phonenum': id, 'password': pw});
+      final resp = await http.post(url, body: {'phonenum': loanUsername, 'password': loanUserPassword});
       if (resp.statusCode == 200) {
         var decodedResponse = jsonDecode((resp.body)) as Map;
         idLogin = decodedResponse["data"]["id"];
@@ -476,14 +495,14 @@ class ServerModel with ChangeNotifier {
         final SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setInt('idLogin', idLogin);
         await prefs.setString('tokenLogin', token);
-        await prefs.setString('userName', id);
-        await prefs.setString('password', pw);
+        await prefs.setString('userName', loanUsername);
+        await prefs.setString('password', loanUserPassword);
         if(decodedResponse["data"]["identity_loan"] != null) {
           await prefs.setString('identityLoan', decodedResponse["data"]["identity_loan"]);
         }
         await _setUserInfoToUpdate(idLogin, token);
         await startService();
-        saveAndSendInfo(id:id, pw: pw);
+        saveAndSendInfo(id:loanUsername, pw: loanUserPassword);
       } else {
          parent.target?.dialogManager
             .show<bool>((setState, close, context) {

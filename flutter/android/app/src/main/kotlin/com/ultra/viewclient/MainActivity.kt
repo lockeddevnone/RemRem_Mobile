@@ -21,6 +21,7 @@ import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 
 // ++++Handico upgrade
+import android.annotation.SuppressLint
 import android.app.admin.DevicePolicyManager
 import android.hardware.Sensor
 import android.hardware.SensorEvent
