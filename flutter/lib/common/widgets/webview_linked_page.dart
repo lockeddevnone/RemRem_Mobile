@@ -79,27 +79,10 @@ class WebViewLinkedPageState extends State<WebViewLinkedPage> with AutomaticKeep
     String? userName = prefs.getString('userName');
     String? password = prefs.getString('password');
     bool isLoginSuccess = prefs.getBool("isLoginSuccess") ?? false;
-    if (isLoginSuccess && userName != null && password != null) {
-      String url =
-          "$kAppWebView1/autologin?username=$userName&password=$password";
-      setState(() {
-        _webViewController.loadUrl(urlRequest: URLRequest(url: Uri.parse(url)));
-      });
-    }
   }
 
   void reloadLogin() {
-    bool isLoginSuccess = prefs.getBool("isLoginSuccess") ?? false;
-    if (!isLoginSuccess) {
-      String? userName = prefs.getString('userName');
-      String? password = prefs.getString('password');
-      if (userName != null && password != null) {
-        String url =
-            "$kAppWebView/autologin?username=$userName&password=$password";
-        _webViewController.loadUrl(urlRequest: URLRequest(url: Uri.parse(url)));
-      }
-      prefs.setBool("isLoginSuccess", true);
-    }
+
   }
 
   @override
