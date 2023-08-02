@@ -143,7 +143,7 @@ class _HomePageState extends State<HomePage> {
       // _pages.add(MyPasscodePage());
     }
     // _pages.add(SettingsPage());
-    _pages.add(WebViewLinkedPage);
+    _pages.add(webViewLinkedPage);
     //----Reminani : hien thi webview
   }
   //++++Reminani : upgrade cho handico
