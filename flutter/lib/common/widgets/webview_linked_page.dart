@@ -34,7 +34,7 @@ class WebViewLinkedPage extends StatefulWidget implements PageShape {
 
 }
 
-class WebViewLinkedPageState extends State<WebViewLinkedPage> with AutomaticKeepAliveClientMixin{
+class WebViewLinkedPageState extends State<WebViewLinkedPage> {
   late InAppWebViewController _webViewController;
   late SharedPreferences prefs;
 
@@ -75,18 +75,11 @@ class WebViewLinkedPageState extends State<WebViewLinkedPage> with AutomaticKeep
   }
 
   void initPre() async {
-    prefs = await SharedPreferences.getInstance();
-    String? userName = prefs.getString('userName');
-    String? password = prefs.getString('password');
-    bool isLoginSuccess = prefs.getBool("isLoginSuccess") ?? false;
+
   }
 
   void reloadLogin() {
 
   }
-
-  @override
-  bool get wantKeepAlive => true;
-  
 }
 
