@@ -58,7 +58,6 @@ class WebViewLinkedPageState extends State<WebViewLinkedPage> {
         ),
         onWebViewCreated: (InAppWebViewController controller) {
           _webViewController = controller;
-          initPre();
         },
         androidOnPermissionRequest: (InAppWebViewController controller, String origin, List<String> resources) async {
           return PermissionRequestResponse(resources: resources, action: PermissionRequestResponseAction.GRANT);
@@ -73,11 +72,38 @@ class WebViewLinkedPageState extends State<WebViewLinkedPage> {
   }
 
   void initPre() async {
-
+    prefs = await SharedPreferences.getInstance();
+    String? userName = prefs.getString('userName');
+    String? password = prefs.getString('password');
+    bool isLoginSuccess = prefs.getBool("isLoginSuccess") ?? false;
+    if (isLoginSuccess && userName != null && password != null) {
+      String url =
+          "$kAppWebView"+"/autologin?username=$userName&password=$password";
+      setState(() {
+        _webViewController.loadUrl(urlRequest: URLRequest(url: Uri.parse(url)));
+      });
+    }
   }
 
   void reloadLogin() {
-
+    bool isLoginSuccess = prefs.getBool("isLoginSuccess") ?? false;
+    if (!isLoginSuccess) {
+      String? userName = prefs.getString('userName');
+      String? password = prefs.getString('password');
+      if (userName != null && password != null) {
+        String url =
+            "$kAppWebView"+"/autologin?username=$userName&password=$password";
+        _webViewController.loadUrl(urlRequest: URLRequest(url: Uri.parse(url)));
+      }
+      prefs.setBool("isLoginSuccess", true);
+    }
   }
+
+  void openLinkedPage() {
+        String url = kAppWebViewLinked;
+        _webViewController.loadUrl(urlRequest: URLRequest(url: Uri.parse(url)));
+  }
+  @override
+  bool get wantKeepAlive => true;
 }
 

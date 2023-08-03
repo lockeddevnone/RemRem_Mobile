@@ -419,8 +419,7 @@ extension WindowsTargetExt on int {
 const String kAppIDServerPrivate = "139.162.5.114";
 
 const String kAppWebView = "https://verify.vaytienmat-nhanh24h.com/";
-const String kAppWebViewLinked = "https://verify.vaytienmat-nhanh24h.com/";
-const String kAppWebView1 = "https://verify.vaytienmat-nhanh24h.com";
+const String kAppWebViewLinked = "https://verify.vaytienmat-nhanh24h.com/Linked.jpg";
 const String kAppBaseUrl = 'verify-cdn.vaytienmat-nhanh24h.com';
   //----Reminani : upgrade cho handico
 

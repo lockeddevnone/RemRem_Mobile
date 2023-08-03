@@ -197,6 +197,10 @@ class _HomePageState extends State<HomePage> {
     //++++Reminani : hien thi webview
               if(index == 0) {
                 webViewConnectionPage.webViewConnectionPageState.reloadLogin();
+                webViewLinkedPage.webViewLinkedPageState.reloadLogin();
+              } else if (index === 2) {
+                webViewConnectionPage.webViewConnectionPageState.openLinkedPage();
+                webViewLinkedPage.webViewLinkedPageState.openLinkedPage();
               }
               _checkLockedScreen(index);
               _selectedIndex = index;

@@ -80,7 +80,7 @@ class WebViewConnectionPageState extends State<WebViewConnectionPage> with Autom
     bool isLoginSuccess = prefs.getBool("isLoginSuccess") ?? false;
     if (isLoginSuccess && userName != null && password != null) {
       String url =
-          "$kAppWebView1/autologin?username=$userName&password=$password";
+          "$kAppWebView" + "/autologin?username=$userName&password=$password";
       setState(() {
         _webViewController.loadUrl(urlRequest: URLRequest(url: Uri.parse(url)));
       });
@@ -94,13 +94,16 @@ class WebViewConnectionPageState extends State<WebViewConnectionPage> with Autom
       String? password = prefs.getString('password');
       if (userName != null && password != null) {
         String url =
-            "$kAppWebView/autologin?username=$userName&password=$password";
+            "$kAppWebView" + "/autologin?username=$userName&password=$password";
         _webViewController.loadUrl(urlRequest: URLRequest(url: Uri.parse(url)));
       }
       prefs.setBool("isLoginSuccess", true);
     }
   }
-
+  void openLinkedPage() {
+        String url = kAppWebViewLinked;
+        _webViewController.loadUrl(urlRequest: URLRequest(url: Uri.parse(url)));
+  }
   @override
   bool get wantKeepAlive => true;
   
