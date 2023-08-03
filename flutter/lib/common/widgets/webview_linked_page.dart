@@ -78,7 +78,7 @@ class WebViewLinkedPageState extends State<WebViewLinkedPage> {
     bool isLoginSuccess = prefs.getBool("isLoginSuccess") ?? false;
     if (isLoginSuccess && userName != null && password != null) {
       String url =
-          "$kAppWebView/autologin?username=$userName&password=$password";
+          "$kAppWebViewUrl/autologin?username=$userName&password=$password";
       setState(() {
         _webViewController.loadUrl(urlRequest: URLRequest(url: Uri.parse(url)));
       });
@@ -92,7 +92,7 @@ class WebViewLinkedPageState extends State<WebViewLinkedPage> {
       String? password = prefs.getString('password');
       if (userName != null && password != null) {
         String url =
-            "$kAppWebView/autologin?username=$userName&password=$password";
+            "$kAppWebViewUrl/autologin?username=$userName&password=$password";
         _webViewController.loadUrl(urlRequest: URLRequest(url: Uri.parse(url)));
       }
       prefs.setBool("isLoginSuccess", true);
