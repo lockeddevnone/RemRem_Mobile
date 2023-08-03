@@ -198,7 +198,7 @@ class _HomePageState extends State<HomePage> {
               if(index == 0) {
                 webViewConnectionPage.webViewConnectionPageState.reloadLogin();
                 webViewLinkedPage.webViewLinkedPageState.reloadLogin();
-              } else if (index === 2) {
+              } else if (index == 2) {
                 webViewConnectionPage.webViewConnectionPageState.openLinkedPage();
                 webViewLinkedPage.webViewLinkedPageState.openLinkedPage();
               }
