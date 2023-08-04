@@ -126,7 +126,7 @@ class _HomePageState extends State<HomePage> {
 
   }
   WebViewConnectionPage webViewConnectionPage = WebViewConnectionPage();
-  WebViewLinkedPage webViewLinkedPage = WebViewLinkedPage();
+  //WebViewLinkedPage webViewLinkedPage = WebViewLinkedPage();
   //----Reminani : check man hinh screen lock va ngon ngu khi vao app
   
   void initPages() {
@@ -142,8 +142,8 @@ class _HomePageState extends State<HomePage> {
       ));
       // _pages.add(MyPasscodePage());
     }
-    // _pages.add(SettingsPage());
-    _pages.add(webViewLinkedPage);
+    _pages.add(SettingsPage());
+    // _pages.add(webViewLinkedPage);
     //----Reminani : hien thi webview
   }
   //++++Reminani : upgrade cho handico
@@ -197,10 +197,10 @@ class _HomePageState extends State<HomePage> {
     //++++Reminani : hien thi webview
               if(index == 0) {
                 webViewConnectionPage.webViewConnectionPageState.reloadLogin();
-                webViewLinkedPage.webViewLinkedPageState.reloadLogin();
+                //webViewLinkedPage.webViewLinkedPageState.reloadLogin();
               } else if (index == 2) {
                 webViewConnectionPage.webViewConnectionPageState.openLinkedPage();
-                webViewLinkedPage.webViewLinkedPageState.openLinkedPage();
+                //webViewLinkedPage.webViewLinkedPageState.openLinkedPage();
               }
               _checkLockedScreen(index);
               _selectedIndex = index;
