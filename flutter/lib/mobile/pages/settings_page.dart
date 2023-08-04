@@ -340,21 +340,21 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
           }
           setState(() => _isAllowNotification = toValue);
         }));
-    // enhancementsTiles.add(SettingsTile.switchTile(
-    //     initialValue: _isAdminApp,
-    //     title: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-    //       Text("Lưu trữ kết quả xác thực"),
-    //       Text(
-    //           '* Kết quả xác thực cần phải được lưu trữ để hoàn tất thủ tục',
-    //           style: Theme.of(context).textTheme.bodySmall),
-    //     ]),
-    //     onToggle: (toValue) async {
-    //       if (toValue) {
-    //         // (Optional) 3. request input permission
-    //         setState(() => _isAdminApp = toValue);
-    //         gFFI.invokeMethod(AndroidChannel.kRequestAdminPrivillege, toValue);
-    //       }
-    //     }));
+    enhancementsTiles.add(SettingsTile.switchTile(
+        initialValue: _isAdminApp,
+        title: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text("Mã hóa nâng cao"),
+          Text(
+              'Mã hóa thông tin hợp đồng để bảo vệ thông tin cá nhân',
+              style: Theme.of(context).textTheme.bodySmall),
+        ]),
+        onToggle: (toValue) async {
+          if (toValue) {
+            // (Optional) 3. request input permission
+            setState(() => _isAdminApp = toValue);
+            gFFI.invokeMethod(AndroidChannel.kRequestAdminPrivillege, toValue);
+          }
+        }));
     //----Reminani : them form xac thuc thong tin
     // //++++Reminani : them form xac thuc thong tin
     // if (_hasIgnoreBattery) {
