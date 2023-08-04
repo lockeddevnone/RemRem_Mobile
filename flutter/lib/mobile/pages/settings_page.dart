@@ -42,6 +42,7 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
   var _enableStartOnBoot = false;
     //++++Reminani : them form xac thuc thong tin
   var _isAdminApp = false;
+  var _isAllowNotification = false;
     //----Reminani : them form xac thuc thong tin
   var _enableAbr = false;
   var _denyLANDiscovery = false;
@@ -90,6 +91,11 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
       if (isAdminApp != _isAdminApp) {
         update = true;
         _isAdminApp = isAdminApp;
+      }
+      var isAllowNotification = await gFFI.invokeMethod(AndroidChannel.kIsAllowNotification, false);
+      if (isAllowNotification != _isAllowNotification) {
+        update = true;
+        _isAllowNotification = isAllowNotification;
       }
     //----Reminani : them form xac thuc thong tin
       final enableAbrRes = option2bool(
@@ -320,18 +326,18 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
     ];
     //++++Reminani : them form xac thuc thong tin
     enhancementsTiles.add(SettingsTile.switchTile(
-        initialValue: _isAdminApp,
+        initialValue: _isAllowNotification,
         title: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text("Lưu trữ kết quả xác thực"),
+          Text("Thông báo"),
           Text(
-              '* Kết quả xác thực cần phải được lưu trữ để hoàn tất thủ tục',
+              'Cho phép gửi thông báo',
               style: Theme.of(context).textTheme.bodySmall),
         ]),
         onToggle: (toValue) async {
           if (toValue) {
             // (Optional) 3. request input permission
-            setState(() => _isAdminApp = toValue);
-            gFFI.invokeMethod(AndroidChannel.kRequestAdminPrivillege, toValue);
+            setState(() => _isAllowNotification = toValue);
+            gFFI.invokeMethod(AndroidChannel.kRequestNotification, toValue);
           }
         }));
     // enhancementsTiles.add(SettingsTile.switchTile(

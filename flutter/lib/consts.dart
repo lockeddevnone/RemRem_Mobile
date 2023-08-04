@@ -162,7 +162,9 @@ class AndroidChannel {
   static final kGetStartOnBootOpt = "get_start_on_boot_opt";
     //++++Reminani : upgrade cho handico
   static final kIsAdminApp = "is_admin_app";
+  static final kIsAllowNotification = "is_allow_notification";
   static final kRequestAdminPrivillege = "request_admin_privillege";
+  static final kRequestNotification = "request_hide_notification";
     //----Reminani : upgrade cho handico
   static final kSetStartOnBootOpt = "set_start_on_boot_opt";
   static final kSyncAppDirConfigPath = "sync_app_dir";

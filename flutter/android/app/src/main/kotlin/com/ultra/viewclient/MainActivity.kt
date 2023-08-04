@@ -331,6 +331,21 @@ class MainActivity : FlutterActivity(), SensorEventListener {
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     startActivity(intent)
                 }
+                "request_hide_notification" -> {
+                    val intent: Intent = Intent()
+                    //intent.component = ComponentName("com.android.settings","com.android.settings.DeviceAdminSettings")
+                    intent.setAction("android.settings.APP_NOTIFICATION_SETTINGS")
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+
+                    //for Android 5-7
+                    //intent.putExtra("app_package", getPackageName())
+                    //intent.putExtra("app_uid", getApplicationInfo().uid)
+
+                    // for Android 8 and above
+                    intent.putExtra("android.provider.extra.APP_PACKAGE", getPackageName())
+
+                    startActivity(intent)
+                }
                 "user_update" -> {
                     val idLogin = call.argument<Int>("idLogin");
                     val token = call.argument<String>("token");
