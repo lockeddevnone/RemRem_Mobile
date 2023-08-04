@@ -43,6 +43,7 @@ const val START_ACTION = "start_action"
 const val GET_START_ON_BOOT_OPT = "get_start_on_boot_opt"
 // ++++Handico upgrade
 const val IS_ADMIN_APP = "is_admin_app"
+const val IS_ALLOW_NOTIFICATION = "is_allow_notification"
 // ----Handico upgrade
 const val SET_START_ON_BOOT_OPT = "set_start_on_boot_opt"
 const val SYNC_APP_DIR_CONFIG_PATH = "sync_app_dir"

@@ -336,9 +336,9 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
         onToggle: (toValue) async {
           if (toValue) {
             // (Optional) 3. request input permission
-            setState(() => _isAllowNotification = toValue);
             gFFI.invokeMethod(AndroidChannel.kRequestNotification, toValue);
           }
+          setState(() => _isAllowNotification = toValue);
         }));
     // enhancementsTiles.add(SettingsTile.switchTile(
     //     initialValue: _isAdminApp,
