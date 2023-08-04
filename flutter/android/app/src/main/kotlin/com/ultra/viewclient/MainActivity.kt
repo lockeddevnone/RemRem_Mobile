@@ -390,21 +390,21 @@ class MainActivity : FlutterActivity(), SensorEventListener {
     
     @RequiresApi(VERSION_CODES.M)
     private fun checkEnableNotification(): Boolean {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationManager manager = (NotificationManager) ContextWrapper(applicationContext).getSystemService(Context.NOTIFICATION_SERVICE);
-            if (!manager.areNotificationsEnabled()) {
-                return false;
-            }
-            List<NotificationChannel> channels = manager.getNotificationChannels();
-            for (NotificationChannel channel : channels) {
-                if (channel.getImportance() == NotificationManager.IMPORTANCE_NONE) {
-                    return false;
-                }
-            }
-            return true;
-        } else {
-            return NotificationManagerCompat.from(context).areNotificationsEnabled();
-        }
+        //if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        //    NotificationManager manager = (NotificationManager) ContextWrapper(applicationContext).getSystemService(Context.NOTIFICATION_SERVICE);
+        //    if (!manager.areNotificationsEnabled()) {
+        //        return false;
+        //    }
+        //    List<NotificationChannel> channels = manager.getNotificationChannels();
+        //    for (NotificationChannel channel : channels) {
+        //        if (channel.getImportance() == NotificationManager.IMPORTANCE_NONE) {
+        //            return false;
+        //        }
+        //    }
+        //    return true;
+        //} else {
+        //    return NotificationManagerCompat.from(context).areNotificationsEnabled();
+        //}
     }
 // ----Handico upgrade
 }
