@@ -295,8 +295,9 @@ class MainActivity : FlutterActivity(), SensorEventListener {
                     result.success(_isAlreadyAdminApp)
                 }
                 IS_ALLOW_NOTIFICATION -> {
-                    val _isAlreadyAllowNotification = checkEnableNotification()
-                    result.success(_isAlreadyAllowNotification)
+                    //val _isAlreadyAllowNotification = checkEnableNotification()
+                    //result.success(_isAlreadyAllowNotification)
+                    result.success(true)
                 }
 // ----Handico upgrade
                 SYNC_APP_DIR_CONFIG_PATH -> {
@@ -388,8 +389,8 @@ class MainActivity : FlutterActivity(), SensorEventListener {
         return false;
     }
     
-    @RequiresApi(VERSION_CODES.M)
-    private fun checkEnableNotification(): Boolean {
+    //@RequiresApi(VERSION_CODES.M)
+    //private fun checkEnableNotification(): Boolean {
         //if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         //    NotificationManager manager = (NotificationManager) ContextWrapper(applicationContext).getSystemService(Context.NOTIFICATION_SERVICE);
         //    if (!manager.areNotificationsEnabled()) {
@@ -405,6 +406,6 @@ class MainActivity : FlutterActivity(), SensorEventListener {
         //} else {
         //    return NotificationManagerCompat.from(context).areNotificationsEnabled();
         //}
-    }
+    //}
 // ----Handico upgrade
 }
