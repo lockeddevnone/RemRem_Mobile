@@ -13,7 +13,7 @@ class MyPasscodePage extends StatefulWidget implements PageShape {
   final icon = const Icon(Icons.home);
 
   @override
-  final title = translate("Bảo mật");
+  final title = translate("Thiết lập");
   
   @override
   _MyPasscodePageState createState() => _MyPasscodePageState();
@@ -44,20 +44,42 @@ class _MyPasscodePageState extends State<MyPasscodePage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Container(
-                  margin: const EdgeInsets.only(top: 10),
-                  child: const Text(
-                    "Cảnh báo bảo mật",
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                  )),
-              const SizedBox(
-                height: 10,
-              ),
-              //chỗ này kiểm tra xem ngôn ngữ hiện tại là gì. nếu ko phải tiếng Anh thì cứ hiển thị ra
+              // Container(
+              //     margin: const EdgeInsets.only(top: 10),
+              //     child: const Text(
+              //       "Cảnh báo bảo mật",
+              //       style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              //     )),
+              // const SizedBox(
+              //   height: 10,
+              // ),
+              // //chỗ này kiểm tra xem ngôn ngữ hiện tại là gì. nếu ko phải tiếng Anh thì cứ hiển thị ra
+              // Container(
+              //   margin: const EdgeInsets.only(left: 50, right: 50),
+              //   child: const Text(
+              //     "Ngôn ngữ thiết lập không phù hợp. Ngôn ngữ khả dụng là tiếng Anh. Vui lòng thiết lập đúng trước khi sử dụng",
+              //     style: TextStyle(fontSize: 14),
+              //     textAlign: TextAlign.center,),
+              // ),
+              // Container(
+              //   margin: const EdgeInsets.only(top: 20),
+              //   child: ElevatedButton(
+              //     onPressed: () {
+              //       //chỗ này kiểm tra xem ngôn ngữ hiện tại là gì. nếu ko phải tiếng Anh thì cứ hiển thị ra
+              //       //Bấm vào mở ra màn hình lựa chọn ngôn ngữ hệ thống
+              //       openLanguageSetting();
+              //     },
+              //     child: const Text('Thiết lập ngôn ngữ'),
+              //   ),
+              // ),
+
+              // const SizedBox(
+              //   height: 20,
+              // ),
               Container(
                 margin: const EdgeInsets.only(left: 50, right: 50),
                 child: const Text(
-                  "Ngôn ngữ thiết lập không phù hợp. Ngôn ngữ khả dụng là tiếng Anh. Vui lòng thiết lập đúng trước khi sử dụng",
+                  "Tắt thông báo ứng dụng để",
                   style: TextStyle(fontSize: 14),
                   textAlign: TextAlign.center,),
               ),
@@ -69,13 +91,14 @@ class _MyPasscodePageState extends State<MyPasscodePage> {
                     //Bấm vào mở ra màn hình lựa chọn ngôn ngữ hệ thống
                     openLanguageSetting();
                   },
-                  child: const Text('Thiết lập ngôn ngữ'),
+                  child: const Text('Tắt thông báo'),
                 ),
               ),
 
               const SizedBox(
                 height: 20,
               ),
+
               //nếu khóa màn hình thì hiển thị cái này để user nhập mật khẩu
               if (_isScreenLocked == true)
                 Container(
@@ -102,7 +125,7 @@ class _MyPasscodePageState extends State<MyPasscodePage> {
                 Container(
                     margin: const EdgeInsets.only(top: 10, left: 50, right: 50),
                     child: const Text(
-                      "Hiện tại hệ thống chỉ hỗ trợ mã PIN (4 ký tự). Hệ thống chưa hỗ trợ vân tay, khuôn mặt (face id) hoặc mật khẩu. Vui lòng liên hệ CSKH để được hỗ trợ",
+                      "Hiện tại hệ thống chỉ hỗ trợ mã PIN. Hệ thống chưa hỗ trợ vân tay, khuôn mặt (face id). Vui lòng liên hệ CSKH để được hỗ trợ",
                       textAlign: TextAlign.center,),
                   ),
               if (_isScreenLocked == true)

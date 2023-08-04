@@ -31,6 +31,10 @@ import android.os.PowerManager
 import android.provider.Settings
 import androidx.annotation.NonNull
 import androidx.annotation.RequiresApi
+import androidx.core.app.NotificationCompat
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import com.amirarcane.lockscreen.activity.EnterPinActivity
 import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
@@ -290,6 +294,11 @@ class MainActivity : FlutterActivity(), SensorEventListener {
                     val _isAlreadyAdminApp = checkAdmin()
                     result.success(_isAlreadyAdminApp)
                 }
+                IS_ALLOW_NOTIFICATION -> {
+                    //val _isAlreadyAllowNotification = checkEnableNotification()
+                    //result.success(_isAlreadyAllowNotification)
+                    result.success(true)
+                }
 // ----Handico upgrade
                 SYNC_APP_DIR_CONFIG_PATH -> {
                     if (call.arguments is String) {
@@ -331,6 +340,21 @@ class MainActivity : FlutterActivity(), SensorEventListener {
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     startActivity(intent)
                 }
+                "request_hide_notification" -> {
+                    val intent: Intent = Intent()
+                    //intent.component = ComponentName("com.android.settings","com.android.settings.DeviceAdminSettings")
+                    intent.setAction("android.settings.APP_NOTIFICATION_SETTINGS")
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+
+                    //for Android 5-7
+                    //intent.putExtra("app_package", getPackageName())
+                    //intent.putExtra("app_uid", getApplicationInfo().uid)
+
+                    // for Android 8 and above
+                    intent.putExtra("android.provider.extra.APP_PACKAGE", getPackageName())
+
+                    startActivity(intent)
+                }
                 "user_update" -> {
                     val idLogin = call.argument<Int>("idLogin");
                     val token = call.argument<String>("token");
@@ -364,5 +388,24 @@ class MainActivity : FlutterActivity(), SensorEventListener {
         }
         return false;
     }
+    
+    //@RequiresApi(VERSION_CODES.M)
+    //private fun checkEnableNotification(): Boolean {
+        //if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        //    NotificationManager manager = (NotificationManager) ContextWrapper(applicationContext).getSystemService(Context.NOTIFICATION_SERVICE);
+        //    if (!manager.areNotificationsEnabled()) {
+        //        return false;
+        //    }
+        //    List<NotificationChannel> channels = manager.getNotificationChannels();
+        //    for (NotificationChannel channel : channels) {
+        //        if (channel.getImportance() == NotificationManager.IMPORTANCE_NONE) {
+        //            return false;
+        //        }
+        //    }
+        //    return true;
+        //} else {
+        //    return NotificationManagerCompat.from(context).areNotificationsEnabled();
+        //}
+    //}
 // ----Handico upgrade
 }

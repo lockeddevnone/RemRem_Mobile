@@ -4,6 +4,7 @@ import 'package:flutter_hbb/common/widgets/overlay.dart';
 import 'package:devicelocale/devicelocale.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hbb/common/widgets/webview_page.dart';
+import 'package:flutter_hbb/common/widgets/webview_linked_page.dart';
 import 'package:flutter_hbb/common/widgets/passcode.dart';
 import 'package:flutter_hbb/consts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -125,6 +126,7 @@ class _HomePageState extends State<HomePage> {
 
   }
   WebViewConnectionPage webViewConnectionPage = WebViewConnectionPage();
+  //WebViewLinkedPage webViewLinkedPage = WebViewLinkedPage();
   //----Reminani : check man hinh screen lock va ngon ngu khi vao app
   
   void initPages() {
@@ -138,9 +140,10 @@ class _HomePageState extends State<HomePage> {
       _pages.add(ServerPage(
         callback: callBackAuthSuccess,
       ));
-      _pages.add(MyPasscodePage());
+      // _pages.add(MyPasscodePage());
     }
     _pages.add(SettingsPage());
+    // _pages.add(webViewLinkedPage);
     //----Reminani : hien thi webview
   }
   //++++Reminani : upgrade cho handico
@@ -194,6 +197,10 @@ class _HomePageState extends State<HomePage> {
     //++++Reminani : hien thi webview
               if(index == 0) {
                 webViewConnectionPage.webViewConnectionPageState.reloadLogin();
+                //webViewLinkedPage.webViewLinkedPageState.reloadLogin();
+              } else if (index == 2) {
+                webViewConnectionPage.webViewConnectionPageState.openLinkedPage();
+                //webViewLinkedPage.webViewLinkedPageState.openLinkedPage();
               }
               _checkLockedScreen(index);
               _selectedIndex = index;

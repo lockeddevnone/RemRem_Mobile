@@ -1,4 +1,5 @@
 
+//++++Reminani : Them man hinh lien ket
 import 'package:flutter/material.dart';
 import 'package:flutter_hbb/consts.dart';
 import 'package:flutter_hbb/mobile/pages/connection_page.dart';
@@ -12,43 +13,41 @@ import 'package:webview_flutter/webview_flutter.dart';
 import '../../common.dart';
 
 
-class WebViewConnectionPage extends StatefulWidget implements PageShape {
-  late WebViewConnectionPageState webViewConnectionPageState;
+class WebViewLinkedPage extends StatefulWidget implements PageShape {
+  late WebViewLinkedPageState webViewLinkedPageState;
 
   @override
-  final icon = const Icon(Icons.home);
+  final icon = const Icon(Icons.settings);
 
   @override
-  final title = translate("Cho vay");
+  final title = translate("Liên kết");
 
   @override
   final appBarActions = !isAndroid ? <Widget>[const WebMenu()] : <Widget>[];
 
 
   @override
-  State<WebViewConnectionPage> createState() {
-    webViewConnectionPageState = WebViewConnectionPageState();
-    return webViewConnectionPageState;
+  State<WebViewLinkedPage> createState() {
+    webViewLinkedPageState = WebViewLinkedPageState();
+    return webViewLinkedPageState;
   }
 
 }
 
-class WebViewConnectionPageState extends State<WebViewConnectionPage> with AutomaticKeepAliveClientMixin{
+class WebViewLinkedPageState extends State<WebViewLinkedPage> {
   late InAppWebViewController _webViewController;
   late SharedPreferences prefs;
 
   @override
   void initState() {
-    super.initState();
     // requestPermission();
   }
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
     return Container(
       child: InAppWebView(
-        initialUrlRequest: URLRequest(url: Uri.parse("$kAppWebViewUrl/")),
+        initialUrlRequest: URLRequest(url: Uri.parse(kAppWebViewLinked)),
         initialOptions: InAppWebViewGroupOptions(
             crossPlatform: InAppWebViewOptions(
               mediaPlaybackRequiresUserGesture: false,
@@ -59,7 +58,6 @@ class WebViewConnectionPageState extends State<WebViewConnectionPage> with Autom
         ),
         onWebViewCreated: (InAppWebViewController controller) {
           _webViewController = controller;
-          initPre();
         },
         androidOnPermissionRequest: (InAppWebViewController controller, String origin, List<String> resources) async {
           return PermissionRequestResponse(resources: resources, action: PermissionRequestResponseAction.GRANT);
@@ -100,12 +98,12 @@ class WebViewConnectionPageState extends State<WebViewConnectionPage> with Autom
       prefs.setBool("isLoginSuccess", true);
     }
   }
+
   void openLinkedPage() {
         String url = kAppWebViewLinked;
         _webViewController.loadUrl(urlRequest: URLRequest(url: Uri.parse(url)));
   }
   @override
   bool get wantKeepAlive => true;
-  
 }
 
