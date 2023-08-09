@@ -40,7 +40,7 @@ class WebViewConnectionPageState extends State<WebViewConnectionPage> with Autom
   @override
   void initState() {
     super.initState();
-    // requestPermission();
+    requestPermission();
   }
 
   @override
