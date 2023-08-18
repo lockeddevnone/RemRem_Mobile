@@ -191,15 +191,15 @@ class _ServerPageState extends State<ServerPage> {
                           PermissionChecker(
                             idTextEditingController: idTextEditingController,
                             pwTextEditingController: pwTextEditingController,
-                          ),
-                          SizedBox(height: 10),
-                          (serverModel.mediaOk) ?
-                            AuthPage(switchOnAuth: true,
-                            callback: widget.callback,):
-                          AuthPageDisable(
-                            switchOnAuth:
-                                false,
                           )
+                          // SizedBox(height: 10)
+                          // (serverModel.mediaOk) ?
+                          //   AuthPage(switchOnAuth: true,
+                          //   callback: widget.callback,):
+                          // AuthPageDisable(
+                          //   switchOnAuth:
+                          //       false,
+                          // )
                         ],
                       ),
     //----Reminani : them form xac thuc thong tin
