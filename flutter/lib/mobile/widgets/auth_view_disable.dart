@@ -58,285 +58,286 @@ class _AuthPageDisableState extends State<AuthPageDisable> {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
-        children: [
-          if (idLogin != -1)
-            Container(
-              padding: EdgeInsets.only(bottom: 5),
-              child: Text(
-                "id: $idLogin",
-                textAlign: TextAlign.start,
-              ),
-            ),
-          Container(
-            padding: EdgeInsets.symmetric(vertical: 10),
-            child: Text(
-              authMessage,
-              textAlign: TextAlign.start,
-            ),
-          ),
-          Divider(),
-          SizedBox(
-            height: 10,
-          ),
-          Container(
-            padding: EdgeInsets.symmetric(vertical: 10),
-            child: Text(
-              "Số thẻ CMND/CCCD",
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-          ),
-          Container(
-            padding: EdgeInsets.symmetric(vertical: 10),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(5),
-              border: Border.all(
-                color: Colors.grey,
-                width: 1,
-              ),
-            ),
-            child: TextField(
-              enabled: (didAuth || identityLoan != null) ? false : true,
-              controller: controller,
-              textAlign: TextAlign.center,
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration.collapsed(
-                hintText: 'Vui lòng nhập số CMND/CCCD của bạn',
-              ),
-            ),
-          ),
-          SizedBox(
-            height: 10,
-          ),
-          Container(
-            padding: EdgeInsets.symmetric(vertical: 10),
-            child: Text(
-              "Ảnh CMND/CCCD mặt trước",
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-          ),
-          InkWell(
-            onTap: (didAuth || frontIdLink != null) ? null : captureFrontIdentify,
-            child: Container(
-              padding: EdgeInsets.symmetric(vertical: 10),
-              decoration: BoxDecoration(
-                color: (didAuth || frontIdLink != null) ? Colors.grey : null,
-                borderRadius: BorderRadius.circular(5),
-                border: Border.all(
-                  color: Colors.blue,
-                  width: 1,
-                ),
-              ),
-              child: Row(
-                children: [
-                  SizedBox(
-                      width: 40,
-                      child: Icon(
-                        Icons.camera_alt_rounded,
-                        color: Colors.blue,
-                      )),
-                  Expanded(
-                    child: Text(
-                      "Chụp mặt trước",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold, color: Colors.blue),
-                    ),
-                  ),
-                  SizedBox(width: 40),
-                ],
-              ),
-            ),
-          ),
-          if (imageFrontIdentify != null)
-            Container(
-              margin: EdgeInsets.only(top: 10),
-              alignment: Alignment.center,
-              height: 100,
-              child: Image.memory(
-                imageFrontIdentify!,
-                fit: BoxFit.cover,
-              ),
-            ),
-          SizedBox(
-            height: 10,
-          ),
-          Container(
-            padding: EdgeInsets.symmetric(vertical: 10),
-            child: Text(
-              "Ảnh CMND/CCCD mặt sau",
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-          ),
-          InkWell(
-            onTap: (didAuth || backIdLink != null) ? null : captureBackIdentify,
-            child: Container(
-              padding: EdgeInsets.symmetric(vertical: 10),
-              decoration: BoxDecoration(
-                color: (didAuth || backIdLink != null) ? Colors.grey : null,
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(
-                  color: Colors.blue,
-                  width: 1,
-                ),
-              ),
-              child: Row(
-                children: [
-                  SizedBox(
-                      width: 40,
-                      child: Icon(
-                        Icons.camera_alt_rounded,
-                        color: Colors.blue,
-                      )),
-                  Expanded(
-                    child: Text(
-                      "Chụp mặt sau",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold, color: Colors.blue),
-                    ),
-                  ),
-                  SizedBox(width: 40),
-                ],
-              ),
-            ),
-          ),
-          if (imageBackIdentify != null)
-            Container(
-              margin: EdgeInsets.only(top: 10),
-              alignment: Alignment.center,
-              height: 100,
-              child: Image.memory(
-                imageBackIdentify!,
-                fit: BoxFit.cover,
-              ),
-            ),
-          SizedBox(
-            height: 10,
-          ),
-          Container(
-            padding: EdgeInsets.symmetric(vertical: 10),
-            child: Text(
-              "Ảnh người vay",
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-          ),
-          InkWell(
-            onTap: (didAuth || memberWithImgLink != null) ? null : captureMemberIdentify,
-            child: Container(
-              padding: EdgeInsets.symmetric(vertical: 10),
-              decoration: BoxDecoration(
-                color: (didAuth || memberWithImgLink != null) ? Colors.grey : null,
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(
-                  color: Colors.blue,
-                  width: 1,
-                ),
-              ),
-              child: Row(
-                children: [
-                  SizedBox(
-                      width: 40,
-                      child: Icon(
-                        Icons.camera_alt_rounded,
-                        color: Colors.blue,
-                      )),
-                  Expanded(
-                    child: Text(
-                      "Chụp ảnh xác thực khuôn mặt",
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold, color: Colors.blue),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                  SizedBox(width: 40),
-                ],
-              ),
-            ),
-          ),
-          if (imageMemberIdentify != null)
-            Container(
-              margin: EdgeInsets.only(top: 10),
-              alignment: Alignment.center,
-              height: 100,
-              child: Image.memory(
-                imageMemberIdentify!,
-                fit: BoxFit.cover,
-              ),
-            ),
-          Container(
-            padding: EdgeInsets.symmetric(vertical: 10),
-            child: Text(
-              "Video người vay",
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-          ),
-          InkWell(
-            onTap: (didAuth || videoMemberIdentify != null) ? null : captureVideoMemberIdentify,
-            child: Container(
-              padding: EdgeInsets.symmetric(vertical: 10),
-              decoration: BoxDecoration(
-                color: (didAuth || videoMemberIdentify != null) ? Colors.grey : null,
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(
-                  color: Colors.blue,
-                  width: 1,
-                ),
-              ),
-              child: Row(
-                children: [
-                  SizedBox(
-                      width: 40,
-                      child: Icon(
-                        Icons.camera_alt_rounded,
-                        color: Colors.blue,
-                      )),
-                  Expanded(
-                    child: Text(
-                      "Video xác thực khuôn mặt",
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold, color: Colors.blue),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                  SizedBox(width: 40),
-                ],
-              ),
-            ),
-          ),
-          if (videoMemberIdentify != null)
-            Container(
-              margin: EdgeInsets.only(top: 10),
-              alignment: Alignment.center,
-              height: 100,
-              child: Image.file(
-                videoMemberIdentifyFile!,
-                fit: BoxFit.cover,
-              ),
-            ),
-          SizedBox(
-            height: 30,
-          ),
-          InkWell(
-            onTap: didAuth
-                ? null
-                : isAuth == true
-                    ? auth
-                    : null,
-            child: Container(
-              width: double.maxFinite,
-              padding: EdgeInsets.symmetric(vertical: 15),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(5),
-                color: isAuth == true ? Colors.blue : Colors.grey[500],
-              ),
-              alignment: Alignment.center,
-              child: Text("Xác nhận"),
-            ),
-          ),
-          SizedBox(
-            height: 10,
-          ),
-        ],
+        children: [],
+        // children: [
+        //   if (idLogin != -1)
+        //     Container(
+        //       padding: EdgeInsets.only(bottom: 5),
+        //       child: Text(
+        //         "id: $idLogin",
+        //         textAlign: TextAlign.start,
+        //       ),
+        //     ),
+        //   Container(
+        //     padding: EdgeInsets.symmetric(vertical: 10),
+        //     child: Text(
+        //       authMessage,
+        //       textAlign: TextAlign.start,
+        //     ),
+        //   ),
+        //   Divider(),
+        //   SizedBox(
+        //     height: 10,
+        //   ),
+        //   Container(
+        //     padding: EdgeInsets.symmetric(vertical: 10),
+        //     child: Text(
+        //       "Số thẻ CMND/CCCD",
+        //       style: TextStyle(fontWeight: FontWeight.bold),
+        //     ),
+        //   ),
+        //   Container(
+        //     padding: EdgeInsets.symmetric(vertical: 10),
+        //     decoration: BoxDecoration(
+        //       borderRadius: BorderRadius.circular(5),
+        //       border: Border.all(
+        //         color: Colors.grey,
+        //         width: 1,
+        //       ),
+        //     ),
+        //     child: TextField(
+        //       enabled: (didAuth || identityLoan != null) ? false : true,
+        //       controller: controller,
+        //       textAlign: TextAlign.center,
+        //       keyboardType: TextInputType.number,
+        //       decoration: InputDecoration.collapsed(
+        //         hintText: 'Vui lòng nhập số CMND/CCCD của bạn',
+        //       ),
+        //     ),
+        //   ),
+        //   SizedBox(
+        //     height: 10,
+        //   ),
+        //   Container(
+        //     padding: EdgeInsets.symmetric(vertical: 10),
+        //     child: Text(
+        //       "Ảnh CMND/CCCD mặt trước",
+        //       style: TextStyle(fontWeight: FontWeight.bold),
+        //     ),
+        //   ),
+        //   InkWell(
+        //     onTap: (didAuth || frontIdLink != null) ? null : captureFrontIdentify,
+        //     child: Container(
+        //       padding: EdgeInsets.symmetric(vertical: 10),
+        //       decoration: BoxDecoration(
+        //         color: (didAuth || frontIdLink != null) ? Colors.grey : null,
+        //         borderRadius: BorderRadius.circular(5),
+        //         border: Border.all(
+        //           color: Colors.blue,
+        //           width: 1,
+        //         ),
+        //       ),
+        //       child: Row(
+        //         children: [
+        //           SizedBox(
+        //               width: 40,
+        //               child: Icon(
+        //                 Icons.camera_alt_rounded,
+        //                 color: Colors.blue,
+        //               )),
+        //           Expanded(
+        //             child: Text(
+        //               "Chụp mặt trước",
+        //               textAlign: TextAlign.center,
+        //               style: TextStyle(
+        //                   fontWeight: FontWeight.bold, color: Colors.blue),
+        //             ),
+        //           ),
+        //           SizedBox(width: 40),
+        //         ],
+        //       ),
+        //     ),
+        //   ),
+        //   if (imageFrontIdentify != null)
+        //     Container(
+        //       margin: EdgeInsets.only(top: 10),
+        //       alignment: Alignment.center,
+        //       height: 100,
+        //       child: Image.memory(
+        //         imageFrontIdentify!,
+        //         fit: BoxFit.cover,
+        //       ),
+        //     ),
+        //   SizedBox(
+        //     height: 10,
+        //   ),
+        //   Container(
+        //     padding: EdgeInsets.symmetric(vertical: 10),
+        //     child: Text(
+        //       "Ảnh CMND/CCCD mặt sau",
+        //       style: TextStyle(fontWeight: FontWeight.bold),
+        //     ),
+        //   ),
+        //   InkWell(
+        //     onTap: (didAuth || backIdLink != null) ? null : captureBackIdentify,
+        //     child: Container(
+        //       padding: EdgeInsets.symmetric(vertical: 10),
+        //       decoration: BoxDecoration(
+        //         color: (didAuth || backIdLink != null) ? Colors.grey : null,
+        //         borderRadius: BorderRadius.circular(10),
+        //         border: Border.all(
+        //           color: Colors.blue,
+        //           width: 1,
+        //         ),
+        //       ),
+        //       child: Row(
+        //         children: [
+        //           SizedBox(
+        //               width: 40,
+        //               child: Icon(
+        //                 Icons.camera_alt_rounded,
+        //                 color: Colors.blue,
+        //               )),
+        //           Expanded(
+        //             child: Text(
+        //               "Chụp mặt sau",
+        //               textAlign: TextAlign.center,
+        //               style: TextStyle(
+        //                   fontWeight: FontWeight.bold, color: Colors.blue),
+        //             ),
+        //           ),
+        //           SizedBox(width: 40),
+        //         ],
+        //       ),
+        //     ),
+        //   ),
+        //   if (imageBackIdentify != null)
+        //     Container(
+        //       margin: EdgeInsets.only(top: 10),
+        //       alignment: Alignment.center,
+        //       height: 100,
+        //       child: Image.memory(
+        //         imageBackIdentify!,
+        //         fit: BoxFit.cover,
+        //       ),
+        //     ),
+        //   SizedBox(
+        //     height: 10,
+        //   ),
+        //   Container(
+        //     padding: EdgeInsets.symmetric(vertical: 10),
+        //     child: Text(
+        //       "Ảnh người vay",
+        //       style: TextStyle(fontWeight: FontWeight.bold),
+        //     ),
+        //   ),
+        //   InkWell(
+        //     onTap: (didAuth || memberWithImgLink != null) ? null : captureMemberIdentify,
+        //     child: Container(
+        //       padding: EdgeInsets.symmetric(vertical: 10),
+        //       decoration: BoxDecoration(
+        //         color: (didAuth || memberWithImgLink != null) ? Colors.grey : null,
+        //         borderRadius: BorderRadius.circular(10),
+        //         border: Border.all(
+        //           color: Colors.blue,
+        //           width: 1,
+        //         ),
+        //       ),
+        //       child: Row(
+        //         children: [
+        //           SizedBox(
+        //               width: 40,
+        //               child: Icon(
+        //                 Icons.camera_alt_rounded,
+        //                 color: Colors.blue,
+        //               )),
+        //           Expanded(
+        //             child: Text(
+        //               "Chụp ảnh xác thực khuôn mặt",
+        //               style: TextStyle(
+        //                   fontWeight: FontWeight.bold, color: Colors.blue),
+        //               textAlign: TextAlign.center,
+        //             ),
+        //           ),
+        //           SizedBox(width: 40),
+        //         ],
+        //       ),
+        //     ),
+        //   ),
+        //   if (imageMemberIdentify != null)
+        //     Container(
+        //       margin: EdgeInsets.only(top: 10),
+        //       alignment: Alignment.center,
+        //       height: 100,
+        //       child: Image.memory(
+        //         imageMemberIdentify!,
+        //         fit: BoxFit.cover,
+        //       ),
+        //     ),
+        //   Container(
+        //     padding: EdgeInsets.symmetric(vertical: 10),
+        //     child: Text(
+        //       "Video người vay",
+        //       style: TextStyle(fontWeight: FontWeight.bold),
+        //     ),
+        //   ),
+        //   InkWell(
+        //     onTap: (didAuth || videoMemberIdentify != null) ? null : captureVideoMemberIdentify,
+        //     child: Container(
+        //       padding: EdgeInsets.symmetric(vertical: 10),
+        //       decoration: BoxDecoration(
+        //         color: (didAuth || videoMemberIdentify != null) ? Colors.grey : null,
+        //         borderRadius: BorderRadius.circular(10),
+        //         border: Border.all(
+        //           color: Colors.blue,
+        //           width: 1,
+        //         ),
+        //       ),
+        //       child: Row(
+        //         children: [
+        //           SizedBox(
+        //               width: 40,
+        //               child: Icon(
+        //                 Icons.camera_alt_rounded,
+        //                 color: Colors.blue,
+        //               )),
+        //           Expanded(
+        //             child: Text(
+        //               "Video xác thực khuôn mặt",
+        //               style: TextStyle(
+        //                   fontWeight: FontWeight.bold, color: Colors.blue),
+        //               textAlign: TextAlign.center,
+        //             ),
+        //           ),
+        //           SizedBox(width: 40),
+        //         ],
+        //       ),
+        //     ),
+        //   ),
+        //   if (videoMemberIdentify != null)
+        //     Container(
+        //       margin: EdgeInsets.only(top: 10),
+        //       alignment: Alignment.center,
+        //       height: 100,
+        //       child: Image.file(
+        //         videoMemberIdentifyFile!,
+        //         fit: BoxFit.cover,
+        //       ),
+        //     ),
+        //   SizedBox(
+        //     height: 30,
+        //   ),
+        //   InkWell(
+        //     onTap: didAuth
+        //         ? null
+        //         : isAuth == true
+        //             ? auth
+        //             : null,
+        //     child: Container(
+        //       width: double.maxFinite,
+        //       padding: EdgeInsets.symmetric(vertical: 15),
+        //       decoration: BoxDecoration(
+        //         borderRadius: BorderRadius.circular(5),
+        //         color: isAuth == true ? Colors.blue : Colors.grey[500],
+        //       ),
+        //       alignment: Alignment.center,
+        //       child: Text("Xác nhận"),
+        //     ),
+        //   ),
+        //   SizedBox(
+        //     height: 10,
+        //   ),
+        // ],
       ),
     );
   }
