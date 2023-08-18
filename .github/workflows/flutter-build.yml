@@ -18,7 +18,7 @@ env:
   # for arm64 linux
   FLUTTER_ELINUX_VERSION: "3.10.5"
   FLUTTER_ELINUX_COMMIT_ID: "410b3ca42f2cd0c485edf517a1666652bab442d4"
-  TAG_NAME: '1.2.1.2_${{ github.ref_name }}'
+  TAG_NAME: '1.2.1.3_${{ github.ref_name }}'
   #TAG_NAME: '1.0.0.21_build_vaynhanh_callonline'
   # vcpkg version: 2023.04.15
   # for multiarch gcc compatibility
