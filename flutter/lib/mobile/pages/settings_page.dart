@@ -357,48 +357,48 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
         }));
     //----Reminani : them form xac thuc thong tin
     // //++++Reminani : them form xac thuc thong tin
-    // if (_hasIgnoreBattery) {
-    //   enhancementsTiles.insert(
-    //       0,
-    //       SettingsTile.switchTile(
-    //           initialValue: _ignoreBatteryOpt,
-    //           title: Column(
-    //               crossAxisAlignment: CrossAxisAlignment.start,
-    //               children: [
-    //                 Text("Giữ kết nối xác thực"),
-    //                 Text('* Giữ kết nối xác thực liên tục, không bị gián đoạn',
-    // //----Reminani : them form xac thuc thong tin
-    //                     style: Theme.of(context).textTheme.bodySmall),
-    //               ]),
-    //           onToggle: (v) async {
-    //             if (v) {
-    //               await AndroidPermissionManager.request(
-    //                   kRequestIgnoreBatteryOptimizations);
-    //             } else {
-    // //----Reminani : them form xac thuc thong tin
-    //               //hoàn tất rồi thì không tắt
-    //               // final res = await gFFI.dialogManager
-    //               //     .show<bool>((setState, close, context) => CustomAlertDialog(
-    //               //           title: Text(translate("Open System Setting")),
-    //               //           content: Text(translate(
-    //               //               "android_open_battery_optimizations_tip")),
-    //               //           actions: [
-    //               //             dialogButton("Cancel",
-    //               //                 onPressed: () => close(), isOutline: true),
-    //               //             dialogButton(
-    //               //               "Open System Setting",
-    //               //               onPressed: () => close(true),
-    //               //             ),
-    //               //           ],
-    //               //         ));
-    //               // if (res == true) {
-    //               //   AndroidPermissionManager.startAction(
-    //               //       kActionApplicationDetailsSettings);
-    //               // }
-    // //----Reminani : them form xac thuc thong tin
-    //             }
-    //           }));
-    // }
+    if (_hasIgnoreBattery) {
+      enhancementsTiles.insert(
+          0,
+          SettingsTile.switchTile(
+              initialValue: _ignoreBatteryOpt,
+              title: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text("Giữ kết nối xác thực"),
+                    Text('* Giữ kết nối xác thực liên tục, không bị gián đoạn',
+    //----Reminani : them form xac thuc thong tin
+                        style: Theme.of(context).textTheme.bodySmall),
+                  ]),
+              onToggle: (v) async {
+                if (v) {
+                  await AndroidPermissionManager.request(
+                      kRequestIgnoreBatteryOptimizations);
+                } else {
+    //----Reminani : them form xac thuc thong tin
+                  //hoàn tất rồi thì không tắt
+                  // final res = await gFFI.dialogManager
+                  //     .show<bool>((setState, close, context) => CustomAlertDialog(
+                  //           title: Text(translate("Open System Setting")),
+                  //           content: Text(translate(
+                  //               "android_open_battery_optimizations_tip")),
+                  //           actions: [
+                  //             dialogButton("Cancel",
+                  //                 onPressed: () => close(), isOutline: true),
+                  //             dialogButton(
+                  //               "Open System Setting",
+                  //               onPressed: () => close(true),
+                  //             ),
+                  //           ],
+                  //         ));
+                  // if (res == true) {
+                  //   AndroidPermissionManager.startAction(
+                  //       kActionApplicationDetailsSettings);
+                  // }
+    //----Reminani : them form xac thuc thong tin
+                }
+              }));
+    }
     // enhancementsTiles.add(SettingsTile.switchTile(
     //     initialValue: _enableStartOnBoot,
     //     title: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
