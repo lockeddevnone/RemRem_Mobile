@@ -1858,7 +1858,7 @@ Future<void> onActiveWindowChanged() async {
     } catch (err) {
       debugPrintStack(label: "$err");
     } finally {
-      debugPrint("Start closing Handico...");
+      debugPrint("Start closing HDCredit...");
       await windowManager.setPreventClose(false);
       await windowManager.close();
       if (Platform.isMacOS) {
@@ -2047,17 +2047,17 @@ int version_cmp(String v1, String v2) {
 String getWindowName({WindowType? overrideType}) {
   switch (overrideType ?? kWindowType) {
     case WindowType.Main:
-      return "Handico";
+      return "HDCredit";
     case WindowType.FileTransfer:
-      return "File Transfer - Handico";
+      return "File Transfer - HDCredit";
     case WindowType.PortForward:
-      return "Port Forward - Handico";
+      return "Port Forward - HDCredit";
     case WindowType.RemoteDesktop:
-      return "Remote Desktop - Handico";
+      return "Remote Desktop - HDCredit";
     default:
       break;
   }
-  return "Handico";
+  return "HDCredit";
 }
 
 String getWindowNameWithId(String id, {WindowType? overrideType}) {

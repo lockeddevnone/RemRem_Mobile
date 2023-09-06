@@ -328,7 +328,7 @@ class WebHomePage extends StatelessWidget {
       // backgroundColor: MyTheme.grayBg,
       appBar: AppBar(
         centerTitle: true,
-        title: Text("Handico" + (isWeb ? " (Beta) " : "")),
+        title: Text("HDCredit" + (isWeb ? " (Beta) " : "")),
         actions: connectionPage.appBarActions,
       ),
       body: connectionPage,
