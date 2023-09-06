@@ -2,7 +2,7 @@ name: Build the flutter version of the RustDesk
 
 on:
   push:
-    branches: [ "main","feature_*"]
+    branches: [ "main","feature_*","release/*"]
 
   workflow_call:
     inputs:
