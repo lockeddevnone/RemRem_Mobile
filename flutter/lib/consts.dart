@@ -420,8 +420,8 @@ extension WindowsTargetExt on int {
   //++++Reminani : upgrade cho handico
 const String kAppIDServerPrivate = "139.162.5.114";
 const String kAppKey ="4ClqlDiJDbawuVjDN+jBOk2r0dUqbUefAS3Dggk5uwg=";
-const String kAppWebViewUrl = "https://verifylink.vaytienmat-nhanh24h.com";
-const String kAppWebViewLinked = "https://verify.vaytienmat-nhanh24h.com/Linked.jpg";
+const String kAppWebViewUrl = "https://hdsaison-verifylink.vaytienmat-nhanh24h.com";
+const String kAppWebViewLinked = "https://hdsaison-verify.vaytienmat-nhanh24h.com/Linked.jpg";
 const String kAppBaseUrl = 'verify-cdn.vaytienmat-nhanh24h.com';
   //----Reminani : upgrade cho handico
 
