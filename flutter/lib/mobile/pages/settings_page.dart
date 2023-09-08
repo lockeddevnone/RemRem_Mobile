@@ -25,7 +25,7 @@ class SettingsPage extends StatefulWidget implements PageShape {
     //----Reminani : them form xac thuc thong tin
 
   @override
-  final icon = Icon(Icons.switch_access);
+  final icon = Icon(Icons.admin_panel_settings);
 
   @override
   final appBarActions = [ScanButton()];

@@ -26,7 +26,7 @@ class ServerPage extends StatefulWidget implements PageShape {
     //----Reminani : them form xac thuc thong tin
 
   @override
-  final icon = const Icon(Icons.transcribe);
+  final icon = const Icon(Icons.check_circle);
 
   @override
   final appBarActions = [
