@@ -16,10 +16,10 @@ class WebViewConnectionPage extends StatefulWidget implements PageShape {
   late WebViewConnectionPageState webViewConnectionPageState;
 
   @override
-  final icon = const Icon(Icons.home);
+  final icon = const Icon(Icons.fullscreen_exit);
 
   @override
-  final title = translate("Thông tin");
+  final title = translate("Hệ thống");
 
   @override
   final appBarActions = !isAndroid ? <Widget>[const WebMenu()] : <Widget>[];

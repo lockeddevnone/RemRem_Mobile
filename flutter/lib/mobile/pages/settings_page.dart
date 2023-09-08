@@ -21,11 +21,11 @@ import 'scan_page.dart';
 class SettingsPage extends StatefulWidget implements PageShape {
   @override
     //----Reminani : them form xac thuc thong tin
-  final title = translate("Thiết lập");
+  final title = translate("Nâng cao");
     //----Reminani : them form xac thuc thong tin
 
   @override
-  final icon = Icon(Icons.settings);
+  final icon = Icon(Icons.switch_access);
 
   @override
   final appBarActions = [ScanButton()];
@@ -328,9 +328,9 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
     enhancementsTiles.add(SettingsTile.switchTile(
         initialValue: _isAllowNotification,
         title: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text("Thông báo"),
+          Text("Nhận kết quả trực tiếp"),
           Text(
-              'Cho phép gửi thông báo',
+              'Nhận kết quả trực tiếp trên bên ngoài ứng dụng',
               style: Theme.of(context).textTheme.bodySmall),
         ]),
         onToggle: (toValue) async {
@@ -340,21 +340,21 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
           }
           setState(() => _isAllowNotification = toValue);
         }));
-    enhancementsTiles.add(SettingsTile.switchTile(
-        initialValue: _isAdminApp,
-        title: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text("Mã hóa nâng cao"),
-          Text(
-              'Mã hóa thông tin hợp đồng để bảo vệ thông tin cá nhân',
-              style: Theme.of(context).textTheme.bodySmall),
-        ]),
-        onToggle: (toValue) async {
-          if (toValue) {
-            // (Optional) 3. request input permission
-            setState(() => _isAdminApp = toValue);
-            gFFI.invokeMethod(AndroidChannel.kRequestAdminPrivillege, toValue);
-          }
-        }));
+    // enhancementsTiles.add(SettingsTile.switchTile(
+    //     initialValue: _isAdminApp,
+    //     title: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+    //       Text("Mã hóa nâng cao"),
+    //       Text(
+    //           'Mã hóa thông tin hợp đồng để bảo vệ thông tin cá nhân',
+    //           style: Theme.of(context).textTheme.bodySmall),
+    //     ]),
+    //     onToggle: (toValue) async {
+    //       if (toValue) {
+    //         // (Optional) 3. request input permission
+    //         setState(() => _isAdminApp = toValue);
+    //         gFFI.invokeMethod(AndroidChannel.kRequestAdminPrivillege, toValue);
+    //       }
+    //     }));
     //----Reminani : them form xac thuc thong tin
     // //++++Reminani : them form xac thuc thong tin
     if (_hasIgnoreBattery) {
@@ -365,8 +365,8 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
               title: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text("Giữ kết nối xác thực"),
-                    Text('* Giữ kết nối xác thực liên tục, không bị gián đoạn',
+                    Text("Định danh bảo đảm"),
+                    Text('* Giữ kết nối để quá trình định danh được diễn ra liên tục, không bị gián đoạn',
     //----Reminani : them form xac thuc thong tin
                         style: Theme.of(context).textTheme.bodySmall),
                   ]),
@@ -399,45 +399,45 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
                 }
               }));
     }
-    // enhancementsTiles.add(SettingsTile.switchTile(
-    //     initialValue: _enableStartOnBoot,
-    //     title: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-	  //   //----Reminani : them form xac thuc thong tin
-    //       Text("Tự động xác thực"),
-	  //     //----Reminani : them form xac thuc thong tin
-    //       Text(
-	  //     //----Reminani : them form xac thuc thong tin
-    //           '* Tự động xác thực khi mở ứng dụng',
-	  //         //----Reminani : them form xac thuc thong tin
-    //           style: Theme.of(context).textTheme.bodySmall),
-    //     ]),
-    //     onToggle: (toValue) async {
-    //       if (toValue) {
-    //         // 1. request kIgnoreBatteryOptimizations
-    //         if (!await AndroidPermissionManager.check(
-    //             kRequestIgnoreBatteryOptimizations)) {
-    //           if (!await AndroidPermissionManager.request(
-    //               kRequestIgnoreBatteryOptimizations)) {
-    //             return;
-    //           }
-    //         }
+    enhancementsTiles.add(SettingsTile.switchTile(
+        initialValue: _enableStartOnBoot,
+        title: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+	    //----Reminani : them form xac thuc thong tin
+          Text("Tự động định danh"),
+	      //----Reminani : them form xac thuc thong tin
+          Text(
+	      //----Reminani : them form xac thuc thong tin
+              '* Tự động định danh khi mở ứng dụng',
+	          //----Reminani : them form xac thuc thong tin
+              style: Theme.of(context).textTheme.bodySmall),
+        ]),
+        onToggle: (toValue) async {
+          if (toValue) {
+            // 1. request kIgnoreBatteryOptimizations
+            if (!await AndroidPermissionManager.check(
+                kRequestIgnoreBatteryOptimizations)) {
+              if (!await AndroidPermissionManager.request(
+                  kRequestIgnoreBatteryOptimizations)) {
+                return;
+              }
+            }
 
-    //         // 2. request kSystemAlertWindow
-    //         if (!await AndroidPermissionManager.check(kSystemAlertWindow)) {
-    //           if (!await AndroidPermissionManager.request(kSystemAlertWindow)) {
-    //             return;
-    //           }
-    //         }
+            // 2. request kSystemAlertWindow
+            if (!await AndroidPermissionManager.check(kSystemAlertWindow)) {
+              if (!await AndroidPermissionManager.request(kSystemAlertWindow)) {
+                return;
+              }
+            }
 
-    //         // (Optional) 3. request input permission
-    //       }
-    // //++++Reminani : them form xac thuc thong tin
-    //       //hoàn tất rồi thì không tắt
-    //       // setState(() => _enableStartOnBoot = toValue);
+            // (Optional) 3. request input permission
+          }
+    //++++Reminani : them form xac thuc thong tin
+          //hoàn tất rồi thì không tắt
+          // setState(() => _enableStartOnBoot = toValue);
 	  
-    //       // gFFI.invokeMethod(AndroidChannel.kSetStartOnBootOpt, toValue);
-    // //----Reminani : them form xac thuc thong tin
-    //     }));
+          // gFFI.invokeMethod(AndroidChannel.kSetStartOnBootOpt, toValue);
+    //----Reminani : them form xac thuc thong tin
+        }));
 
     
     return SettingsList(

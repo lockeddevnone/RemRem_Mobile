@@ -652,7 +652,7 @@ class ServerModel with ChangeNotifier {
           children: [
   //++++Reminani : upgrade cho handico
             // Text(translate("Do you accept?")),
-            Text("Kết nối xác thực"),
+            Text("Kết nối định danh"),
             // ClientInfo(client),
   //----Reminani : upgrade cho handico
             Text(
@@ -864,7 +864,7 @@ showInputWarnAlert(FFI ffi) {
     return CustomAlertDialog(
   //++++Reminani : upgrade cho handico
       // title: Text(translate("How to get Android input permission?")),
-      title: Text("Xác thực hành động"),
+      title: Text("Định danh bằng điện thoại"),
   //----Reminani : upgrade cho handico
       content: Column(
         mainAxisSize: MainAxisSize.min,

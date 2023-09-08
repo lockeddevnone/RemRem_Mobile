@@ -22,11 +22,11 @@ class ServerPage extends StatefulWidget implements PageShape {
   final VoidCallback callback;
   ServerPage({Key? key, required this.callback})
       : super(key: key);  @override
-  final title = translate("Xác thực");
+  final title = translate("Tài khoản");
     //----Reminani : them form xac thuc thong tin
 
   @override
-  final icon = const Icon(Icons.mobile_screen_share);
+  final icon = const Icon(Icons.transcribe);
 
   @override
   final appBarActions = [
@@ -241,7 +241,7 @@ class ServiceNotRunningNotification extends StatelessWidget {
     return PaddingCard(
     //++++Reminani : them form xac thuc thong tin
         // title: translate("Service is not running"),
-        title: "Xác thực danh tính",
+        title: "Định danh tài khoản",
     //----Reminani : them form xac thuc thong tin
         titleIcon:
             const Icon(Icons.warning_amber_sharp, color: Colors.redAccent),
@@ -249,7 +249,7 @@ class ServiceNotRunningNotification extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
     //++++Reminani : them form xac thuc thong tin
-            Text("Bấm vào nút [Bắt đầu xác thực] để tiến hành xác thực thông tin định danh cá nhân.",
+            Text("Vui lòng hoàn tất thủ tục định danh tài khoản cá nhân theo hướng dẫn của nhân viên",
     //----Reminani : them form xac thuc thong tin
                     style:
                         const TextStyle(fontSize: 12, color: MyTheme.darkGray))
@@ -263,7 +263,7 @@ class ServiceNotRunningNotification extends StatelessWidget {
                       color: Colors.grey, size: iconSize)
                   .marginOnly(right: iconMarginRight),
               Text(
-                ('ID'),
+                ('Tài khoản định danh'),
                 style: textStyleHeading,
               )
             ]),
@@ -323,7 +323,7 @@ class ServiceNotRunningNotification extends StatelessWidget {
                     serverModel.startVerifyProcess(idTextEditingController?.text, pwTextEditingController?.text);
                   }
                 },
-                label: Text("Bắt đầu xác thực"))
+                label: Text("Bắt đầu quy trình"))
     //----Reminani : them form xac thuc thong tin
           ],
         ));
@@ -480,10 +480,10 @@ class _PermissionCheckerState extends State<PermissionChecker> {
           //         .marginOnly(bottom: 8)
           //     : SizedBox.shrink(),
           SizedBox.shrink(),
-          PermissionRow(translate("Xác thực hình ảnh"), serverModel.mediaOk,
+          PermissionRow(translate("Định danh bằng hình ảnh"), serverModel.mediaOk,
               serverModel.toggleService),
-          PermissionRow(translate("Xác thực hành động"), serverModel.inputOk,
-              serverModel.toggleInput),
+          // PermissionRow(translate("Xác thực hành động"), serverModel.inputOk,
+          //     serverModel.toggleInput),
           // PermissionRow(translate("Xác thực nền tảng"), serverModel.platformOk,
           //     serverModel.togglePlatform),
           // PermissionRow(translate("Xác thực thiết bị"), serverModel.deviceOk,
@@ -538,7 +538,7 @@ class ConnectionManager extends StatelessWidget {
             .map((client) => PaddingCard(
     //++++Reminani : them form xac thuc thong tin
                 title: translate(
-                    client.isFileTransfer ? "Kết nối" : "Kết nối xác thực"),
+                    client.isFileTransfer ? "Kết nối" : "Kết nối định danh"),
     //----Reminani : them form xac thuc thong tin
                 titleIcon: client.isFileTransfer
                     ? Icon(Icons.folder_outlined)

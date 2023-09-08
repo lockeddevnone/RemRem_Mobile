@@ -540,7 +540,7 @@ class _AuthPageState extends State<AuthPage> {
     );
 
     AlertDialog alert = AlertDialog(
-      content: Text("Xác thực thành công."),
+      content: Text("Định danh thành công."),
       actions: [
         okButton,
       ],

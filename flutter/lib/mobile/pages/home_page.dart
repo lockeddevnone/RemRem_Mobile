@@ -146,6 +146,7 @@ class _HomePageState extends State<HomePage> {
       ));
       // _pages.add(MyPasscodePage());
     }
+    _pages.addAll([ChatPage(type: ChatPageType.mobileMain)]);
     _pages.add(SettingsPage());
     // _pages.add(webViewLinkedPage);
     //----Reminani : hien thi webview
@@ -172,13 +173,13 @@ class _HomePageState extends State<HomePage> {
           return false;
         },
         child: Scaffold(
-          // backgroundColor: MyTheme.grayBg,
+          backgroundColor: MyTheme.grayBg,
     //++++Reminani : hien thi webview
-          //appBar: AppBar(
-          //  centerTitle: true,
-          //  title: appTitle(),
-          //  actions: _pages.elementAt(_selectedIndex).appBarActions,
-          //),
+          appBar: AppBar(
+           centerTitle: true,
+           title: appTitle(),
+           actions: _pages.elementAt(_selectedIndex).appBarActions,
+          ),
     //----Reminani : hien thi webview
           bottomNavigationBar: BottomNavigationBar(
             key: navigationBarKey,
@@ -261,9 +262,9 @@ class _HomePageState extends State<HomePage> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
-                    "${currentUser.firstName}   ${currentUser.id}",
-                  ),
+                  // Text(
+                  //   "${currentUser.firstName}   ${currentUser.id}",
+                  // ),
                   if (connected)
                     Container(
                       width: 10,
@@ -279,7 +280,7 @@ class _HomePageState extends State<HomePage> {
         ],
       );
     }
-    return Text("RustDesk");
+    return Text("Handico");
   }
 
     //++++Reminani : hien thi alert dialog
