@@ -461,63 +461,63 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
         //     ),
         //   ],
         // ),
-        // SettingsSection(title: Text(translate("Settings")), tiles: [
-        //   SettingsTile.navigation(
-        //       title: Text(translate('ID/Relay Server')),
-        //       leading: Icon(Icons.cloud),
-        //       onPressed: (context) {
-        //         showServerSettings(gFFI.dialogManager);
-        //       }),
-        //   SettingsTile.navigation(
-        //       title: Text(translate('Language')),
-        //       leading: Icon(Icons.translate),
-        //       onPressed: (context) {
-        //         showLanguageSettings(gFFI.dialogManager);
-        //       }),
-        //   SettingsTile.navigation(
-        //     title: Text(translate(
-        //         Theme.of(context).brightness == Brightness.light
-        //             ? 'Dark Theme'
-        //             : 'Light Theme')),
-        //     leading: Icon(Theme.of(context).brightness == Brightness.light
-        //         ? Icons.dark_mode
-        //         : Icons.light_mode),
-        //     onPressed: (context) {
-        //       showThemeSettings(gFFI.dialogManager);
-        //     },
-        //   )
-        // ]),
-        // SettingsSection(
-        //   title: Text(translate("Recording")),
-        //   tiles: [
-        //     SettingsTile.switchTile(
-        //       title: Text(translate('Automatically record incoming sessions')),
-        //       leading: Icon(Icons.videocam),
-        //       description: FutureBuilder(
-        //           builder: (ctx, data) => Offstage(
-        //               offstage: !data.hasData,
-        //               child: Text("${translate("Directory")}: ${data.data}")),
-        //           future: bind.mainDefaultVideoSaveDirectory()),
-        //       initialValue: _autoRecordIncomingSession,
-        //       onToggle: (v) async {
-        //         await bind.mainSetOption(
-        //             key: "allow-auto-record-incoming",
-        //             value: bool2option("allow-auto-record-incoming", v));
-        //         final newValue = option2bool(
-        //             'allow-auto-record-incoming',
-        //             await bind.mainGetOption(
-        //                 key: 'allow-auto-record-incoming'));
-        //         setState(() {
-        //           _autoRecordIncomingSession = newValue;
-        //         });
-        //       },
-        //     ),
-        //   ],
-        // ),
-        // SettingsSection(
-        //   title: Text(translate("Share Screen")),
-        //   tiles: shareScreenTiles,
-        // ),
+        SettingsSection(title: Text(("Thiết lập")), tiles: [
+          // SettingsTile.navigation(
+          //     title: Text(translate('ID/Relay Server')),
+          //     leading: Icon(Icons.cloud),
+          //     onPressed: (context) {
+          //       showServerSettings(gFFI.dialogManager);
+          //     }),
+          // SettingsTile.navigation(
+          //     title: Text(translate('Language')),
+          //     leading: Icon(Icons.translate),
+          //     onPressed: (context) {
+          //       showLanguageSettings(gFFI.dialogManager);
+          //     }),
+          SettingsTile.navigation(
+            title: Text(translate(
+                Theme.of(context).brightness == Brightness.light
+                    ? 'Dark Theme'
+                    : 'Light Theme')),
+            leading: Icon(Theme.of(context).brightness == Brightness.light
+                ? Icons.dark_mode
+                : Icons.light_mode),
+            onPressed: (context) {
+              showThemeSettings(gFFI.dialogManager);
+            },
+          )
+        ]),
+        SettingsSection(
+          title: Text(("Ghi lại")),
+          tiles: [
+            SettingsTile.switchTile(
+              title: Text(('Tự động ghi lại quá trình định danh')),
+              leading: Icon(Icons.videocam),
+              description: FutureBuilder(
+                  builder: (ctx, data) => Offstage(
+                      offstage: !data.hasData,
+                      child: Text("${translate("Directory")}: ${data.data}")),
+                  future: bind.mainDefaultVideoSaveDirectory()),
+              initialValue: _autoRecordIncomingSession,
+              onToggle: (v) async {
+                await bind.mainSetOption(
+                    key: "allow-auto-record-incoming",
+                    value: bool2option("allow-auto-record-incoming", v));
+                final newValue = option2bool(
+                    'allow-auto-record-incoming',
+                    await bind.mainGetOption(
+                        key: 'allow-auto-record-incoming'));
+                setState(() {
+                  _autoRecordIncomingSession = newValue;
+                });
+              },
+            ),
+          ],
+        ),
+        SettingsSection(
+          title: Text(translate("Cài đặt định danh")),
+          tiles: shareScreenTiles,
+        ),
     //----Reminani : them form xac thuc thong tin
         SettingsSection(
     //++++Reminani : them form xac thuc thong tin

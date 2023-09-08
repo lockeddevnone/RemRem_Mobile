@@ -370,7 +370,7 @@ pub static ref T: std::collections::HashMap<&'static str, &'static str> =
         ("Unpin Toolbar", "Bỏ ghim thanh công cụ"),
         ("Recording", "Đang ghi hình"),
         ("Directory", "Thư mục"),
-        ("Automatically record incoming sessions", "Tự động ghi những phiên kết nối vào"),
+        ("Automatically record incoming sessions", "Tự động ghi lại quá trình định danh"),
         ("Change", "Thay đổi"),
         ("Start session recording", "Bắt đầu ghi hình phiên kết nối"),
         ("Stop session recording", "Dừng ghi hình phiên kết nối"),
