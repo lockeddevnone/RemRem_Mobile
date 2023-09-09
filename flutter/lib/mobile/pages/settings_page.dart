@@ -323,7 +323,7 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
     //       setState(() {});
     //     },
     //   )
-    // ];
+    ];
     //++++Reminani : them form xac thuc thong tin
     enhancementsTiles.add(SettingsTile.switchTile(
         initialValue: _isAllowNotification,
