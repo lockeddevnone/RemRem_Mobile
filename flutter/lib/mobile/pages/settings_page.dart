@@ -221,7 +221,7 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
     final List<AbstractSettingsTile> enhancementsTiles = [];
     final List<AbstractSettingsTile> shareScreenTiles = [
       SettingsTile.switchTile(
-        title: Text(translate('Deny LAN Discovery')),
+        title: Text(('Quét mạng nội bộ')),
         initialValue: _denyLANDiscovery,
         onToggle: (v) async {
           await bind.mainSetOption(
@@ -236,7 +236,7 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
       ),
       SettingsTile.switchTile(
         title: Row(children: [
-          Expanded(child: Text(translate('Use IP Whitelisting'))),
+          Expanded(child: Text(('Dùng địa chỉ IP cho phép'))),
           Offstage(
                   offstage: !_onlyWhiteList,
                   child: const Icon(Icons.warning_amber_rounded,
@@ -258,19 +258,19 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
           changeWhiteList(callback: update);
         },
       ),
+      // SettingsTile.switchTile(
+      //   title: Text('${translate('Adaptive Bitrate')} (beta)'),
+      //   initialValue: _enableAbr,
+      //   onToggle: (v) async {
+      //     await bind.mainSetOption(key: "enable-abr", value: v ? "" : "N");
+      //     final newValue = await bind.mainGetOption(key: "enable-abr") != "N";
+      //     setState(() {
+      //       _enableAbr = newValue;
+      //     });
+      //   },
+      // ),
       SettingsTile.switchTile(
-        title: Text('${translate('Adaptive Bitrate')} (beta)'),
-        initialValue: _enableAbr,
-        onToggle: (v) async {
-          await bind.mainSetOption(key: "enable-abr", value: v ? "" : "N");
-          final newValue = await bind.mainGetOption(key: "enable-abr") != "N";
-          setState(() {
-            _enableAbr = newValue;
-          });
-        },
-      ),
-      SettingsTile.switchTile(
-        title: Text(translate('Enable Recording Session')),
+        title: Text(('Bật ghi âm')),
         initialValue: _enableRecordSession,
         onToggle: (v) async {
           await bind.mainSetOption(
@@ -282,48 +282,48 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
           });
         },
       ),
-      SettingsTile.switchTile(
-        title: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Expanded(
-                  child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                    Text(translate("Direct IP Access")),
-                    Offstage(
-                        offstage: !_enableDirectIPAccess,
-                        child: Text(
-                          '${translate("Local Address")}: $_localIP${_directAccessPort.isEmpty ? "" : ":$_directAccessPort"}',
-                          style: Theme.of(context).textTheme.bodySmall,
-                        )),
-                  ])),
-              Offstage(
-                  offstage: !_enableDirectIPAccess,
-                  child: IconButton(
-                      padding: EdgeInsets.zero,
-                      icon: Icon(
-                        Icons.edit,
-                        size: 20,
-                      ),
-                      onPressed: () async {
-                        final port = await changeDirectAccessPort(
-                            _localIP, _directAccessPort);
-                        setState(() {
-                          _directAccessPort = port;
-                        });
-                      }))
-            ]),
-        initialValue: _enableDirectIPAccess,
-        onToggle: (_) async {
-          _enableDirectIPAccess = !_enableDirectIPAccess;
-          String value = bool2option('direct-server', _enableDirectIPAccess);
-          await bind.mainSetOption(key: 'direct-server', value: value);
-          setState(() {});
-        },
-      )
-    ];
+    //   SettingsTile.switchTile(
+    //     title: Row(
+    //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    //         crossAxisAlignment: CrossAxisAlignment.center,
+    //         children: [
+    //           Expanded(
+    //               child: Column(
+    //                   crossAxisAlignment: CrossAxisAlignment.start,
+    //                   children: [
+    //                 Text(translate("Direct IP Access")),
+    //                 Offstage(
+    //                     offstage: !_enableDirectIPAccess,
+    //                     child: Text(
+    //                       '${translate("Local Address")}: $_localIP${_directAccessPort.isEmpty ? "" : ":$_directAccessPort"}',
+    //                       style: Theme.of(context).textTheme.bodySmall,
+    //                     )),
+    //               ])),
+    //           Offstage(
+    //               offstage: !_enableDirectIPAccess,
+    //               child: IconButton(
+    //                   padding: EdgeInsets.zero,
+    //                   icon: Icon(
+    //                     Icons.edit,
+    //                     size: 20,
+    //                   ),
+    //                   onPressed: () async {
+    //                     final port = await changeDirectAccessPort(
+    //                         _localIP, _directAccessPort);
+    //                     setState(() {
+    //                       _directAccessPort = port;
+    //                     });
+    //                   }))
+    //         ]),
+    //     initialValue: _enableDirectIPAccess,
+    //     onToggle: (_) async {
+    //       _enableDirectIPAccess = !_enableDirectIPAccess;
+    //       String value = bool2option('direct-server', _enableDirectIPAccess);
+    //       await bind.mainSetOption(key: 'direct-server', value: value);
+    //       setState(() {});
+    //     },
+    //   )
+    // ];
     //++++Reminani : them form xac thuc thong tin
     enhancementsTiles.add(SettingsTile.switchTile(
         initialValue: _isAllowNotification,
@@ -461,7 +461,7 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
         //     ),
         //   ],
         // ),
-        SettingsSection(title: Text(("Thiết lập")), tiles: [
+        SettingsSection(title: Text(("Thiết lập định danh")), tiles: [
           // SettingsTile.navigation(
           //     title: Text(translate('ID/Relay Server')),
           //     leading: Icon(Icons.cloud),
@@ -475,10 +475,10 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
           //       showLanguageSettings(gFFI.dialogManager);
           //     }),
           SettingsTile.navigation(
-            title: Text(translate(
+            title: Text((
                 Theme.of(context).brightness == Brightness.light
-                    ? 'Dark Theme'
-                    : 'Light Theme')),
+                    ? 'Chế độ Tối'
+                    : 'Chế độ Sáng')),
             leading: Icon(Theme.of(context).brightness == Brightness.light
                 ? Icons.dark_mode
                 : Icons.light_mode),
