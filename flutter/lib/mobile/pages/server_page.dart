@@ -7,6 +7,7 @@ import 'package:flutter_hbb/mobile/widgets/auth_view.dart';
 import 'package:flutter_hbb/mobile/widgets/auth_view_disable.dart';
     //----Reminani : them form xac thuc thong tin
 import 'package:flutter_hbb/mobile/widgets/dialog.dart';
+import 'package:flutter_hbb/models/chat_model.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 

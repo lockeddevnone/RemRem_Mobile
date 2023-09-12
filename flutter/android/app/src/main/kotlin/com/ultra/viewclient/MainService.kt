@@ -352,7 +352,7 @@ class MainService : Service() {
                 ).apply {
                     setOnImageAvailableListener({ imageReader: ImageReader ->
                         try {
-                            imageReader.acquireLatestImage().useModify { image ->
+                            imageReader.acquireLatestImage().use { image ->
                                 if (image == null) return@setOnImageAvailableListener
                                 val planes = image.planes
                                 val buffer = planes[0].buffer

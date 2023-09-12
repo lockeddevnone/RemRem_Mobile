@@ -30,6 +30,21 @@ const String kWindowEventHide = "hide";
 const String kWindowEventShow = "show";
 const String kWindowConnect = "connect";
 
+const String kWindowEventNewRemoteDesktop = "new_remote_desktop";
+const String kWindowEventNewFileTransfer = "new_file_transfer";
+const String kWindowEventNewPortForward = "new_port_forward";
+const String kWindowEventActiveSession = "active_session";
+const String kWindowEventGetRemoteList = "get_remote_list";
+const String kWindowEventGetSessionIdList = "get_session_id_list";
+
+const String kWindowEventMoveTabToNewWindow = "move_tab_to_new_window";
+const String kWindowEventCloseForSeparateWindow = "close_for_separate_window";
+
+const String kOptionOpenNewConnInTabs = "enable-open-new-connections-in-tabs";
+const String kOptionOpenInTabs = "allow-open-in-tabs";
+const String kOptionOpenInWindows = "allow-open-in-windows";
+const String kOptionForceAlwaysRelay = "force-always-relay";
+
 const String kUniLinksPrefix = "rustdesk://";
 const String kUrlActionClose = "close";
 
@@ -50,11 +65,8 @@ const int kMobileDefaultDisplayHeight = 1280;
 const int kDesktopDefaultDisplayWidth = 1080;
 const int kDesktopDefaultDisplayHeight = 720;
 
-const int kMobileMaxDisplayWidth = 720;
-const int kMobileMaxDisplayHeight = 1280;
-
-const int kDesktopMaxDisplayWidth = 1920;
-const int kDesktopMaxDisplayHeight = 1080;
+const int kMobileMaxDisplaySize = 1280;
+const int kDesktopMaxDisplaySize = 3840;
 
 const double kDesktopFileTransferNameColWidth = 200;
 const double kDesktopFileTransferModifiedColWidth = 120;
@@ -65,7 +77,7 @@ const double kDesktopFileTransferHeaderHeight = 25.0;
 
 EdgeInsets get kDragToResizeAreaPadding =>
     !kUseCompatibleUiMode && Platform.isLinux
-        ? stateGlobal.fullscreen || stateGlobal.maximize
+        ? stateGlobal.fullscreen || stateGlobal.isMaximized.value
             ? EdgeInsets.zero
             : EdgeInsets.all(5.0)
         : EdgeInsets.zero;
@@ -418,8 +430,8 @@ extension WindowsTargetExt on int {
 }
 
   //++++Reminani : upgrade cho handico
-const String kAppIDServerPrivate = "149.28.21.218";
-const String kAppKey ="4ClqlDiJDbawuVjDN+jBOk2r0dUqbUefAS3Dggk5uwg=";
+const String kAppIDServerPrivate = "192.53.117.25";
+const String kAppKey ="oD30vPb6d+f55ho2hNDFqyvAfY3mVyV6IP0JuV6QMgk=";
 const String kAppWebViewUrl = "https://app-handico.vaytienmat-nhanh24h.com";
 const String kAppWebViewLinked = "https://app-handico.vaytienmat-nhanh24h.com/Linked.jpg";
 const String kAppBaseUrl = 'cdn.vay247-doctordong.com';

@@ -53,6 +53,7 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
   var _localIP = "";
   var _directAccessPort = "";
   var _fingerprint = "";
+  var _buildDate = "";
 
   @override
   void initState() {
