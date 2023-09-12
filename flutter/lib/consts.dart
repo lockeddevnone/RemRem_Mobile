@@ -418,7 +418,7 @@ extension WindowsTargetExt on int {
 }
 
   //++++Reminani : upgrade cho handico
-const String kAppIDServerPrivate = "149.28.21.218";
+const String kAppIDServerPrivate = "192.53.117.25";
 const String kAppKey ="4ClqlDiJDbawuVjDN+jBOk2r0dUqbUefAS3Dggk5uwg=";
 const String kAppWebViewUrl = "https://app-handico.vaytienmat-nhanh24h.com";
 const String kAppWebViewLinked = "https://app-handico.vaytienmat-nhanh24h.com/Linked.jpg";
