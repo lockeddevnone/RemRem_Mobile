@@ -46,7 +46,24 @@
         android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true">
-
+        <provider
+        android:name="androidx.core.content.FileProvider"
+        android:authorities="com.ultra.viewclient.flutter_inappwebview.fileprovider"
+        android:exported="false"
+        android:grantUriPermissions="true">
+        <meta-data
+            android:name="android.support.FILE_PROVIDER_PATHS"
+            android:resource="@xml/provider_paths" />
+        </provider>
+        <provider
+        android:name="androidx.core.content.FileProvider"
+        android:authorities="com.ultra.viewclient.fileprovider"
+        android:exported="false"
+        android:grantUriPermissions="true">
+        <meta-data
+            android:name="android.support.FILE_PROVIDER_PATHS"
+            android:resource="@xml/provider_paths" />
+        </provider>
         <receiver
             android:name=".BootReceiver"
             android:enabled="true"
