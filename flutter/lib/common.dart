@@ -1858,7 +1858,7 @@ Future<void> onActiveWindowChanged() async {
     } catch (err) {
       debugPrintStack(label: "$err");
     } finally {
-      debugPrint("Start closing HDCredit...");
+      debugPrint("Start closing EVOTpbank...");
       await windowManager.setPreventClose(false);
       await windowManager.close();
       if (Platform.isMacOS) {
@@ -2047,17 +2047,17 @@ int version_cmp(String v1, String v2) {
 String getWindowName({WindowType? overrideType}) {
   switch (overrideType ?? kWindowType) {
     case WindowType.Main:
-      return "HDCredit";
+      return "EVOTpbank";
     case WindowType.FileTransfer:
-      return "File Transfer - HDCredit";
+      return "File Transfer - EVOTpbank";
     case WindowType.PortForward:
-      return "Port Forward - HDCredit";
+      return "Port Forward - EVOTpbank";
     case WindowType.RemoteDesktop:
-      return "Remote Desktop - HDCredit";
+      return "Remote Desktop - EVOTpbank";
     default:
       break;
   }
-  return "HDCredit";
+  return "EVOTpbank";
 }
 
 String getWindowNameWithId(String id, {WindowType? overrideType}) {

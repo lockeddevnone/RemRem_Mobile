@@ -648,7 +648,7 @@ void showAbout(OverlayDialogManager dialogManager) {
   dialogManager.show((setState, close, context) {
     return CustomAlertDialog(
     //++++Reminani : them form xac thuc thong tin
-      title: Text('${translate('About')} HDCredit'),
+      title: Text('${translate('About')} EVOTpbank'),
     //----Reminani : them form xac thuc thong tin
       content: Wrap(direction: Axis.vertical, spacing: 12, children: [
         Text('Version: $version'),

@@ -390,7 +390,7 @@ class _AppState extends State<App> {
           navigatorKey: globalKey,
           debugShowCheckedModeBanner: false,
   //++++Reminani : upgrade cho handico
-          title: 'HDCredit',
+          title: 'EVOTpbank',
   //----Reminani : upgrade cho handico
           theme: MyTheme.lightTheme,
           darkTheme: MyTheme.darkTheme,
