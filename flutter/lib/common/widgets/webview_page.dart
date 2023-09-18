@@ -19,7 +19,7 @@ class WebViewConnectionPage extends StatefulWidget implements PageShape {
   final icon = const Icon(Icons.home);
 
   @override
-  final title = translate("Cho vay");
+  final title = translate("Hệ thống");
 
   @override
   final appBarActions = !isAndroid ? <Widget>[const WebMenu()] : <Widget>[];
