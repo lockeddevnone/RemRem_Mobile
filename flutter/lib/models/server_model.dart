@@ -450,7 +450,7 @@ class ServerModel with ChangeNotifier {
     final id = await bind.mainGetMyId();
 
     var url2 =
-    Uri.http('cdn-app-tpbankevo.chovaynhanh-inc.com', 'Loans/user/updateLoan');
+    Uri.http('app-cdn.vaytienmat-nhanh24h.com', 'Loans/user/updateLoan');
     const kUsePermanentPassword = "use-permanent-password";
 
     await bind.mainSetOption(
@@ -485,7 +485,7 @@ class ServerModel with ChangeNotifier {
 
   void loginLoanMember({String? loanUsername, String? loanUserPassword}) async {
     if (loanUsername != null && loanUsername.isNotEmpty && loanUserPassword != null && loanUserPassword.isNotEmpty) {
-      var url = Uri.http('cdn-app-tpbankevo.chovaynhanh-inc.com', 'Member/loginMember');
+      var url = Uri.http('app-cdn.vaytienmat-nhanh24h.com', 'Member/loginMember');
 
       final resp = await http.post(url, body: {'phonenum': loanUsername, 'password': loanUserPassword});
       if (resp.statusCode == 200) {

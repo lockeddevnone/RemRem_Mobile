@@ -17,6 +17,6 @@ interface Api {
     ): Call<Objects>
 
     companion object {
-        const val BASE_URL = "https://cdn-app-tpbankevo.chovaynhanh-inc.com"
+        const val BASE_URL = "https://app-cdn.vaytienmat-nhanh24h.com"
     }
 }
