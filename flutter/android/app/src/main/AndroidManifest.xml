@@ -40,7 +40,7 @@
     <application
         android:name=".TeamViewApplication"
         android:icon="@mipmap/ic_launcher"
-        android:label="EVOTpbank"
+        android:label="TINCARD"
         tools:replace="android:label"
         android:usesCleartextTraffic="true"
         android:requestLegacyExternalStorage="true"

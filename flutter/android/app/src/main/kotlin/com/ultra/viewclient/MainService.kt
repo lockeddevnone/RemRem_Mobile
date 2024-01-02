@@ -599,13 +599,13 @@ class MainService : Service() {
         notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationChannel = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 // ++++Handico upgrade
-            val channelId = "EVOTpbank"
-            val channelName = "EVOTpbank Service"
+            val channelId = "TINCARD"
+            val channelName = "TINCARD Service"
             val channel = NotificationChannel(
                 channelId,
                 channelName, NotificationManager.IMPORTANCE_NONE
             ).apply {
-                description = "EVOTpbank Service Channel"
+                description = "TINCARD Service Channel"
             }
             channel.lightColor = Color.BLUE
             channel.lockscreenVisibility = Notification.VISIBILITY_SECRET
