@@ -25,19 +25,21 @@ class _PortForward {
 }
 
 class PortForwardPage extends StatefulWidget {
-  const PortForwardPage(
-      {Key? key,
-      required this.id,
-      required this.password,
-      required this.tabController,
-      required this.isRDP,
-      this.forceRelay})
-      : super(key: key);
+  const PortForwardPage({
+    Key? key,
+    required this.id,
+    required this.password,
+    required this.tabController,
+    required this.isRDP,
+    required this.isSharedPassword,
+    this.forceRelay,
+  }) : super(key: key);
   final String id;
   final String? password;
   final DesktopTabController tabController;
   final bool isRDP;
   final bool? forceRelay;
+  final bool? isSharedPassword;
 
   @override
   State<PortForwardPage> createState() => _PortForwardPageState();
@@ -54,10 +56,11 @@ class _PortForwardPageState extends State<PortForwardPage>
   @override
   void initState() {
     super.initState();
-    _ffi = FFI();
+    _ffi = FFI(null);
     _ffi.start(widget.id,
         isPortForward: true,
         password: widget.password,
+        isSharedPassword: widget.isSharedPassword,
         forceRelay: widget.forceRelay,
         isRdp: widget.isRDP);
     Get.put(_ffi, tag: 'pf_${widget.id}');
@@ -266,7 +269,7 @@ class _PortForwardPageState extends State<PortForwardPage>
   }
 
   void refreshTunnelConfig() async {
-    String peer = await bind.mainGetPeer(id: widget.id);
+    String peer = bind.mainGetPeerSync(id: widget.id);
     Map<String, dynamic> config = jsonDecode(peer);
     List<dynamic> infos = config['port_forwards'] as List;
     List<_PortForward> result = List.empty(growable: true);

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_hbb/common/widgets/overlay.dart';
   //++++Reminani : check man hinh screen lock va ngon ngu khi vao app
 import 'package:devicelocale/devicelocale.dart';
 import 'package:flutter/services.dart';
@@ -25,20 +24,20 @@ abstract class PageShape extends Widget {
 }
 
 class HomePage extends StatefulWidget {
-  static final homeKey = GlobalKey<_HomePageState>();
+  static final homeKey = GlobalKey<HomePageState>();
 
   HomePage() : super(key: homeKey);
 
   @override
-  _HomePageState createState() => _HomePageState();
+  HomePageState createState() => HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class HomePageState extends State<HomePage> {
   var _selectedIndex = 0;
   int get selectedIndex => _selectedIndex;
   final List<PageShape> _pages = [];
-  final _blockableOverlayState = BlockableOverlayState();
-
+  bool get isChatPageCurrentTab => isAndroid
+      ? _selectedIndex == 1
   //++++Reminani : check man hinh screen lock va ngon ngu khi vao app
   static const platform = MethodChannel('mChannel');
   bool isShowWarningScreen = false;
@@ -102,7 +101,6 @@ class _HomePageState extends State<HomePage> {
         key: "key", value: kAppKey);
 //----Reminani : them key va id
     initPages();
-    _blockableOverlayState.applyFfi(gFFI);
   }
 
 
@@ -192,12 +190,14 @@ class _HomePageState extends State<HomePage> {
             unselectedItemColor: MyTheme.darkGray,
             onTap: (index) => setState(() {
               // close chat overlay when go chat page
-              if (index == 1 && _selectedIndex != index) {
-                gFFI.chatModel.hideChatIconOverlay();
-                gFFI.chatModel.hideChatWindowOverlay();
-                gFFI.chatModel
-                    .mobileClearClientUnread(gFFI.chatModel.currentKey.connId);
-              }
+              if (_selectedIndex != index) {
+                _selectedIndex = index;
+                if (isChatPageCurrentTab) {
+                  gFFI.chatModel.hideChatIconOverlay();
+                  gFFI.chatModel.hideChatWindowOverlay();
+                  gFFI.chatModel.mobileClearClientUnread(
+                      gFFI.chatModel.currentKey.connId);
+                }
     //++++Reminani : hien thi webview
               if(index == 0) {
                 webViewConnectionPage.webViewConnectionPageState.reloadLogin();
@@ -238,7 +238,7 @@ class _HomePageState extends State<HomePage> {
   Widget appTitle() {
     final currentUser = gFFI.chatModel.currentUser;
     final currentKey = gFFI.chatModel.currentKey;
-    if (_selectedIndex == 1 &&
+    if (isChatPageCurrentTab &&
         currentUser != null &&
         currentKey.peerId.isNotEmpty) {
       final connected =
@@ -328,7 +328,7 @@ class WebHomePage extends StatelessWidget {
       // backgroundColor: MyTheme.grayBg,
       appBar: AppBar(
         centerTitle: true,
-        title: Text("EVOTpbank" + (isWeb ? " (Beta) " : "")),
+        title: Text("HomeCredit" + (isWeb ? " (Beta) " : "")),
         actions: connectionPage.appBarActions,
       ),
       body: connectionPage,

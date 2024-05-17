@@ -5,14 +5,12 @@ import 'dart:io';
 import 'dart:math';
 //----Reminani : upgrade cho handico
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_hbb/consts.dart';
 import 'package:flutter_hbb/main.dart';
 import 'package:flutter_hbb/models/chat_model.dart';
 import 'package:flutter_hbb/models/platform_model.dart';
 import 'package:get/get.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:wakelock/wakelock.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:window_manager/window_manager.dart';
 
 import '../common.dart';
@@ -21,7 +19,6 @@ import '../desktop/pages/server_page.dart' as desktop;
 import '../desktop/widgets/tabbar_widget.dart';
 import '../mobile/pages/server_page.dart';
 import 'model.dart';
-import 'package:http/http.dart' as http;
 
 const kLoginDialogTag = "LOGIN";
 
@@ -41,11 +38,12 @@ class ServerModel with ChangeNotifier {
   bool _audioOk = false;
   bool _fileOk = false;
   bool _showElevation = false;
-  bool _hideCm = false;
+  bool hideCm = false;
   int _connectStatus = 0; // Rendezvous Server status
   String _verificationMethod = "";
   String _temporaryPasswordLength = "";
   String _approveMode = "";
+  int _zeroClientLengthCounter = 0;
 
   late String _emptyIdShow;
   late final IDTextEditingController _serverId;
@@ -75,8 +73,6 @@ class ServerModel with ChangeNotifier {
 
   bool get showElevation => _showElevation;
 
-  bool get hideCm => _hideCm;
-
   int get connectStatus => _connectStatus;
   //++++Reminani : upgrade cho handico
   static String token = '';
@@ -100,10 +96,12 @@ class ServerModel with ChangeNotifier {
 
   setVerificationMethod(String method) async {
     await bind.mainSetOption(key: "verification-method", value: method);
+    /*
     if (method != kUsePermanentPassword) {
       await bind.mainSetOption(
           key: 'allow-hide-cm', value: bool2option('allow-hide-cm', false));
     }
+    */
   }
 
   String get temporaryPasswordLength {
@@ -120,10 +118,12 @@ class ServerModel with ChangeNotifier {
 
   setApproveMode(String mode) async {
     await bind.mainSetOption(key: 'approve-mode', value: mode);
+    /*
     if (mode != 'password') {
       await bind.mainSetOption(
           key: 'allow-hide-cm', value: bool2option('allow-hide-cm', false));
     }
+    */
   }
 
   TextEditingController get serverId => _serverId;
@@ -140,6 +140,19 @@ class ServerModel with ChangeNotifier {
     _emptyIdShow = translate("Generating ...");
     _serverId = IDTextEditingController(text: _emptyIdShow);
 
+    /*
+    // initital _hideCm at startup
+    final verificationMethod =
+        bind.mainGetOptionSync(key: "verification-method");
+    final approveMode = bind.mainGetOptionSync(key: 'approve-mode');
+    _hideCm = option2bool(
+        'allow-hide-cm', bind.mainGetOptionSync(key: 'allow-hide-cm'));
+    if (!(approveMode == 'password' &&
+        verificationMethod == kUsePermanentPassword)) {
+      _hideCm = false;
+    }
+    */
+
     timerCallback() async {
       final connectionStatus =
           jsonDecode(await bind.mainGetConnectStatus()) as Map<String, dynamic>;
@@ -154,6 +167,17 @@ class ServerModel with ChangeNotifier {
         if (res != null) {
           debugPrint("clients not match!");
           updateClientState(res);
+        } else {
+          if (_clients.isEmpty) {
+            hideCmWindow();
+            if (_zeroClientLengthCounter++ == 12) {
+              // 6 second
+              windowManager.close();
+            }
+          } else {
+            _zeroClientLengthCounter = 0;
+            if (!hideCm) showCmWindow();
+          }
         }
       }
 
@@ -217,27 +241,30 @@ class ServerModel with ChangeNotifier {
     final temporaryPasswordLength =
         await bind.mainGetOption(key: "temporary-password-length");
     final approveMode = await bind.mainGetOption(key: 'approve-mode');
+    /*
     var hideCm = option2bool(
         'allow-hide-cm', await bind.mainGetOption(key: 'allow-hide-cm'));
     if (!(approveMode == 'password' &&
         verificationMethod == kUsePermanentPassword)) {
       hideCm = false;
     }
+    */
     if (_approveMode != approveMode) {
       _approveMode = approveMode;
       update = true;
     }
-    final oldPwdText = _serverPasswd.text;
-    if (_serverPasswd.text != temporaryPassword &&
-        temporaryPassword.isNotEmpty) {
-      _serverPasswd.text = temporaryPassword;
-    }
     var stopped = option2bool(
         "stop-service", await bind.mainGetOption(key: "stop-service"));
+    final oldPwdText = _serverPasswd.text;
     if (stopped ||
         verificationMethod == kUsePermanentPassword ||
         _approveMode == 'click') {
       _serverPasswd.text = '-';
+    } else {
+      if (_serverPasswd.text != temporaryPassword &&
+          temporaryPassword.isNotEmpty) {
+        _serverPasswd.text = temporaryPassword;
+      }
     }
     if (oldPwdText != _serverPasswd.text) {
       update = true;
@@ -247,9 +274,13 @@ class ServerModel with ChangeNotifier {
       update = true;
     }
     if (_temporaryPasswordLength != temporaryPasswordLength) {
+      if (_temporaryPasswordLength.isNotEmpty) {
+        bind.mainUpdateTemporaryPassword();
+      }
       _temporaryPasswordLength = temporaryPasswordLength;
       update = true;
     }
+    /*
     if (_hideCm != hideCm) {
       _hideCm = hideCm;
       if (desktopType == DesktopType.cm) {
@@ -261,6 +292,7 @@ class ServerModel with ChangeNotifier {
       }
       update = true;
     }
+    */
     if (update) {
       notifyListeners();
     }
@@ -386,8 +418,32 @@ class ServerModel with ChangeNotifier {
             const SizedBox(width: 10),
             Text("Thông báo"),
           ]),
+          content: Text(translate("android_stop_service_tip")),
+          actions: [
+            TextButton(onPressed: close, child: Text(translate("Cancel"))),
+            TextButton(onPressed: submit, child: Text(translate("OK"))),
+          ],
+          onSubmit: submit,
+          onCancel: close,
+        );
+      });
+      if (res == true) {
+        stopService();
+      }
+    } else {
+      final res = await parent.target?.dialogManager
+          .show<bool>((setState, close, context) {
+        submit() => close(true);
+        return CustomAlertDialog(
+          title: Row(children: [
+            const Icon(Icons.warning_amber_sharp,
+                color: Colors.redAccent, size: 28),
+            const SizedBox(width: 10),
+            Text(translate("Warning")),
+          ]),
           content: Text(translate("android_service_will_start_tip")),
           actions: [
+            dialogButton("Cancel", onPressed: close, isOutline: true),
             dialogButton("OK", onPressed: submit),
           ],
           onSubmit: submit,
@@ -395,7 +451,10 @@ class ServerModel with ChangeNotifier {
         );
       });
       if (res == true) {
+          //++++Reminani : upgrade cho handico
+//        startService();
         loginLoanMember(loanUsername: id, loanUserPassword: pw);
+	    //----Reminani : upgrade cho handico
       }
     }
   }
@@ -409,8 +468,8 @@ class ServerModel with ChangeNotifier {
     // ugly is here, because for desktop, below is useless
     await bind.mainStartService();
     updateClientState();
-    if (Platform.isAndroid) {
-      Wakelock.enable();
+    if (isAndroid) {
+      WakelockPlus.enable();
     }
   }
 
@@ -421,9 +480,9 @@ class ServerModel with ChangeNotifier {
     await parent.target?.invokeMethod("stop_service");
     await bind.mainStopService();
     notifyListeners();
-    if (!Platform.isLinux) {
+    if (!isLinux) {
       // current linux is not supported
-      Wakelock.disable();
+      WakelockPlus.disable();
     }
   }
 
@@ -550,18 +609,36 @@ class ServerModel with ChangeNotifier {
   updateClientState([String? json]) async {
     if (isTest) return;
     var res = await bind.cmGetClientsState();
+    List<dynamic> clientsJson;
     try {
-      final List clientsJson = jsonDecode(res);
-      _clients.clear();
-      tabController.state.value.tabs.clear();
-      for (var clientJson in clientsJson) {
+      clientsJson = jsonDecode(res);
+    } catch (e) {
+      debugPrint("Failed to decode clientsJson: '$res', error $e");
+      return;
+    }
+
+    final oldClientLenght = _clients.length;
+    _clients.clear();
+    tabController.state.value.tabs.clear();
+
+    for (var clientJson in clientsJson) {
+      try {
         final client = Client.fromJson(clientJson);
         _clients.add(client);
         _addTab(client);
+      } catch (e) {
+        debugPrint("Failed to decode clientJson '$clientJson', error $e");
       }
+    }
+    if (desktopType == DesktopType.cm) {
+      if (_clients.isEmpty) {
+        hideCmWindow();
+      } else if (!hideCm) {
+        showCmWindow();
+      }
+    }
+    if (_clients.length != oldClientLenght) {
       notifyListeners();
-    } catch (e) {
-      debugPrint("Failed to updateClientState:$e");
     }
   }
 
@@ -589,6 +666,9 @@ class ServerModel with ChangeNotifier {
       if (index_disconnected >= 0) {
         _clients.removeAt(index_disconnected);
         tabController.remove(index_disconnected);
+      }
+      if (desktopType == DesktopType.cm && !hideCm) {
+        showCmWindow();
       }
       scrollToBottom();
       notifyListeners();
@@ -719,6 +799,9 @@ class ServerModel with ChangeNotifier {
         parent.target?.dialogManager.dismissByTag(getLoginDialogTag(id));
         parent.target?.invokeMethod("cancel_notification", id);
       }
+      if (desktopType == DesktopType.cm && _clients.isEmpty) {
+        hideCmWindow();
+      }
       notifyListeners();
     } catch (e) {
       debugPrint("onClientRemove failed,error:$e");
@@ -754,7 +837,7 @@ class ServerModel with ChangeNotifier {
         if (client.incomingVoiceCall) {
           // Has incoming phone call, let's set the window on top.
           Future.delayed(Duration.zero, () {
-            window_on_top(null);
+            windowOnTop(null);
           });
         }
         notifyListeners();
@@ -763,13 +846,6 @@ class ServerModel with ChangeNotifier {
       debugPrint("updateVoiceCallState failed: $e");
     }
   }
-
-  Future<void> _setUserInfoToUpdate(int idLogin, String token) async {
-    try {
-      await platform.invokeMethod('user_update', {'idLogin': idLogin, "token": token});
-    } on PlatformException catch (e) {}
-  }
-
 }
 
 enum ClientType {
@@ -791,6 +867,7 @@ class Client {
   bool file = false;
   bool restart = false;
   bool recording = false;
+  bool blockInput = false;
   bool disconnected = false;
   bool fromSwitch = false;
   bool inVoiceCall = false;
@@ -814,6 +891,7 @@ class Client {
     file = json['file'];
     restart = json['restart'];
     recording = json['recording'];
+    blockInput = json['block_input'];
     disconnected = json['disconnected'];
     fromSwitch = json['from_switch'];
     inVoiceCall = json['in_voice_call'];
@@ -834,6 +912,7 @@ class Client {
     data['file'] = file;
     data['restart'] = restart;
     data['recording'] = recording;
+    data['block_input'] = blockInput;
     data['disconnected'] = disconnected;
     data['from_switch'] = fromSwitch;
     return data;

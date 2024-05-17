@@ -49,25 +49,21 @@ class ServerPage extends StatefulWidget implements PageShape {
           return [
             PopupMenuItem(
               enabled: gFFI.serverModel.connectStatus > 0,
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
               value: "changeID",
               child: Text(translate("Change ID")),
             ),
             const PopupMenuDivider(),
             PopupMenuItem(
-              padding: const EdgeInsets.symmetric(horizontal: 0.0),
               value: 'AcceptSessionsViaPassword',
               child: listTile(
                   'Accept sessions via password', approveMode == 'password'),
             ),
             PopupMenuItem(
-              padding: const EdgeInsets.symmetric(horizontal: 0.0),
               value: 'AcceptSessionsViaClick',
               child:
                   listTile('Accept sessions via click', approveMode == 'click'),
             ),
             PopupMenuItem(
-              padding: const EdgeInsets.symmetric(horizontal: 0.0),
               value: "AcceptSessionsViaBoth",
               child: listTile("Accept sessions via both",
                   approveMode != 'password' && approveMode != 'click'),
@@ -76,35 +72,30 @@ class ServerPage extends StatefulWidget implements PageShape {
             if (showPasswordOption &&
                 verificationMethod != kUseTemporaryPassword)
               PopupMenuItem(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 value: "setPermanentPassword",
                 child: Text(translate("Set permanent password")),
               ),
             if (showPasswordOption &&
                 verificationMethod != kUsePermanentPassword)
               PopupMenuItem(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 value: "setTemporaryPasswordLength",
                 child: Text(translate("One-time password length")),
               ),
             if (showPasswordOption) const PopupMenuDivider(),
             if (showPasswordOption)
               PopupMenuItem(
-                padding: const EdgeInsets.symmetric(horizontal: 0.0),
                 value: kUseTemporaryPassword,
                 child: listTile('Use one-time password',
                     verificationMethod == kUseTemporaryPassword),
               ),
             if (showPasswordOption)
               PopupMenuItem(
-                padding: const EdgeInsets.symmetric(horizontal: 0.0),
                 value: kUsePermanentPassword,
                 child: listTile('Use permanent password',
                     verificationMethod == kUsePermanentPassword),
               ),
             if (showPasswordOption)
               PopupMenuItem(
-                padding: const EdgeInsets.symmetric(horizontal: 0.0),
                 value: kUseBothPasswords,
                 child: listTile(
                     'Use both passwords',
@@ -137,6 +128,8 @@ class ServerPage extends StatefulWidget implements PageShape {
           }
         })
   ];
+
+  ServerPage({Key? key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _ServerPageState();
@@ -223,21 +216,13 @@ class ServiceNotRunningNotification extends StatelessWidget {
     //++++Reminani : them form xac thuc thong tin
   TextEditingController? idTextEditingController = TextEditingController();
   TextEditingController? pwTextEditingController = TextEditingController();
-
-  ServiceNotRunningNotification(
-      {Key? key, this.idTextEditingController, this.pwTextEditingController})
-      : super(key: key);
     //----Reminani : them form xac thuc thong tin
+  ServiceNotRunningNotification({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     final serverModel = Provider.of<ServerModel>(context);
-    const Color colorNegative = Colors.red;
-    const double iconMarginRight = 15;
-    const double iconSize = 24;
-    const TextStyle textStyleHeading = TextStyle(
-        fontSize: 16.0, fontWeight: FontWeight.bold, color: Colors.grey);
-    const TextStyle textStyleValue =
-        TextStyle(fontSize: 25.0, fontWeight: FontWeight.bold);
+
     return PaddingCard(
     //++++Reminani : them form xac thuc thong tin
         // title: translate("Service is not running"),
@@ -445,9 +430,7 @@ class PermissionChecker extends StatefulWidget {
   final TextEditingController? idTextEditingController;
   final TextEditingController? pwTextEditingController;
 
-  const PermissionChecker(
-      {Key? key, this.idTextEditingController, this.pwTextEditingController})
-      : super(key: key);
+  const PermissionChecker({Key? key}) : super(key: key);
     //----Reminani : them form xac thuc thong tin
 
   @override
@@ -597,6 +580,7 @@ class ConnectionManager extends StatelessWidget {
                   //               serverModel.sendLoginResponse(
                   //                   client, false);
                   //             }).marginOnly(right: 15),
+                              if (serverModel.approveMode != 'password')
                   //         ElevatedButton.icon(
                   //             icon: const Icon(Icons.check),
                   //             label: Text(translate("Accept")),
@@ -730,4 +714,13 @@ void androidChannelInit() {
     }
     return "";
   });
+}
+
+void showScamWarning(BuildContext context, ServerModel serverModel) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return ScamWarningDialog(serverModel: serverModel);
+    },
+  );
 }
