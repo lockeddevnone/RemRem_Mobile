@@ -10,7 +10,6 @@ import 'package:flutter_hbb/desktop/widgets/tabbar_widget.dart';
 import 'package:flutter_hbb/mobile/pages/home_page.dart';
 import 'package:flutter_hbb/models/platform_model.dart';
 import 'package:flutter_hbb/models/state_model.dart';
-import 'package:get/get_rx/src/rx_types/rx_types.dart';
 import 'package:get/get.dart';
 import 'package:uuid/uuid.dart';
 import 'package:window_manager/window_manager.dart';
@@ -63,7 +62,7 @@ class ChatModel with ChangeNotifier {
   bool isConnManager = false;
 
   RxBool isWindowFocus = true.obs;
-  BlockableOverlayState? _blockableOverlayState;
+  BlockableOverlayState _blockableOverlayState = BlockableOverlayState();
   final Rx<VoiceCallStatus> _voiceCallStatus = Rx(VoiceCallStatus.notStarted);
 
   Rx<VoiceCallStatus> get voiceCallStatus => _voiceCallStatus;
@@ -71,6 +70,13 @@ class ChatModel with ChangeNotifier {
   TextEditingController textController = TextEditingController();
   RxInt mobileUnreadSum = 0.obs;
   MessageKey? latestReceivedKey;
+
+  Offset chatWindowPosition = Offset(20, 80);
+
+  void setChatWindowPosition(Offset position) {
+    chatWindowPosition = position;
+    notifyListeners();
+  }
 
   @override
   void dispose() {
@@ -86,18 +92,18 @@ class ChatModel with ChangeNotifier {
   late final Map<MessageKey, MessageBody> _messages = {};
 
   MessageKey _currentKey = MessageKey('', -2); // -2 is invalid value
-  late bool _isShowCMChatPage = false;
+  late bool _isShowCMSidePage = false;
 
   Map<MessageKey, MessageBody> get messages => _messages;
 
   MessageKey get currentKey => _currentKey;
 
-  bool get isShowCMChatPage => _isShowCMChatPage;
+  bool get isShowCMSidePage => _isShowCMSidePage;
 
   void setOverlayState(BlockableOverlayState blockableOverlayState) {
     _blockableOverlayState = blockableOverlayState;
 
-    _blockableOverlayState!.addMiddleBlockedListener((v) {
+    _blockableOverlayState.addMiddleBlockedListener((v) {
       if (!v) {
         isWindowFocus.value = false;
         if (isWindowFocus.value) {
@@ -154,7 +160,7 @@ class ChatModel with ChangeNotifier {
       }
     }
 
-    final overlayState = _blockableOverlayState?.state;
+    final overlayState = _blockableOverlayState.state;
     if (overlayState == null) return;
 
     final overlay = OverlayEntry(builder: (context) {
@@ -191,9 +197,9 @@ class ChatModel with ChangeNotifier {
   showChatWindowOverlay({Offset? chatInitPos}) {
     if (chatWindowOverlayEntry != null) return;
     isWindowFocus.value = true;
-    _blockableOverlayState?.setMiddleBlocked(true);
+    _blockableOverlayState.setMiddleBlocked(true);
 
-    final overlayState = _blockableOverlayState?.state;
+    final overlayState = _blockableOverlayState.state;
     if (overlayState == null) return;
     if (isMobile &&
         !gFFI.chatModel.currentKey.isOut && // not in remote page
@@ -206,11 +212,11 @@ class ChatModel with ChangeNotifier {
           onPointerDown: (_) {
             if (!isWindowFocus.value) {
               isWindowFocus.value = true;
-              _blockableOverlayState?.setMiddleBlocked(true);
+              _blockableOverlayState.setMiddleBlocked(true);
             }
           },
           child: DraggableChatWindow(
-              position: chatInitPos ?? Offset(20, 80),
+              position: chatInitPos ?? chatWindowPosition,
               width: 250,
               height: 350,
               chatModel: this));
@@ -222,7 +228,7 @@ class ChatModel with ChangeNotifier {
 
   hideChatWindowOverlay() {
     if (chatWindowOverlayEntry != null) {
-      _blockableOverlayState?.setMiddleBlocked(false);
+      _blockableOverlayState.setMiddleBlocked(false);
       chatWindowOverlayEntry!.remove();
       chatWindowOverlayEntry = null;
       return;
@@ -255,7 +261,7 @@ class ChatModel with ChangeNotifier {
   showChatPage(MessageKey key) async {
     if (isDesktop) {
       if (isConnManager) {
-        if (!_isShowCMChatPage) {
+        if (!_isShowCMSidePage) {
           await toggleCMChatPage(key);
         }
       } else {
@@ -276,20 +282,39 @@ class ChatModel with ChangeNotifier {
     if (gFFI.chatModel.currentKey != key) {
       gFFI.chatModel.changeCurrentKey(key);
     }
-    if (_isShowCMChatPage) {
-      _isShowCMChatPage = !_isShowCMChatPage;
+    await toggleCMSidePage();
+  }
+
+  toggleCMFilePage() async {
+    await toggleCMSidePage();
+  }
+
+  var _togglingCMSidePage = false; // protect order for await
+  toggleCMSidePage() async {
+    if (_togglingCMSidePage) return false;
+    _togglingCMSidePage = true;
+    if (_isShowCMSidePage) {
+      _isShowCMSidePage = !_isShowCMSidePage;
       notifyListeners();
       await windowManager.show();
       await windowManager.setSizeAlignment(
           kConnectionManagerWindowSizeClosedChat, Alignment.topRight);
     } else {
+      final currentSelectedTab =
+          gFFI.serverModel.tabController.state.value.selectedTabInfo;
+      final client = parent.target?.serverModel.clients.firstWhereOrNull(
+          (client) => client.id.toString() == currentSelectedTab.key);
+      if (client != null) {
+        client.unreadChatMessageCount.value = 0;
+      }
       requestChatInputFocus();
       await windowManager.show();
       await windowManager.setSizeAlignment(
           kConnectionManagerWindowSizeOpenChat, Alignment.topRight);
-      _isShowCMChatPage = !_isShowCMChatPage;
+      _isShowCMSidePage = !_isShowCMSidePage;
       notifyListeners();
     }
+    _togglingCMSidePage = false;
   }
 
   changeCurrentKey(MessageKey key) {
@@ -367,7 +392,7 @@ class ChatModel with ChangeNotifier {
           // not minisized: add count
           if (await WindowController.fromWindowId(stateGlobal.windowId)
               .isMinimized()) {
-            window_on_top(stateGlobal.windowId);
+            windowOnTop(stateGlobal.windowId);
             if (notSelected) {
               tabController.jumpTo(index);
             }
@@ -386,7 +411,7 @@ class ChatModel with ChangeNotifier {
         return;
       }
       if (isDesktop) {
-        window_on_top(null);
+        windowOnTop(null);
         // disable auto jumpTo other tab when hasFocus, and mark unread message
         final currentSelectedTab =
             session.serverModel.tabController.state.value.selectedTabInfo;
@@ -396,7 +421,7 @@ class ChatModel with ChangeNotifier {
           parent.target?.serverModel.jumpTo(id);
         }
       } else {
-        if (HomePage.homeKey.currentState?.selectedIndex != 1 ||
+        if (HomePage.homeKey.currentState?.isChatPageCurrentTab != true ||
             _currentKey != messagekey) {
           client.unreadChatMessageCount.value += 1;
           mobileUpdateUnreadSum();

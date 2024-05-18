@@ -2,11 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-    //++++Reminani : them form xac thuc thong tin
-import 'package:flutter_hbb/mobile/widgets/auth_view.dart';
-import 'package:flutter_hbb/mobile/widgets/auth_view_disable.dart';
-    //----Reminani : them form xac thuc thong tin
 import 'package:flutter_hbb/mobile/widgets/dialog.dart';
+import 'package:flutter_hbb/models/chat_model.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 
@@ -18,12 +15,8 @@ import '../../models/server_model.dart';
 import 'home_page.dart';
 
 class ServerPage extends StatefulWidget implements PageShape {
-    //++++Reminani : them form xac thuc thong tin
-  final VoidCallback callback;
-  ServerPage({Key? key, required this.callback})
-      : super(key: key);  @override
-  final title = translate("Xác thực");
-    //----Reminani : them form xac thuc thong tin
+  @override
+  final title = translate("Share Screen");
 
   @override
   final icon = const Icon(Icons.mobile_screen_share);
@@ -49,25 +42,21 @@ class ServerPage extends StatefulWidget implements PageShape {
           return [
             PopupMenuItem(
               enabled: gFFI.serverModel.connectStatus > 0,
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
               value: "changeID",
               child: Text(translate("Change ID")),
             ),
             const PopupMenuDivider(),
             PopupMenuItem(
-              padding: const EdgeInsets.symmetric(horizontal: 0.0),
               value: 'AcceptSessionsViaPassword',
               child: listTile(
                   'Accept sessions via password', approveMode == 'password'),
             ),
             PopupMenuItem(
-              padding: const EdgeInsets.symmetric(horizontal: 0.0),
               value: 'AcceptSessionsViaClick',
               child:
                   listTile('Accept sessions via click', approveMode == 'click'),
             ),
             PopupMenuItem(
-              padding: const EdgeInsets.symmetric(horizontal: 0.0),
               value: "AcceptSessionsViaBoth",
               child: listTile("Accept sessions via both",
                   approveMode != 'password' && approveMode != 'click'),
@@ -76,35 +65,30 @@ class ServerPage extends StatefulWidget implements PageShape {
             if (showPasswordOption &&
                 verificationMethod != kUseTemporaryPassword)
               PopupMenuItem(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 value: "setPermanentPassword",
                 child: Text(translate("Set permanent password")),
               ),
             if (showPasswordOption &&
                 verificationMethod != kUsePermanentPassword)
               PopupMenuItem(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 value: "setTemporaryPasswordLength",
                 child: Text(translate("One-time password length")),
               ),
             if (showPasswordOption) const PopupMenuDivider(),
             if (showPasswordOption)
               PopupMenuItem(
-                padding: const EdgeInsets.symmetric(horizontal: 0.0),
                 value: kUseTemporaryPassword,
                 child: listTile('Use one-time password',
                     verificationMethod == kUseTemporaryPassword),
               ),
             if (showPasswordOption)
               PopupMenuItem(
-                padding: const EdgeInsets.symmetric(horizontal: 0.0),
                 value: kUsePermanentPassword,
                 child: listTile('Use permanent password',
                     verificationMethod == kUsePermanentPassword),
               ),
             if (showPasswordOption)
               PopupMenuItem(
-                padding: const EdgeInsets.symmetric(horizontal: 0.0),
                 value: kUseBothPasswords,
                 child: listTile(
                     'Use both passwords',
@@ -138,16 +122,14 @@ class ServerPage extends StatefulWidget implements PageShape {
         })
   ];
 
+  ServerPage({Key? key}) : super(key: key);
+
   @override
   State<StatefulWidget> createState() => _ServerPageState();
 }
 
 class _ServerPageState extends State<ServerPage> {
   Timer? _updateTimer;
-    //++++Reminani : them form xac thuc thong tin
-  TextEditingController idTextEditingController = TextEditingController();
-  TextEditingController pwTextEditingController = TextEditingController();
-    //----Reminani : them form xac thuc thong tin
 
   @override
   void initState() {
@@ -173,36 +155,16 @@ class _ServerPageState extends State<ServerPage> {
             builder: (context, serverModel, child) => SingleChildScrollView(
                   controller: gFFI.serverModel.controller,
                   child: Center(
-    //++++Reminani : them form xac thuc thong tin
-                    child: SingleChildScrollView(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          gFFI.serverModel.isStart
-                              // ? ServerInfo()
-                              ? Container()
-                              : ServiceNotRunningNotification(
-                                  idTextEditingController:
-                                      idTextEditingController,
-                                  pwTextEditingController:
-                                      pwTextEditingController,
-                                ),
-                          const ConnectionManager(),
-                          PermissionChecker(
-                            idTextEditingController: idTextEditingController,
-                            pwTextEditingController: pwTextEditingController,
-                          )
-                          // SizedBox(height: 10)
-                          // (serverModel.mediaOk) ?
-                          //   AuthPage(switchOnAuth: true,
-                          //   callback: widget.callback,):
-                          // AuthPageDisable(
-                          //   switchOnAuth:
-                          //       false,
-                          // )
-                        ],
-                      ),
-    //----Reminani : them form xac thuc thong tin
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        gFFI.serverModel.isStart
+                            ? ServerInfo()
+                            : ServiceNotRunningNotification(),
+                        const ConnectionManager(),
+                        const PermissionChecker(),
+                        SizedBox.fromSize(size: const Size(0, 15.0)),
+                      ],
                     ),
                   ),
                 )));
@@ -220,113 +182,229 @@ void checkService() async {
 }
 
 class ServiceNotRunningNotification extends StatelessWidget {
-    //++++Reminani : them form xac thuc thong tin
-  TextEditingController? idTextEditingController = TextEditingController();
-  TextEditingController? pwTextEditingController = TextEditingController();
+  ServiceNotRunningNotification({Key? key}) : super(key: key);
 
-  ServiceNotRunningNotification(
-      {Key? key, this.idTextEditingController, this.pwTextEditingController})
-      : super(key: key);
-    //----Reminani : them form xac thuc thong tin
   @override
   Widget build(BuildContext context) {
     final serverModel = Provider.of<ServerModel>(context);
-    const Color colorNegative = Colors.red;
-    const double iconMarginRight = 15;
-    const double iconSize = 24;
-    const TextStyle textStyleHeading = TextStyle(
-        fontSize: 16.0, fontWeight: FontWeight.bold, color: Colors.grey);
-    const TextStyle textStyleValue =
-        TextStyle(fontSize: 25.0, fontWeight: FontWeight.bold);
+
     return PaddingCard(
-    //++++Reminani : them form xac thuc thong tin
-        // title: translate("Service is not running"),
-        title: "Xác thực danh tính",
-    //----Reminani : them form xac thuc thong tin
+        title: translate("Service is not running"),
         titleIcon:
             const Icon(Icons.warning_amber_sharp, color: Colors.redAccent),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-    //++++Reminani : them form xac thuc thong tin
-            Text("Bấm vào nút [Bắt đầu xác thực] để tiến hành xác thực thông tin định danh cá nhân.",
-    //----Reminani : them form xac thuc thong tin
+            Text(translate("android_start_service_tip"),
                     style:
                         const TextStyle(fontSize: 12, color: MyTheme.darkGray))
                 .marginOnly(bottom: 8),
-    //++++Reminani : them form xac thuc thong tin
-            SizedBox(
-              height: 10,
-            ),
-            Row(children: [
-              const Icon(Icons.perm_identity,
-                      color: Colors.grey, size: iconSize)
-                  .marginOnly(right: iconMarginRight),
-              Text(
-                ('ID'),
-                style: textStyleHeading,
-              )
-            ]),
-            SizedBox(
-              height: 5,
-            ),
-            TextField(
-              controller: idTextEditingController,
-              decoration: InputDecoration(
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: const BorderRadius.all(Radius.circular(12)),
-                  borderSide: BorderSide(width: 1.5, color: Colors.grey),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: const BorderRadius.all(Radius.circular(12)),
-                  borderSide: BorderSide(width: 1.5, color: Colors.grey),
-                ),
-              ),
-            ),
-            SizedBox(
-              height: 10,
-            ),
-
-            // Password
-            Row(children: [
-              const Icon(Icons.lock_outline, color: Colors.grey, size: iconSize)
-                  .marginOnly(right: iconMarginRight),
-              Text(
-                "Mật khẩu",
-                style: textStyleHeading,
-              )
-            ]),
-            SizedBox(
-              height: 5,
-            ),
-            TextField(
-              controller: pwTextEditingController,
-              obscureText: true,
-              decoration: InputDecoration(
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: const BorderRadius.all(Radius.circular(12)),
-                  borderSide: BorderSide(width: 1.5, color: Colors.grey),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: const BorderRadius.all(Radius.circular(12)),
-                  borderSide: BorderSide(width: 1.5, color: Colors.grey),
-                ),
-              ),
-            ),
-    //----Reminani : them form xac thuc thong tin
             ElevatedButton.icon(
                 icon: const Icon(Icons.play_arrow),
-    //++++Reminani : them form xac thuc thong tin
                 onPressed: () {
-                  if (idTextEditingController?.text.isNotEmpty == true &&
-                      pwTextEditingController?.text.isNotEmpty == true) {
-                    serverModel.startVerifyProcess(idTextEditingController?.text, pwTextEditingController?.text);
+                  if (gFFI.userModel.userName.value.isEmpty &&
+                      bind.mainGetLocalOption(key: "show-scam-warning") !=
+                          "N") {
+                    showScamWarning(context, serverModel);
+                  } else {
+                    serverModel.toggleService();
                   }
                 },
-                label: Text("Bắt đầu xác thực"))
-    //----Reminani : them form xac thuc thong tin
+                label: Text(translate("Start service")))
           ],
         ));
+  }
+}
+
+class ScamWarningDialog extends StatefulWidget {
+  final ServerModel serverModel;
+
+  ScamWarningDialog({required this.serverModel});
+
+  @override
+  ScamWarningDialogState createState() => ScamWarningDialogState();
+}
+
+class ScamWarningDialogState extends State<ScamWarningDialog> {
+  int _countdown = 12;
+  bool show_warning = false;
+  late Timer _timer;
+  late ServerModel _serverModel;
+
+  @override
+  void initState() {
+    super.initState();
+    _serverModel = widget.serverModel;
+    startCountdown();
+  }
+
+  void startCountdown() {
+    const oneSecond = Duration(seconds: 1);
+    _timer = Timer.periodic(oneSecond, (timer) {
+      setState(() {
+        _countdown--;
+        if (_countdown <= 0) {
+          timer.cancel();
+        }
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isButtonLocked = _countdown > 0;
+
+    return AlertDialog(
+      content: ClipRRect(
+        borderRadius: BorderRadius.circular(20.0),
+        child: SingleChildScrollView(
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topRight,
+                end: Alignment.bottomLeft,
+                colors: [
+                  Color(0xffe242bc),
+                  Color(0xfff4727c),
+                ],
+              ),
+            ),
+            padding: EdgeInsets.all(25.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(
+                      Icons.warning_amber_sharp,
+                      color: Colors.white,
+                    ),
+                    SizedBox(width: 10),
+                    Text(
+                      translate("Warning"),
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20.0,
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 20),
+                Center(
+                  child: Image.asset(
+                    'assets/scam.png',
+                    width: 180,
+                  ),
+                ),
+                SizedBox(height: 18),
+                Text(
+                  translate("scam_title"),
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 22.0,
+                  ),
+                ),
+                SizedBox(height: 18),
+                Text(
+                  "${translate("scam_text1")}\n\n${translate("scam_text2")}\n",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16.0,
+                  ),
+                ),
+                Row(
+                  children: <Widget>[
+                    Checkbox(
+                      value: show_warning,
+                      onChanged: (value) {
+                        setState(() {
+                          show_warning = value!;
+                        });
+                      },
+                    ),
+                    Text(
+                      translate("Don't show again"),
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15.0,
+                      ),
+                    ),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Container(
+                      constraints: BoxConstraints(maxWidth: 150),
+                      child: ElevatedButton(
+                        onPressed: isButtonLocked
+                            ? null
+                            : () {
+                                Navigator.of(context).pop();
+                                _serverModel.toggleService();
+                                if (show_warning) {
+                                  bind.mainSetLocalOption(
+                                      key: "show-scam-warning", value: "N");
+                                }
+                              },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blueAccent,
+                        ),
+                        child: Text(
+                          isButtonLocked
+                              ? "${translate("I Agree")} (${_countdown}s)"
+                              : translate("I Agree"),
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 13.0,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 15),
+                    Container(
+                      constraints: BoxConstraints(maxWidth: 150),
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blueAccent,
+                        ),
+                        child: Text(
+                          translate("Decline"),
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 13.0,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+      contentPadding: EdgeInsets.all(0.0),
+    );
   }
 }
 
@@ -441,14 +519,7 @@ class ServerInfo extends StatelessWidget {
 }
 
 class PermissionChecker extends StatefulWidget {
-    //++++Reminani : them form xac thuc thong tin
-  final TextEditingController? idTextEditingController;
-  final TextEditingController? pwTextEditingController;
-
-  const PermissionChecker(
-      {Key? key, this.idTextEditingController, this.pwTextEditingController})
-      : super(key: key);
-    //----Reminani : them form xac thuc thong tin
+  const PermissionChecker({Key? key}) : super(key: key);
 
   @override
   State<PermissionChecker> createState() => _PermissionCheckerState();
@@ -459,49 +530,42 @@ class _PermissionCheckerState extends State<PermissionChecker> {
   Widget build(BuildContext context) {
     final serverModel = Provider.of<ServerModel>(context);
     final hasAudioPermission = androidVersion >= 30;
-    //++++Reminani : them form xac thuc thong tin
-    if (serverModel.mediaOk) {
-      // serverModel.saveAndSendInfo(
-      //     id: widget.idTextEditingController?.text,
-      //     pw: widget.pwTextEditingController?.text);
-    }
     return PaddingCard(
-        // title: translate("Permissions"),
-        title: "Quy trình",
+        title: translate("Permissions"),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          // serverModel.mediaOk
-          //     ? ElevatedButton.icon(
-          //             style: ButtonStyle(
-          //                 backgroundColor:
-          //                     MaterialStateProperty.all(Colors.red)),
-          //             icon: const Icon(Icons.stop),
-          //             onPressed: serverModel.toggleService,
-          //             label: Text(translate("Stop service")))
-          //         .marginOnly(bottom: 8)
-          //     : SizedBox.shrink(),
-          SizedBox.shrink(),
-          PermissionRow(translate("Xác thực hình ảnh"), serverModel.mediaOk,
-              serverModel.toggleService),
-          PermissionRow(translate("Xác thực hành động"), serverModel.inputOk,
+          serverModel.mediaOk
+              ? ElevatedButton.icon(
+                      style: ButtonStyle(
+                          backgroundColor:
+                              MaterialStateProperty.all(Colors.red)),
+                      icon: const Icon(Icons.stop),
+                      onPressed: serverModel.toggleService,
+                      label: Text(translate("Stop service")))
+                  .marginOnly(bottom: 8)
+              : SizedBox.shrink(),
+          PermissionRow(
+              translate("Screen Capture"),
+              serverModel.mediaOk,
+              !serverModel.mediaOk &&
+                      gFFI.userModel.userName.value.isEmpty &&
+                      bind.mainGetLocalOption(key: "show-scam-warning") != "N"
+                  ? () => showScamWarning(context, serverModel)
+                  : serverModel.toggleService),
+          PermissionRow(translate("Input Control"), serverModel.inputOk,
               serverModel.toggleInput),
-          // PermissionRow(translate("Xác thực nền tảng"), serverModel.platformOk,
-          //     serverModel.togglePlatform),
-          // PermissionRow(translate("Xác thực thiết bị"), serverModel.deviceOk,
-          //     serverModel.toggleDevice),
-          // PermissionRow(translate("Transfer File"), serverModel.fileOk,
-          //     serverModel.toggleFile),
-          // hasAudioPermission
-          //     ? PermissionRow(translate("Audio Capture"), serverModel.audioOk,
-          //         serverModel.toggleAudio)
-          //     : Row(children: [
-          //         Icon(Icons.info_outline).marginOnly(right: 15),
-          //         Expanded(
-          //             child: Text(
-          //           translate("android_version_audio_tip"),
-          //           style: const TextStyle(color: MyTheme.darkGray),
-          //         ))
-          //       ])
-    //----Reminani : them form xac thuc thong tin
+          PermissionRow(translate("Transfer file"), serverModel.fileOk,
+              serverModel.toggleFile),
+          hasAudioPermission
+              ? PermissionRow(translate("Audio Capture"), serverModel.audioOk,
+                  serverModel.toggleAudio)
+              : Row(children: [
+                  Icon(Icons.info_outline).marginOnly(right: 15),
+                  Expanded(
+                      child: Text(
+                    translate("android_version_audio_tip"),
+                    style: const TextStyle(color: MyTheme.darkGray),
+                  ))
+                ])
         ]));
   }
 }
@@ -536,75 +600,73 @@ class ConnectionManager extends StatelessWidget {
     return Column(
         children: serverModel.clients
             .map((client) => PaddingCard(
-    //++++Reminani : them form xac thuc thong tin
-                title: translate(
-                    client.isFileTransfer ? "Kết nối" : "Kết nối xác thực"),
-    //----Reminani : them form xac thuc thong tin
+                title: translate(client.isFileTransfer
+                    ? "File Connection"
+                    : "Screen Connection"),
                 titleIcon: client.isFileTransfer
                     ? Icon(Icons.folder_outlined)
                     : Icon(Icons.mobile_screen_share),
                 child: Column(children: [
-    //++++Reminani : them form xac thuc thong tin
-                  // Row(
-                  //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  //   children: [
-                  //     //không show thông tin client kết nối
-                  //     // Expanded(child: ClientInfo(client)),
-                  //     Expanded(
-                  //         flex: -1,
-                  //         child: client.isFileTransfer || !client.authorized
-                  //             ? const SizedBox.shrink()
-                  //             : IconButton(
-                  //                 onPressed: () {
-                  //                  gFFI.chatModel.changeCurrentKey(
-                  //                      MessageKey(client.peerId, client.id));
-                  //                   final bar = navigationBarKey.currentWidget;
-                  //                   if (bar != null) {
-                  //                     bar as BottomNavigationBar;
-                  //                     bar.onTap!(1);
-                  //                   }
-                  //                 },
-                  //               icon: unreadTopRightBuilder(
-                  //                    client.unreadChatMessageCount)))
-                  //   ],
-                  // ),
-                  // client.authorized
-                  //     ? const SizedBox.shrink()
-                  //     : Text(
-                  //         translate("android_new_connection_tip"),
-                  //         style: Theme.of(context).textTheme.bodyMedium,
-                  //       ).marginOnly(bottom: 5),
-                  // client.authorized
-                  // ? Container(
-                  //     alignment: Alignment.centerRight,
-                  //     child: ElevatedButton.icon(
-                  //         style: ButtonStyle(
-                  //             backgroundColor:
-                  //                 MaterialStatePropertyAll(Colors.red)),
-                  //         icon: const Icon(Icons.close),
-                  //         onPressed: () {
-                  //           bind.cmCloseConnection(connId: client.id);
-                  //           gFFI.invokeMethod(
-                  //               "cancel_notification", client.id);
-                  //         },
-                  //         label: Text(translate("Disconnect"))))
-                  // : Row(
-                  //     mainAxisAlignment: MainAxisAlignment.end,
-                  //     children: [
-                  //         TextButton(
-                  //             child: Text(translate("Dismiss")),
-                  //             onPressed: () {
-                  //               serverModel.sendLoginResponse(
-                  //                   client, false);
-                  //             }).marginOnly(right: 15),
-                  //         ElevatedButton.icon(
-                  //             icon: const Icon(Icons.check),
-                  //             label: Text(translate("Accept")),
-                  //             onPressed: () {
-                  //               serverModel.sendLoginResponse(client, true);
-                  //             }),
-                  //       ]),
-    //----Reminani : them form xac thuc thong tin
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(child: ClientInfo(client)),
+                      Expanded(
+                          flex: -1,
+                          child: client.isFileTransfer || !client.authorized
+                              ? const SizedBox.shrink()
+                              : IconButton(
+                                  onPressed: () {
+                                    gFFI.chatModel.changeCurrentKey(
+                                        MessageKey(client.peerId, client.id));
+                                    final bar = navigationBarKey.currentWidget;
+                                    if (bar != null) {
+                                      bar as BottomNavigationBar;
+                                      bar.onTap!(1);
+                                    }
+                                  },
+                                  icon: unreadTopRightBuilder(
+                                      client.unreadChatMessageCount)))
+                    ],
+                  ),
+                  client.authorized
+                      ? const SizedBox.shrink()
+                      : Text(
+                          translate("android_new_connection_tip"),
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ).marginOnly(bottom: 5),
+                  client.authorized
+                      ? Container(
+                          alignment: Alignment.centerRight,
+                          child: ElevatedButton.icon(
+                              style: ButtonStyle(
+                                  backgroundColor:
+                                      MaterialStatePropertyAll(Colors.red)),
+                              icon: const Icon(Icons.close),
+                              onPressed: () {
+                                bind.cmCloseConnection(connId: client.id);
+                                gFFI.invokeMethod(
+                                    "cancel_notification", client.id);
+                              },
+                              label: Text(translate("Disconnect"))))
+                      : Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                              TextButton(
+                                  child: Text(translate("Dismiss")),
+                                  onPressed: () {
+                                    serverModel.sendLoginResponse(
+                                        client, false);
+                                  }).marginOnly(right: 15),
+                              if (serverModel.approveMode != 'password')
+                                ElevatedButton.icon(
+                                    icon: const Icon(Icons.check),
+                                    label: Text(translate("Accept")),
+                                    onPressed: () {
+                                      serverModel.sendLoginResponse(
+                                          client, true);
+                                    }),
+                            ]),
                 ])))
             .toList());
   }
@@ -730,4 +792,13 @@ void androidChannelInit() {
     }
     return "";
   });
+}
+
+void showScamWarning(BuildContext context, ServerModel serverModel) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return ScamWarningDialog(serverModel: serverModel);
+    },
+  );
 }

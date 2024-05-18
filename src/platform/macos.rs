@@ -17,7 +17,7 @@ use core_graphics::{
     display::{kCGNullWindowID, kCGWindowListOptionOnScreenOnly, CGWindowListCopyWindowInfo},
     window::{kCGWindowName, kCGWindowOwnerPID},
 };
-use hbb_common::{allow_err, anyhow::anyhow, bail, log, message_proto::Resolution};
+use hbb_common::{anyhow::anyhow, bail, log, message_proto::Resolution};
 use include_dir::{include_dir, Dir};
 use objc::{class, msg_send, sel, sel_impl};
 use scrap::{libc::c_void, quartz::ffi::*};
@@ -45,8 +45,13 @@ extern "C" {
         max: u32,
         numModes: *mut u32,
     ) -> BOOL;
+    fn majorVersion() -> u32;
     fn MacGetMode(display: u32, width: *mut u32, height: *mut u32) -> BOOL;
     fn MacSetMode(display: u32, width: u32, height: u32) -> BOOL;
+}
+
+pub fn major_version() -> u32 {
+    unsafe { majorVersion() }
 }
 
 pub fn is_process_trusted(prompt: bool) -> bool {
@@ -74,7 +79,7 @@ pub fn is_can_input_monitoring(prompt: bool) -> bool {
 // remove just one app from all the permissions: tccutil reset All com.carriez.rustdesk
 pub fn is_can_screen_recording(prompt: bool) -> bool {
     // we got some report that we show no permission even after set it, so we try to use new api for screen recording check
-    // the new api is only available on macOS >= 10.15, but on stackoverflow, some people said it works on >= 10.16 (crash on 10.15), 
+    // the new api is only available on macOS >= 10.15, but on stackoverflow, some people said it works on >= 10.16 (crash on 10.15),
     // but also some said it has bug on 10.16, so we just use it on 11.0.
     unsafe {
         if CanUseNewApiForScreenCaptureCheck() == YES {
@@ -126,10 +131,14 @@ pub fn is_can_screen_recording(prompt: bool) -> bool {
     if !can_record_screen && prompt {
         use scrap::{Capturer, Display};
         if let Ok(d) = Display::primary() {
-            Capturer::new(d, true).ok();
+            Capturer::new(d).ok();
         }
     }
     can_record_screen
+}
+
+pub fn install_service() -> bool {
+    is_installed_daemon(false)
 }
 
 pub fn is_installed_daemon(prompt: bool) -> bool {
@@ -146,14 +155,26 @@ pub fn is_installed_daemon(prompt: bool) -> bool {
         return true;
     }
 
-    let install_script = PRIVILEGES_SCRIPTS_DIR.get_file("install.scpt").unwrap();
-    let install_script_body = install_script.contents_utf8().unwrap();
+    let Some(install_script) = PRIVILEGES_SCRIPTS_DIR.get_file("install.scpt") else {
+        return false;
+    };
+    let Some(install_script_body) = install_script.contents_utf8().map(correct_app_name) else {
+        return false;
+    };
 
-    let daemon_plist = PRIVILEGES_SCRIPTS_DIR.get_file(&daemon).unwrap();
-    let daemon_plist_body = daemon_plist.contents_utf8().unwrap();
+    let Some(daemon_plist) = PRIVILEGES_SCRIPTS_DIR.get_file("daemon.plist") else {
+        return false;
+    };
+    let Some(daemon_plist_body) = daemon_plist.contents_utf8().map(correct_app_name) else {
+        return false;
+    };
 
-    let agent_plist = PRIVILEGES_SCRIPTS_DIR.get_file(&agent).unwrap();
-    let agent_plist_body = agent_plist.contents_utf8().unwrap();
+    let Some(agent_plist) = PRIVILEGES_SCRIPTS_DIR.get_file("agent.plist") else {
+        return false;
+    };
+    let Some(agent_plist_body) = agent_plist.contents_utf8().map(correct_app_name) else {
+        return false;
+    };
 
     std::thread::spawn(move || {
         match std::process::Command::new("osascript")
@@ -192,16 +213,26 @@ pub fn is_installed_daemon(prompt: bool) -> bool {
     false
 }
 
-pub fn uninstall_service(show_new_window: bool) -> bool {
+fn correct_app_name(s: &str) -> String {
+    let s = s.replace("rustdesk", &crate::get_app_name().to_lowercase());
+    let s = s.replace("RustDesk", &crate::get_app_name());
+    s
+}
+
+pub fn uninstall_service(show_new_window: bool, sync: bool) -> bool {
     // to-do: do together with win/linux about refactory start/stop service
     if !is_installed_daemon(false) {
         return false;
     }
 
-    let script_file = PRIVILEGES_SCRIPTS_DIR.get_file("uninstall.scpt").unwrap();
-    let script_body = script_file.contents_utf8().unwrap();
+    let Some(script_file) = PRIVILEGES_SCRIPTS_DIR.get_file("uninstall.scpt") else {
+        return false;
+    };
+    let Some(script_body) = script_file.contents_utf8().map(correct_app_name) else {
+        return false;
+    };
 
-    std::thread::spawn(move || {
+    let func = move || {
         match std::process::Command::new("osascript")
             .arg("-e")
             .arg(script_body)
@@ -220,10 +251,12 @@ pub fn uninstall_service(show_new_window: bool) -> bool {
                     uninstalled
                 );
                 if uninstalled {
+                    if !show_new_window {
+                        let _ = crate::ipc::close_all_instances();
+                        // leave ipc a little time
+                        std::thread::sleep(std::time::Duration::from_millis(300));
+                    }
                     crate::ipc::set_option("stop-service", "Y");
-                    let _ = crate::ipc::close_all_instances();
-                    // leave ipc a little time
-                    std::thread::sleep(std::time::Duration::from_millis(300));
                     std::process::Command::new("launchctl")
                         .args(&["remove", &format!("{}_server", crate::get_full_name())])
                         .status()
@@ -237,17 +270,17 @@ pub fn uninstall_service(show_new_window: bool) -> bool {
                             ))
                             .spawn()
                             .ok();
-                    } else {
-                        std::process::Command::new("pkill")
-                            .arg(crate::get_app_name())
-                            .status()
-                            .ok();
                     }
                     quit_gui();
                 }
             }
         }
-    });
+    };
+    if sync {
+        func();
+    } else {
+        std::thread::spawn(func);
+    }
     true
 }
 
@@ -451,38 +484,23 @@ pub fn lock_screen() {
 }
 
 pub fn start_os_service() {
+    crate::platform::macos::hide_dock();
     let exe = std::env::current_exe().unwrap_or_default();
-    let tm0 = hbb_common::get_modified_time(&exe);
-    log::info!("{}", crate::username());
+    log::info!("Username: {}", crate::username());
+    log::info!("Startime: {:?}", get_server_start_time());
 
     std::thread::spawn(move || loop {
         loop {
-            std::thread::sleep(std::time::Duration::from_millis(300));
-            let now = hbb_common::get_modified_time(&exe);
-            if now != tm0 && now != std::time::UNIX_EPOCH {
-                // sleep a while to wait for resources file ready
-                std::thread::sleep(std::time::Duration::from_millis(300));
-                println!("{:?} updated, will restart", exe);
-                // this won't kill myself
-                std::process::Command::new("pkill")
-                    .args(&["-f", &crate::get_app_name()])
-                    .status()
-                    .ok();
-                println!("The others killed");
-                // launchctl load/unload/start agent not work in daemon, show not privileged.
-                // sudo launchctl asuser 501 open -n also not allowed.
-                std::process::Command::new("launchctl")
-                    .args(&[
-                        "asuser",
-                        &get_active_userid(),
-                        "open",
-                        "-a",
-                        &exe.to_str().unwrap_or(""),
-                        "--args",
-                        "--server",
-                    ])
-                    .status()
-                    .ok();
+            std::thread::sleep(std::time::Duration::from_secs(1));
+            let Some(start_time) = get_server_start_time() else {
+                continue;
+            };
+            if start_time.0 <= start_time.1 {
+                // I tried add delegate (using tao and with its main loop0, but it works in normal mode, but not work as daemon
+                log::info!(
+                    "Agent start later, {:?}, will restart --service to make delegate work",
+                    start_time
+                );
                 std::process::exit(0);
             }
         }
@@ -555,8 +573,8 @@ pub fn toggle_blank_screen(_v: bool) {
     // https://unix.stackexchange.com/questions/17115/disable-keyboard-mouse-temporarily
 }
 
-pub fn block_input(_v: bool) -> bool {
-    true
+pub fn block_input(_v: bool) -> (bool, String) {
+    (true, "".to_owned())
 }
 
 pub fn is_installed() -> bool {
@@ -586,25 +604,45 @@ pub fn hide_dock() {
     }
 }
 
-fn check_main_window() -> bool {
-    if crate::check_process("", true) {
-        return true;
+fn get_server_start_time() -> Option<(i64, i64)> {
+    use hbb_common::sysinfo::System;
+    let mut sys = System::new();
+    sys.refresh_processes();
+    let mut path = std::env::current_exe().unwrap_or_default();
+    if let Ok(linked) = path.read_link() {
+        path = linked;
     }
-    let app = format!("/Applications/{}.app", crate::get_app_name());
-    std::process::Command::new("open")
-        .args(["-n", &app])
-        .status()
-        .ok();
-    false
+    let path = path.to_string_lossy().to_lowercase();
+    let Some(my_start_time) = sys
+        .process((std::process::id() as usize).into())
+        .map(|p| p.start_time())
+    else {
+        return None;
+    };
+    for (_, p) in sys.processes() {
+        let mut cur_path = p.exe().to_path_buf();
+        if let Ok(linked) = cur_path.read_link() {
+            cur_path = linked;
+        }
+        if cur_path.to_string_lossy().to_lowercase() != path {
+            continue;
+        }
+        if p.pid().as_u32() == std::process::id() {
+            continue;
+        }
+        let parg = if p.cmd().len() <= 1 { "" } else { &p.cmd()[1] };
+        if parg == "--server" {
+            return Some((my_start_time as _, p.start_time() as _));
+        }
+    }
+    None
 }
 
 pub fn handle_application_should_open_untitled_file() {
     hbb_common::log::debug!("icon clicked on finder");
     let x = std::env::args().nth(1).unwrap_or_default();
     if x == "--server" || x == "--cm" || x == "--tray" {
-        if crate::platform::macos::check_main_window() {
-            allow_err!(crate::ipc::send_url_scheme("rustdesk:".into()));
-        }
+        std::thread::spawn(move || crate::handle_url_scheme("".to_lowercase()));
     }
 }
 
@@ -715,5 +753,12 @@ impl WakeLock {
                 .create()
                 .ok(),
         )
+    }
+
+    pub fn set_display(&mut self, display: bool) -> ResultType<()> {
+        self.0
+            .as_mut()
+            .map(|h| h.set_display(display))
+            .ok_or(anyhow!("no AwakeHandle"))?
     }
 }

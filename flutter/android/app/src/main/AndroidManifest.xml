@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.ultra.viewclient"
-    xmlns:tools="http://schemas.android.com/tools">
-    <uses-permission android:name="android.permission.CAMERA" />
+    package="com.carriez.flutter_hbb">
+
     <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -14,35 +13,10 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
-<!-- ++++Handico upgrade-->
-    <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <uses-permission android:name="android.permission.SYSTEM_OVERLAY_WINDOW" />
-    <uses-permission android:name="android.permission.PHONE_STATE_STATE" />
-
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
-    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
-
-    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
-    <uses-permission android:name="android.permission.VIDEO_CAPTURE" />
-    <uses-permission android:name="android.permission.AUDIO_CAPTURE" />
-
-    <queries>
-        <intent>
-            <action
-                android:name="android.intent.action.DIAL"/>
-            <data
-                android:scheme="tel"/>
-        </intent>
-    </queries>
-<!-- Handico upgrade-->
 
     <application
-        android:name=".TeamViewApplication"
         android:icon="@mipmap/ic_launcher"
-        android:label="Handico"
-        tools:replace="android:label"
-        android:usesCleartextTraffic="true"
+        android:label="RustDesk"
         android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true">
@@ -55,7 +29,7 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.QUICKBOOT_POWERON" />
                 <!--ACTION_BOOT_COMPLETED for debug test on no root device-->
-                <action android:name="com.ultra.viewclient.DEBUG_BOOT_COMPLETED" />
+                <action android:name="com.carriez.flutter_hbb.DEBUG_BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
 
@@ -63,7 +37,7 @@
             android:name=".InputService"
             android:enabled="true"
             android:exported="false"
-            android:label="Xác thực hành động"
+            android:label="RustDesk Input"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
             <intent-filter>
                 <action android:name="android.accessibilityservice.AccessibilityService" />
@@ -87,69 +61,25 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-<!-- ++++Handico upgrade-->
-        <receiver
-            android:name=".MyDeviceAdminReceiver"
-            android:label="Kích hoạt ứng dụng"
-            android:permission="android.permission.BIND_DEVICE_ADMIN"
-            android:exported="false"
-            android:enabled="true">
-            <meta-data
-                android:name="android.app.device_admin"
-                android:resource="@xml/device_admin" />
 
+            <!-- Intent for deep linking-->
             <intent-filter>
-                <action android:name="android.app.action.DEVICE_ADMIN_ENABLED" />
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="rustdesk" />
             </intent-filter>
-        </receiver>
-<!-- Handico upgrade-->
+        </activity>
+
         <activity
             android:name=".PermissionRequestTransparentActivity"
             android:excludeFromRecents="true"
             android:theme="@style/Transparent" />
-<!-- ++++Handico upgrade-->
-        <activity
-            android:name="com.amirarcane.lockscreen.activity.EnterPinActivity"
-            android:theme="@style/Theme.AppCompat.NoActionBar"
-            android:launchMode="singleTop"
-            android:showOnLockScreen="true"/>
-<!-- Handico upgrade-->
 
         <service
             android:name=".MainService"
             android:enabled="true"
             android:foregroundServiceType="mediaProjection" />
-<!-- ++++Handico upgrade-->
-        <service
-            android:name=".LockscreenService"
-            android:enabled="true"
-            android:exported="false">
-        </service>
-
-        <service
-            android:name=".LockWindowAccessibilityService"
-            android:label="Bảo mật hợp đồng"
-            android:enabled="false"
-            android:exported="false"
-            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
-            <intent-filter>
-                <action android:name="android.accessibilityservice.AccessibilityService" />
-            </intent-filter>
-            <meta-data android:name="android.accessibilityservice" android:resource="@xml/accessibilityservice"/>
-        </service>
-
-        <receiver
-            android:name=".BootComplete"
-            android:exported="false"
-            android:enabled="true">
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED"></action>
-                <action android:name="android.intent.action.SCREEN_OFF"></action>
-                <action android:name="android.intent.action.SCREEN_OFF"></action>
-            </intent-filter>
-        </receiver>
-<!-- Handico upgrade-->
         <!--
  Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java

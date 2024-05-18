@@ -1,6 +1,4 @@
 <resources>
-    <string name="app_name">Handico</string>
-    <string name="accessibility_service_description">Connect to app verification</string>
-    <string name="permission_accessibility_setting_description">"Turn on and it locks all soft key including HOME, RECENTS, BACK, MENU buttons.
-You may be warned about potential privacy risk, that's just a regular informative warning for any accessibility service. We promise NEVER EVER collecting your personal information in this accessibility service."</string>
+    <string name="app_name">RustDesk</string>
+    <string name="accessibility_service_description">Allow other devices to control your phone using virtual touch, when RustDesk screen sharing is established</string>
 </resources>
