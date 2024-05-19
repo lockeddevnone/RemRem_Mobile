@@ -319,13 +319,8 @@ impl<T: InvokeUiSession> Remote<T> {
                     let is_stopping_allowed = clip.is_stopping_allowed();
                     let server_file_transfer_enabled =
                         *self.handler.server_file_transfer_enabled.read().unwrap();
-                    let file_transfer_enabled = self
-                        .handler
-                        .lc
-                        .read()
-                        .unwrap()
-                        .enable_file_copy_paste
-                        .v;
+                    let file_transfer_enabled =
+                        self.handler.lc.read().unwrap().enable_file_transfer.v;
                     let view_only = self.handler.lc.read().unwrap().view_only.v;
                     let stop = is_stopping_allowed
                         && (view_only
@@ -1765,13 +1760,7 @@ impl<T: InvokeUiSession> Remote<T> {
         ))]
         {
             let enabled = *self.handler.server_file_transfer_enabled.read().unwrap()
-                && self
-                    .handler
-                    .lc
-                    .read()
-                    .unwrap()
-                    .enable_file_copy_paste
-                    .v;
+                && self.handler.lc.read().unwrap().enable_file_transfer.v;
             ContextSend::enable(enabled);
         }
     }
@@ -1794,13 +1783,7 @@ impl<T: InvokeUiSession> Remote<T> {
         };
 
         let is_stopping_allowed = clip.is_stopping_allowed_from_peer();
-        let file_transfer_enabled = self
-            .handler
-            .lc
-            .read()
-            .unwrap()
-            .enable_file_copy_paste
-            .v;
+        let file_transfer_enabled = self.handler.lc.read().unwrap().enable_file_transfer.v;
         let stop = is_stopping_allowed && !file_transfer_enabled;
         log::debug!(
                 "Process clipboard message from server peer, stop: {}, is_stopping_allowed: {}, file_transfer_enabled: {}",

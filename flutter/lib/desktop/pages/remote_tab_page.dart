@@ -384,9 +384,9 @@ class _ConnectionTabPageState extends State<ConnectionTabPage> {
       tabController.clear();
       return true;
     } else {
+      final opt = "enable-confirm-closing-tabs";
       final bool res;
-      if (!option2bool(kOptionEnableConfirmClosingTabs,
-          bind.mainGetLocalOption(key: kOptionEnableConfirmClosingTabs))) {
+      if (!option2bool(opt, bind.mainGetLocalOption(key: opt))) {
         res = true;
       } else {
         res = await closeConfirmDialog();
@@ -428,7 +428,7 @@ class _ConnectionTabPageState extends State<ConnectionTabPage> {
       }
       ConnectionTypeState.init(id);
       _toolbarState.setShow(
-          bind.mainGetUserDefaultOption(key: kOptionCollapseToolbar) != 'Y');
+          bind.mainGetUserDefaultOption(key: 'collapse_toolbar') != 'Y');
       tabController.add(TabInfo(
         key: id,
         label: id,
