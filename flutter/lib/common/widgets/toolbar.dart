@@ -327,7 +327,7 @@ Future<List<TRadioMenu<String>>> toolbarCodec(
   final alternativeCodecs =
       await bind.sessionAlternativeCodecs(sessionId: sessionId);
   final groupValue = await bind.sessionGetOption(
-          sessionId: sessionId, arg: 'codec-preference') ??
+          sessionId: sessionId, arg: kOptionCodecPreference) ??
       '';
   final List<bool> codecs = [];
   try {
@@ -349,20 +349,24 @@ Future<List<TRadioMenu<String>>> toolbarCodec(
   onChanged(String? value) async {
     if (value == null) return;
     await bind.sessionPeerOption(
-        sessionId: sessionId, name: 'codec-preference', value: value);
+        sessionId: sessionId, name: kOptionCodecPreference, value: value);
     bind.sessionChangePreferCodec(sessionId: sessionId);
   }
 
   TRadioMenu<String> radio(String label, String value, bool enabled) {
     return TRadioMenu<String>(
-        child: Text(translate(label)),
+        child: Text(label),
         value: value,
         groupValue: groupValue,
         onChanged: enabled ? onChanged : null);
   }
 
+  var autoLabel = translate('Auto');
+  if (groupValue == 'auto') {
+    autoLabel = '$autoLabel (${ffi.qualityMonitorModel.data.codecFormat})';
+  }
   return [
-    radio('Auto', 'auto', true),
+    radio(autoLabel, 'auto', true),
     if (codecs[0]) radio('VP8', 'vp8', codecs[0]),
     radio('VP9', 'vp9', true),
     if (codecs[1]) radio('AV1', 'av1', codecs[1]),
@@ -371,7 +375,7 @@ Future<List<TRadioMenu<String>>> toolbarCodec(
   ];
 }
 
-Future<List<TToggleMenu>> toolbarDisplayToggle(
+Future<List<TToggleMenu>> toolbarCursor(
     BuildContext context, String id, FFI ffi) async {
   List<TToggleMenu> v = [];
   final ffiModel = ffi.ffiModel;
@@ -384,12 +388,17 @@ Future<List<TToggleMenu>> toolbarDisplayToggle(
       !ffi.canvasModel.cursorEmbedded &&
       !pi.isWayland) {
     final state = ShowRemoteCursorState.find(id);
+    final lockState = ShowRemoteCursorLockState.find(id);
     final enabled = !ffiModel.viewOnly;
     final option = 'show-remote-cursor';
+    if (pi.currentDisplay == kAllDisplayValue ||
+        bind.sessionIsMultiUiSession(sessionId: sessionId)) {
+      lockState.value = false;
+    }
     v.add(TToggleMenu(
         child: Text(translate('Show remote cursor')),
         value: state.value,
-        onChanged: enabled
+        onChanged: enabled && !lockState.value
             ? (value) async {
                 if (value == null) return;
                 await bind.sessionToggleOption(
@@ -398,6 +407,67 @@ Future<List<TToggleMenu>> toolbarDisplayToggle(
                     sessionId: sessionId, arg: option);
               }
             : null));
+  }
+  // follow remote cursor
+  if (pi.platform != kPeerPlatformAndroid &&
+      !ffi.canvasModel.cursorEmbedded &&
+      !pi.isWayland &&
+      versionCmp(pi.version, "1.2.4") >= 0 &&
+      pi.displays.length > 1 &&
+      pi.currentDisplay != kAllDisplayValue &&
+      !bind.sessionIsMultiUiSession(sessionId: sessionId)) {
+    final option = 'follow-remote-cursor';
+    final value =
+        bind.sessionGetToggleOptionSync(sessionId: sessionId, arg: option);
+    final showCursorOption = 'show-remote-cursor';
+    final showCursorState = ShowRemoteCursorState.find(id);
+    final showCursorLockState = ShowRemoteCursorLockState.find(id);
+    final showCursorEnabled = bind.sessionGetToggleOptionSync(
+        sessionId: sessionId, arg: showCursorOption);
+    showCursorLockState.value = value;
+    if (value && !showCursorEnabled) {
+      await bind.sessionToggleOption(
+          sessionId: sessionId, value: showCursorOption);
+      showCursorState.value = bind.sessionGetToggleOptionSync(
+          sessionId: sessionId, arg: showCursorOption);
+    }
+    v.add(TToggleMenu(
+        child: Text(translate('Follow remote cursor')),
+        value: value,
+        onChanged: (value) async {
+          if (value == null) return;
+          await bind.sessionToggleOption(sessionId: sessionId, value: option);
+          value = bind.sessionGetToggleOptionSync(
+              sessionId: sessionId, arg: option);
+          showCursorLockState.value = value;
+          if (!showCursorEnabled) {
+            await bind.sessionToggleOption(
+                sessionId: sessionId, value: showCursorOption);
+            showCursorState.value = bind.sessionGetToggleOptionSync(
+                sessionId: sessionId, arg: showCursorOption);
+          }
+        }));
+  }
+  // follow remote window focus
+  if (pi.platform != kPeerPlatformAndroid &&
+      !ffi.canvasModel.cursorEmbedded &&
+      !pi.isWayland &&
+      versionCmp(pi.version, "1.2.4") >= 0 &&
+      pi.displays.length > 1 &&
+      pi.currentDisplay != kAllDisplayValue &&
+      !bind.sessionIsMultiUiSession(sessionId: sessionId)) {
+    final option = 'follow-remote-window';
+    final value =
+        bind.sessionGetToggleOptionSync(sessionId: sessionId, arg: option);
+    v.add(TToggleMenu(
+        child: Text(translate('Follow remote window focus')),
+        value: value,
+        onChanged: (value) async {
+          if (value == null) return;
+          await bind.sessionToggleOption(sessionId: sessionId, value: option);
+          value = bind.sessionGetToggleOptionSync(
+              sessionId: sessionId, arg: option);
+        }));
   }
   // zoom cursor
   final viewStyle = await bind.sessionGetViewStyle(sessionId: sessionId) ?? '';
@@ -417,6 +487,17 @@ Future<List<TToggleMenu>> toolbarDisplayToggle(
       },
     ));
   }
+  return v;
+}
+
+Future<List<TToggleMenu>> toolbarDisplayToggle(
+    BuildContext context, String id, FFI ffi) async {
+  List<TToggleMenu> v = [];
+  final ffiModel = ffi.ffiModel;
+  final pi = ffiModel.pi;
+  final perms = ffiModel.permissions;
+  final sessionId = ffi.sessionId;
+
   // show quality monitor
   final option = 'show-quality-monitor';
   v.add(TToggleMenu(
@@ -441,20 +522,27 @@ Future<List<TToggleMenu>> toolbarDisplayToggle(
         child: Text(translate('Mute'))));
   }
   // file copy and paste
+  // If the version is less than 1.2.4, file copy and paste is supported on Windows only.
+  final isSupportIfPeer_1_2_3 = versionCmp(pi.version, '1.2.4') < 0 &&
+      isWindows &&
+      pi.platform == kPeerPlatformWindows;
+  // If the version is 1.2.4 or later, file copy and paste is supported when kPlatformAdditionsHasFileClipboard is set.
+  final isSupportIfPeer_1_2_4 = versionCmp(pi.version, '1.2.4') >= 0 &&
+      bind.mainHasFileClipboard() &&
+      pi.platformAdditions.containsKey(kPlatformAdditionsHasFileClipboard);
   if (ffiModel.keyboard &&
       perms['file'] != false &&
-      bind.mainHasFileClipboard() &&
-      pi.platformAdditions.containsKey(kPlatformAdditionsHasFileClipboard)) {
+      (isSupportIfPeer_1_2_3 || isSupportIfPeer_1_2_4)) {
     final enabled = !ffiModel.viewOnly;
-    final option = 'enable-file-transfer';
-    final value =
-        bind.sessionGetToggleOptionSync(sessionId: sessionId, arg: option);
+    final value = bind.sessionGetToggleOptionSync(
+        sessionId: sessionId, arg: kOptionEnableFileCopyPaste);
     v.add(TToggleMenu(
         value: value,
         onChanged: enabled
             ? (value) {
                 if (value == null) return;
-                bind.sessionToggleOption(sessionId: sessionId, value: option);
+                bind.sessionToggleOption(
+                    sessionId: sessionId, value: kOptionEnableFileCopyPaste);
               }
             : null,
         child: Text(translate('Enable file copy and paste'))));

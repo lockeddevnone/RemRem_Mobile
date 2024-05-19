@@ -346,6 +346,10 @@ class RustdeskImpl {
     return mode == kKeyLegacyMode;
   }
 
+  bool sessionIsMultiUiSession({required UuidValue sessionId, dynamic hint}) {
+    return false;
+  }
+
   Future<void> sessionSetCustomImageQuality(
       {required UuidValue sessionId, required int value, dynamic hint}) {
     return Future(() => js.context.callMethod('setByName', [
@@ -676,7 +680,8 @@ class RustdeskImpl {
     return Future(() => js.context.callMethod('setByName', ['options', json]));
   }
 
-  Future<String> mainTestIfValidServer({required String server, dynamic hint}) {
+  Future<String> mainTestIfValidServer(
+      {required String server, required bool testWithProxy, dynamic hint}) {
     // TODO: implement
     return Future.value('');
   }
@@ -767,6 +772,24 @@ class RustdeskImpl {
       required String body,
       required String header,
       dynamic hint}) {
+    throw UnimplementedError();
+  }
+
+  Future<bool> mainGetProxyStatus({dynamic hint}) {
+    return Future(() => false);
+  }
+
+  Future<void> mainHttpRequest({
+    required String url,
+    required String method,
+    String? body,
+    required String header,
+    dynamic hint,
+  }) {
+    throw UnimplementedError();
+  }
+
+  Future<String?> mainGetHttpStatus({required String url, dynamic hint}) {
     throw UnimplementedError();
   }
 
@@ -920,7 +943,7 @@ class RustdeskImpl {
     throw UnimplementedError();
   }
 
-  Future<String> mainDefaultVideoSaveDirectory({dynamic hint}) {
+  Future<String> mainVideoSaveDirectory({required bool root, dynamic hint}) {
     throw UnimplementedError();
   }
 
@@ -1052,7 +1075,7 @@ class RustdeskImpl {
     throw UnimplementedError();
   }
 
-  bool mainHasGpucodec({dynamic hint}) {
+  bool mainHasVram({dynamic hint}) {
     throw UnimplementedError();
   }
 
@@ -1570,6 +1593,24 @@ class RustdeskImpl {
   }
 
   String mainGetHardOption({required String key, dynamic hint}) {
+    throw UnimplementedError();
+  }
+
+  Future<void> mainCheckHwcodec({dynamic hint}) {
+    throw UnimplementedError();
+  }
+
+  Future<void> sessionRequestNewDisplayInitMsgs(
+      {required UuidValue sessionId, required int display, dynamic hint}) {
+    throw UnimplementedError();
+  }
+
+  Future<String> mainHandleWaylandScreencastRestoreToken(
+      {required String key, required String value, dynamic hint}) {
+    throw UnimplementedError();
+  }
+
+  bool mainIsOptionFixed({required String key, dynamic hint}) {
     throw UnimplementedError();
   }
 

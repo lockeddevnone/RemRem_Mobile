@@ -12,7 +12,7 @@ use hbb_common::{
     bail,
     config::{self, Config},
     log,
-    message_proto::{Resolution, WindowsSession},
+    message_proto::{DisplayInfo, Resolution, WindowsSession},
     sleep, timeout, tokio,
 };
 use std::process::{Command, Stdio};
@@ -29,6 +29,7 @@ use std::{
     time::{Duration, Instant},
 };
 use wallpaper;
+use winapi::um::sysinfoapi::{GetNativeSystemInfo, SYSTEM_INFO};
 use winapi::{
     ctypes::c_void,
     shared::{minwindef::*, ntdef::NULL, windef::*, winerror::*},
@@ -64,7 +65,25 @@ use windows_service::{
 use winreg::enums::*;
 use winreg::RegKey;
 
-pub const DRIVER_CERT_FILE: &str = "RustDeskIddDriver.cer";
+pub const FLUTTER_RUNNER_WIN32_WINDOW_CLASS: &'static str = "FLUTTER_RUNNER_WIN32_WINDOW"; // main window, install window
+
+pub fn get_focused_display(displays: Vec<DisplayInfo>) -> Option<usize> {
+    unsafe {
+        let hwnd = GetForegroundWindow();
+        let mut rect: RECT = mem::zeroed();
+        if GetWindowRect(hwnd, &mut rect as *mut RECT) == 0 {
+            return None;
+        }
+        displays.iter().position(|display| {
+            let center_x = rect.left + (rect.right - rect.left) / 2;
+            let center_y = rect.top + (rect.bottom - rect.top) / 2;
+            center_x >= display.x
+                && center_x <= display.x + display.width
+                && center_y >= display.y
+                && center_y <= display.y + display.height
+        })
+    }
+}
 
 pub fn get_cursor_pos() -> Option<(i32, i32)> {
     unsafe {
@@ -462,6 +481,7 @@ extern "C" {
     fn is_win_down() -> BOOL;
     fn is_local_system() -> BOOL;
     fn alloc_console_and_redirect();
+    fn is_service_running_w(svc_name: *const u16) -> bool;
 }
 
 extern "system" {
@@ -1279,6 +1299,11 @@ fn get_before_uninstall(kill_self: bool) -> String {
 }
 
 fn get_uninstall(kill_self: bool) -> String {
+    let reg_uninstall_string = get_reg("UninstallString");
+    if reg_uninstall_string.to_lowercase().contains("msiexec.exe") {
+        return reg_uninstall_string;
+    }
+
     let mut uninstall_cert_cmd = "".to_string();
     if let Ok(exe) = std::env::current_exe() {
         if let Some(exe_path) = exe.to_str() {
@@ -1291,12 +1316,14 @@ fn get_uninstall(kill_self: bool) -> String {
     {before_uninstall}
     {uninstall_cert_cmd}
     reg delete {subkey} /f
+    {uninstall_amyuni_idd}
     if exist \"{path}\" rd /s /q \"{path}\"
     if exist \"{start_menu}\" rd /s /q \"{start_menu}\"
     if exist \"%PUBLIC%\\Desktop\\{app_name}.lnk\" del /f /q \"%PUBLIC%\\Desktop\\{app_name}.lnk\"
     if exist \"%PROGRAMDATA%\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\{app_name} Tray.lnk\" del /f /q \"%PROGRAMDATA%\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\{app_name} Tray.lnk\"
     ",
         before_uninstall=get_before_uninstall(kill_self),
+        uninstall_amyuni_idd=get_uninstall_amyuni_idd(),
         app_name = crate::get_app_name(),
     )
 }
@@ -1420,24 +1447,6 @@ pub fn add_recent_document(path: &str) {
 pub fn is_installed() -> bool {
     let (_, _, _, exe) = get_install_info();
     std::fs::metadata(exe).is_ok()
-    /*
-    use windows_service::{
-        service::ServiceAccess,
-        service_manager::{ServiceManager, ServiceManagerAccess},
-    };
-    if !std::fs::metadata(exe).is_ok() {
-        return false;
-    }
-    let manager_access = ServiceManagerAccess::CONNECT;
-    if let Ok(service_manager) = ServiceManager::local_computer(None::<&str>, manager_access) {
-        if let Ok(_) =
-            service_manager.open_service(crate::get_app_name(), ServiceAccess::QUERY_CONFIG)
-        {
-            return true;
-        }
-    }
-    return false;
-    */
 }
 
 pub fn get_reg(name: &str) -> String {
@@ -1887,7 +1896,7 @@ pub fn current_resolution(name: &str) -> ResultType<Resolution> {
         dm.dmSize = std::mem::size_of::<DEVMODEW>() as _;
         if EnumDisplaySettingsW(device_name.as_ptr(), ENUM_CURRENT_SETTINGS, &mut dm) == 0 {
             bail!(
-                "failed to get currrent resolution, error {}",
+                "failed to get current resolution, error {}",
                 io::Error::last_os_error()
             );
         }
@@ -2378,5 +2387,71 @@ impl Drop for WallPaperRemover {
     fn drop(&mut self) {
         // If the old background is a slideshow, it will be converted into an image. AnyDesk does the same.
         allow_err!(Self::set_wallpaper(Some(self.old_path.clone())));
+    }
+}
+
+fn get_uninstall_amyuni_idd() -> String {
+    match std::env::current_exe() {
+        Ok(path) => format!("\"{}\" --uninstall-amyuni-idd", path.to_str().unwrap_or("")),
+        Err(e) => {
+            log::warn!("Failed to get current exe path, cannot get command of uninstalling idd, Zzerror: {:?}", e);
+            "".to_string()
+        }
+    }
+}
+
+#[inline]
+pub fn is_self_service_running() -> bool {
+    is_service_running(&crate::get_app_name())
+}
+
+pub fn is_service_running(service_name: &str) -> bool {
+    unsafe {
+        let service_name = wide_string(service_name);
+        is_service_running_w(service_name.as_ptr() as _)
+    }
+}
+
+pub fn is_x64() -> bool {
+    const PROCESSOR_ARCHITECTURE_AMD64: u16 = 9;
+
+    let mut sys_info = SYSTEM_INFO::default();
+    unsafe {
+        GetNativeSystemInfo(&mut sys_info as _);
+    }
+    unsafe { sys_info.u.s().wProcessorArchitecture == PROCESSOR_ARCHITECTURE_AMD64 }
+}
+
+#[cfg(feature = "flutter")]
+pub fn try_kill_flutter_main_window_process() {
+    // It's called when --server failed to start ipc, because the ipc may be occupied by the main window process.
+    // When --service quit the ipc process, ipc process will call std::process::exit, std::process::exit not work may be the reason.
+    // FindWindow not work in --service, https://forums.codeguru.com/showthread.php?169091-FindWindow-in-service
+    log::info!("try kill flutter main window process");
+    unsafe {
+        let window_name = wide_string(&crate::get_app_name());
+        let class_name = wide_string(FLUTTER_RUNNER_WIN32_WINDOW_CLASS);
+        let hwnd = FindWindowW(class_name.as_ptr(), window_name.as_ptr());
+        if hwnd.is_null() {
+            log::info!("not found flutter main window");
+            return;
+        }
+        let mut process_id: u32 = 0;
+        GetWindowThreadProcessId(hwnd, &mut process_id as *mut u32);
+        if process_id == 0 {
+            log::info!("failed to get flutter window process id");
+            return;
+        }
+        let output = Command::new("taskkill")
+            .arg("/F")
+            .arg("/PID")
+            .arg(process_id.to_string())
+            .output()
+            .expect("Failed to execute command");
+        if output.status.success() {
+            log::info!("kill flutter main window process success");
+        } else {
+            log::error!("kill flutter main window process failed");
+        }
     }
 }

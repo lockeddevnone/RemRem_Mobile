@@ -81,8 +81,7 @@ pub const SEC30: Duration = Duration::from_secs(30);
 pub const VIDEO_QUEUE_SIZE: usize = 120;
 const MAX_DECODE_FAIL_COUNTER: usize = 10; // Currently, failed decode cause refresh_video, so make it small
 
-#[cfg(all(target_os = "linux", feature = "linux_headless"))]
-#[cfg(not(any(feature = "flatpak", feature = "appimage")))]
+#[cfg(target_os = "linux")]
 pub const LOGIN_MSG_DESKTOP_NOT_INITED: &str = "Desktop env is not inited";
 pub const LOGIN_MSG_DESKTOP_SESSION_NOT_READY: &str = "Desktop session not ready";
 pub const LOGIN_MSG_DESKTOP_XSESSION_FAILED: &str = "Desktop xsession failed";
@@ -1038,9 +1037,9 @@ pub struct VideoHandler {
 impl VideoHandler {
     /// Create a new video handler.
     pub fn new(format: CodecFormat, _display: usize) -> Self {
-        #[cfg(all(feature = "gpucodec", feature = "flutter"))]
+        #[cfg(all(feature = "vram", feature = "flutter"))]
         let luid = crate::flutter::get_adapter_luid();
-        #[cfg(not(all(feature = "gpucodec", feature = "flutter")))]
+        #[cfg(not(all(feature = "vram", feature = "flutter")))]
         let luid = Default::default();
         log::info!("new video handler for display #{_display}, format: {format:?}, luid: {luid:?}");
         VideoHandler {
@@ -1097,9 +1096,9 @@ impl VideoHandler {
 
     /// Reset the decoder, change format if it is Some
     pub fn reset(&mut self, format: Option<CodecFormat>) {
-        #[cfg(all(feature = "flutter", feature = "gpucodec"))]
+        #[cfg(all(feature = "flutter", feature = "vram"))]
         let luid = crate::flutter::get_adapter_luid();
-        #[cfg(not(all(feature = "flutter", feature = "gpucodec")))]
+        #[cfg(not(all(feature = "flutter", feature = "vram")))]
         let luid = None;
         let format = format.unwrap_or(self.decoder.format());
         self.decoder = Decoder::new(format, luid);
@@ -1113,7 +1112,7 @@ impl VideoHandler {
             self.recorder = Recorder::new(RecorderContext {
                 server: false,
                 id,
-                default_dir: crate::ui_interface::default_video_save_directory(),
+                dir: crate::ui_interface::video_save_directory(false),
                 filename: "".to_owned(),
                 width: w as _,
                 height: h as _,
@@ -1456,6 +1455,22 @@ impl LoginConfigHandler {
                 BoolOption::No
             })
             .into();
+        } else if name == "follow-remote-cursor" {
+            config.follow_remote_cursor.v = !config.follow_remote_cursor.v;
+            option.follow_remote_cursor = (if config.follow_remote_cursor.v {
+                BoolOption::Yes
+            } else {
+                BoolOption::No
+            })
+            .into();
+        } else if name == "follow-remote-window" {
+            config.follow_remote_window.v = !config.follow_remote_window.v;
+            option.follow_remote_window = (if config.follow_remote_window.v {
+                BoolOption::Yes
+            } else {
+                BoolOption::No
+            })
+            .into();
         } else if name == "disable-audio" {
             config.disable_audio.v = !config.disable_audio.v;
             option.disable_audio = (if config.disable_audio.v {
@@ -1488,9 +1503,9 @@ impl LoginConfigHandler {
                 BoolOption::Yes
             })
             .into();
-        } else if name == "enable-file-transfer" {
-            config.enable_file_transfer.v = !config.enable_file_transfer.v;
-            option.enable_file_transfer = (if config.enable_file_transfer.v {
+        } else if name == "enable-file-copy-paste" {
+            config.enable_file_copy_paste.v = !config.enable_file_copy_paste.v;
+            option.enable_file_transfer = (if config.enable_file_copy_paste.v {
                 BoolOption::Yes
             } else {
                 BoolOption::No
@@ -1523,7 +1538,7 @@ impl LoginConfigHandler {
                 option.disable_keyboard = f(false);
                 option.disable_clipboard = f(self.get_toggle_option("disable-clipboard"));
                 option.show_remote_cursor = f(self.get_toggle_option("show-remote-cursor"));
-                option.enable_file_transfer = f(self.config.enable_file_transfer.v);
+                option.enable_file_transfer = f(self.config.enable_file_copy_paste.v);
                 option.lock_after_session_end = f(self.config.lock_after_session_end.v);
             }
         } else {
@@ -1564,22 +1579,16 @@ impl LoginConfigHandler {
     ///
     /// * `ignore_default` - If `true`, ignore the default value of the option.
     fn get_option_message(&self, ignore_default: bool) -> Option<OptionMessage> {
-        if self.conn_type.eq(&ConnType::PORT_FORWARD) || self.conn_type.eq(&ConnType::RDP) {
+        if self.conn_type.eq(&ConnType::PORT_FORWARD)
+            || self.conn_type.eq(&ConnType::RDP)
+            || self.conn_type.eq(&ConnType::FILE_TRANSFER)
+        {
             return None;
         }
-        let mut n = 0;
         let mut msg = OptionMessage::new();
-        // Version 1.2.5 can remove this, and OptionMessage is not needed for file transfer
-        msg.support_windows_specific_session = BoolOption::Yes.into();
-        n += 1;
-
-        if self.conn_type.eq(&ConnType::FILE_TRANSFER) {
-            return Some(msg);
-        }
         let q = self.image_quality.clone();
         if let Some(q) = self.get_image_quality_enum(&q, ignore_default) {
             msg.image_quality = q.into();
-            n += 1;
         } else if q == "custom" {
             let config = self.load_config();
             let allow_more = !crate::using_public_server() || self.direct == Some(true);
@@ -1602,32 +1611,31 @@ impl LoginConfigHandler {
                 msg.custom_fps = custom_fps;
                 *self.custom_fps.lock().unwrap() = Some(custom_fps as _);
             }
-            n += 1;
         }
         let view_only = self.get_toggle_option("view-only");
         if view_only {
             msg.disable_keyboard = BoolOption::Yes.into();
-            n += 1;
         }
         if view_only || self.get_toggle_option("show-remote-cursor") {
             msg.show_remote_cursor = BoolOption::Yes.into();
-            n += 1;
+        }
+        if self.get_toggle_option("follow-remote-cursor") {
+            msg.follow_remote_cursor = BoolOption::Yes.into();
+        }
+        if self.get_toggle_option("follow-remote-window") {
+            msg.follow_remote_window = BoolOption::Yes.into();
         }
         if !view_only && self.get_toggle_option("lock-after-session-end") {
             msg.lock_after_session_end = BoolOption::Yes.into();
-            n += 1;
         }
         if self.get_toggle_option("disable-audio") {
             msg.disable_audio = BoolOption::Yes.into();
-            n += 1;
         }
-        if !view_only && self.get_toggle_option("enable-file-transfer") {
+        if !view_only && self.get_toggle_option(config::keys::OPTION_ENABLE_FILE_COPY_PASTE) {
             msg.enable_file_transfer = BoolOption::Yes.into();
-            n += 1;
         }
         if view_only || self.get_toggle_option("disable-clipboard") {
             msg.disable_clipboard = BoolOption::Yes.into();
-            n += 1;
         }
         msg.supported_decoding =
             hbb_common::protobuf::MessageField::some(Decoder::supported_decodings(
@@ -1636,12 +1644,7 @@ impl LoginConfigHandler {
                 self.adapter_luid,
                 &self.mark_unsupported,
             ));
-        n += 1;
-        if n > 0 {
-            Some(msg)
-        } else {
-            None
-        }
+        Some(msg)
     }
 
     pub fn get_option_message_after_login(&self) -> Option<OptionMessage> {
@@ -1701,8 +1704,8 @@ impl LoginConfigHandler {
             self.config.lock_after_session_end.v
         } else if name == "privacy-mode" {
             self.config.privacy_mode.v
-        } else if name == "enable-file-transfer" {
-            self.config.enable_file_transfer.v
+        } else if name == config::keys::OPTION_ENABLE_FILE_COPY_PASTE {
+            self.config.enable_file_copy_paste.v
         } else if name == "disable-audio" {
             self.config.disable_audio.v
         } else if name == "disable-clipboard" {
@@ -1713,6 +1716,10 @@ impl LoginConfigHandler {
             self.config.allow_swap_key.v
         } else if name == "view-only" {
             self.config.view_only.v
+        } else if name == "follow-remote-cursor" {
+            self.config.follow_remote_cursor.v
+        } else if name == "follow-remote-window" {
+            self.config.follow_remote_window.v
         } else {
             !self.get_option(name).is_empty()
         }
@@ -2105,7 +2112,7 @@ where
     std::thread::spawn(move || {
         #[cfg(windows)]
         sync_cpu_usage();
-        let mut handler_controller_map = Vec::new();
+        let mut handler_controller_map = HashMap::new();
         // let mut count = Vec::new();
         // let mut duration = std::time::Duration::ZERO;
         // let mut skip_beginning = Vec::new();
@@ -2136,17 +2143,18 @@ where
                         let display = vf.display as usize;
                         let start = std::time::Instant::now();
                         let format = CodecFormat::from(&vf);
-                        if handler_controller_map.len() <= display {
-                            for _i in handler_controller_map.len()..=display {
-                                handler_controller_map.push(VideoHandlerController {
-                                    handler: VideoHandler::new(format, _i),
+                        if !handler_controller_map.contains_key(&display) {
+                            handler_controller_map.insert(
+                                display,
+                                VideoHandlerController {
+                                    handler: VideoHandler::new(format, display),
                                     count: 0,
                                     duration: std::time::Duration::ZERO,
                                     skip_beginning: 0,
-                                });
-                            }
+                                },
+                            );
                         }
-                        if let Some(handler_controller) = handler_controller_map.get_mut(display) {
+                        if let Some(handler_controller) = handler_controller_map.get_mut(&display) {
                             let mut pixelbuffer = true;
                             let mut tmp_chroma = None;
                             match handler_controller.handler.handle_frame(
@@ -2214,7 +2222,7 @@ where
                         let mut should_update_supported = false;
                         handler_controller_map
                             .iter()
-                            .map(|h| {
+                            .map(|(_, h)| {
                                 if !h.handler.decoder.valid() || h.handler.fail_counter >= MAX_DECODE_FAIL_COUNTER {
                                     let mut lc = session.lc.write().unwrap();
                                     let format = h.handler.decoder.format();
@@ -2233,21 +2241,20 @@ where
                         }
                     }
                     MediaData::Reset(display) => {
-                        if let Some(handler_controler) = handler_controller_map.get_mut(display) {
+                        if let Some(handler_controler) = handler_controller_map.get_mut(&display) {
                             handler_controler.handler.reset(None);
                         }
                     }
                     MediaData::RecordScreen(start, display, w, h, id) => {
                         log::info!("record screen command: start: {start}, display: {display}");
-                        if handler_controller_map.len() == 1 {
-                            // Compatible with the sciter version(single ui session).
-                            // For the sciter version, there're no multi-ui-sessions for one connection.
-                            // The display is always 0, video_handler_controllers.len() is always 1. So we use the first video handler.
-                            handler_controller_map[0]
-                                .handler
-                                .record_screen(start, w, h, id);
-                        } else {
-                            if let Some(handler_controler) = handler_controller_map.get_mut(display)
+                        // Compatible with the sciter version(single ui session).
+                        // For the sciter version, there're no multi-ui-sessions for one connection.
+                        // The display is always 0, video_handler_controllers.len() is always 1. So we use the first video handler.
+                        if let Some(handler_controler) = handler_controller_map.get_mut(&display) {
+                            handler_controler.handler.record_screen(start, w, h, id);
+                        } else if handler_controller_map.len() == 1 {
+                            if let Some(handler_controler) =
+                                handler_controller_map.values_mut().next()
                             {
                                 handler_controler.handler.record_screen(start, w, h, id);
                             }

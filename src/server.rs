@@ -50,6 +50,7 @@ pub const NAME: &'static str = "";
 pub mod input_service {
 pub const NAME_CURSOR: &'static str = "";
 pub const NAME_POS: &'static str = "";
+pub const NAME_WINDOW_FOCUS: &'static str = "";
 }
 }
 }
@@ -105,6 +106,7 @@ pub fn new() -> ServerPtr {
         if !display_service::capture_cursor_embedded() {
             server.add_service(Box::new(input_service::new_cursor()));
             server.add_service(Box::new(input_service::new_pos()));
+            server.add_service(Box::new(input_service::new_window_focus()));
         }
     }
     Arc::new(RwLock::new(server))
@@ -354,6 +356,15 @@ impl Server {
         }
     }
 
+    fn get_subbed_displays_count(&self, conn_id: i32) -> usize {
+        self.services
+            .keys()
+            .filter(|k| {
+                Self::is_video_service_name(k) && self.services.get(*k).unwrap().is_subed(conn_id)
+            })
+            .count()
+    }
+
     fn capture_displays(
         &mut self,
         conn: ConnInner,
@@ -449,9 +460,8 @@ pub async fn start_server(is_server: bool) {
         log::info!("XAUTHORITY={:?}", std::env::var("XAUTHORITY"));
     }
     #[cfg(feature = "hwcodec")]
-    scrap::hwcodec::hwcodec_new_check_process();
-    #[cfg(feature = "gpucodec")]
-    scrap::gpucodec::gpucodec_new_check_process();
+    #[cfg(any(target_os = "windows", target_os = "linux"))]
+    scrap::hwcodec::start_check_process(false);
     #[cfg(windows)]
     hbb_common::platform::windows::start_cpu_performance_monitor();
 
@@ -460,6 +470,11 @@ pub async fn start_server(is_server: bool) {
         std::thread::spawn(move || {
             if let Err(err) = crate::ipc::start("") {
                 log::error!("Failed to start ipc: {}", err);
+                #[cfg(all(windows, feature = "flutter"))]
+                if crate::is_server() && crate::ipc::test_ipc_connection().is_ok() {
+                    log::error!("ipc is occupied by another process, try kill it");
+                    crate::platform::try_kill_flutter_main_window_process();
+                }
                 std::process::exit(-1);
             }
         });
@@ -550,8 +565,7 @@ async fn sync_and_watch_config_dir() {
 
     let mut cfg0 = (Config::get(), Config2::get());
     let mut synced = false;
-    let is_server = std::env::args().nth(1) == Some("--server".to_owned());
-    let tries = if is_server { 30 } else { 3 };
+    let tries = if crate::is_server() { 30 } else { 3 };
     log::debug!("#tries of ipc service connection: {}", tries);
     use hbb_common::sleep;
     for i in 1..=tries {
