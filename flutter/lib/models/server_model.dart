@@ -10,6 +10,10 @@ import 'package:flutter_hbb/main.dart';
 import 'package:flutter_hbb/models/chat_model.dart';
 import 'package:flutter_hbb/models/platform_model.dart';
 import 'package:get/get.dart';
+  //++++Reminani : upgrade cho handico
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
+  //----Reminani : upgrade cho handico
 import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:window_manager/window_manager.dart';
 
