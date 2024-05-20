@@ -105,10 +105,11 @@ class HomePageState extends State<HomePage> {
                   gFFI.chatModel.mobileClearClientUnread(
                       gFFI.chatModel.currentKey.connId);
                 }
+              }
     //++++Reminani : hien thi webview
               if(index == 0) {
                 webViewConnectionPage.webViewConnectionPageState.reloadLogin();
-              } 
+              }
     //----Reminani : hien thi webview
             }),
           ),
