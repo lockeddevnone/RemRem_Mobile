@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+  //++++Reminani : check man hinh screen lock va ngon ngu khi vao app
+import 'package:flutter_hbb/common/widgets/webview_page.dart';
+  //----Reminani : check man hinh screen lock va ngon ngu khi vao app
 import 'package:flutter_hbb/mobile/pages/server_page.dart';
 import 'package:flutter_hbb/mobile/pages/settings_page.dart';
 import 'package:get/get.dart';
@@ -45,10 +48,14 @@ class HomePageState extends State<HomePage> {
 
   void initPages() {
     _pages.clear();
+    //++++Reminani : hien thi webview
+    _pages.add(webViewConnectionPage);
+    
     if (!bind.isIncomingOnly()) _pages.add(ConnectionPage());
     if (isAndroid && !bind.isOutgoingOnly()) {
       _chatPageTabIndex = _pages.length;
       _pages.addAll([ChatPage(type: ChatPageType.mobileMain), ServerPage()]);
+    //----Reminani : hien thi webview
     }
     _pages.add(SettingsPage());
   }
@@ -68,11 +75,13 @@ class HomePageState extends State<HomePage> {
         },
         child: Scaffold(
           // backgroundColor: MyTheme.grayBg,
-          appBar: AppBar(
-            centerTitle: true,
-            title: appTitle(),
-            actions: _pages.elementAt(_selectedIndex).appBarActions,
-          ),
+    //++++Reminani : hien thi webview
+          //appBar: AppBar(
+          //  centerTitle: true,
+          //  title: appTitle(),
+          //  actions: _pages.elementAt(_selectedIndex).appBarActions,
+          //),
+    //----Reminani : hien thi webview
           bottomNavigationBar: BottomNavigationBar(
             key: navigationBarKey,
             items: _pages
