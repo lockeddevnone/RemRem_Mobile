@@ -217,6 +217,16 @@ class MainActivity : FlutterActivity() {
                         result.success(false)
                     }
                 }
+                //++++Reminani
+                "user_update" -> {
+                    val idLogin = call.argument<Int>("idLogin");
+                    val token = call.argument<String>("token");
+                    val pref = getSharedPreferences("FlutterSharedPreferences", MODE_PRIVATE)
+                    idLogin?.let { pref.edit().putInt("idLogin", it).commit() }
+                    token?.let { pref.edit().putString("token", it).commit() }
+                    result.success(null)
+                }
+                ----Reminani
                 else -> {
                     result.error("-1", "No such method", null)
                 }

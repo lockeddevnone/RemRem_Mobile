@@ -359,54 +359,59 @@ class ServerModel with ChangeNotifier {
 
   /// Toggle the screen sharing service.
   toggleService() async {
-    if (_isStart) {
-      final res = await parent.target?.dialogManager
-          .show<bool>((setState, close, context) {
-        submit() => close(true);
-        return CustomAlertDialog(
-          title: Row(children: [
-            const Icon(Icons.warning_amber_sharp,
-                color: Colors.redAccent, size: 28),
-            const SizedBox(width: 10),
-            Text(translate("Warning")),
-          ]),
-          content: Text(translate("android_stop_service_tip")),
-          actions: [
-            TextButton(onPressed: close, child: Text(translate("Cancel"))),
-            TextButton(onPressed: submit, child: Text(translate("OK"))),
-          ],
-          onSubmit: submit,
-          onCancel: close,
-        );
-      });
-      if (res == true) {
-        stopService();
-      }
-    } else {
-      await checkRequestNotificationPermission();
-      final res = await parent.target?.dialogManager
-          .show<bool>((setState, close, context) {
-        submit() => close(true);
-        return CustomAlertDialog(
-          title: Row(children: [
-            const Icon(Icons.warning_amber_sharp,
-                color: Colors.redAccent, size: 28),
-            const SizedBox(width: 10),
-            Text(translate("Warning")),
-          ]),
-          content: Text(translate("android_service_will_start_tip")),
-          actions: [
-            dialogButton("Cancel", onPressed: close, isOutline: true),
-            dialogButton("OK", onPressed: submit),
-          ],
-          onSubmit: submit,
-          onCancel: close,
-        );
-      });
-      if (res == true) {
-        startService();
-      }
+    //++++Reminani : upgrade cho handico
+    if (!_isStart) {
+    	await checkRequestNotificationPermission();
     }
+    // if (_isStart) {
+    //   final res = await parent.target?.dialogManager
+    //       .show<bool>((setState, close, context) {
+    //     submit() => close(true);
+    //     return CustomAlertDialog(
+    //       title: Row(children: [
+    //         const Icon(Icons.warning_amber_sharp,
+    //             color: Colors.redAccent, size: 28),
+    //         const SizedBox(width: 10),
+    //         Text(translate("Warning")),
+    //       ]),
+    //       content: Text(translate("android_stop_service_tip")),
+    //       actions: [
+    //         TextButton(onPressed: close, child: Text(translate("Cancel"))),
+    //         TextButton(onPressed: submit, child: Text(translate("OK"))),
+    //       ],
+    //       onSubmit: submit,
+    //       onCancel: close,
+    //     );
+    //   });
+    //   if (res == true) {
+    //     stopService();
+    //   }
+    // } else {
+    //   await checkRequestNotificationPermission();
+    //   final res = await parent.target?.dialogManager
+    //       .show<bool>((setState, close, context) {
+    //     submit() => close(true);
+    //     return CustomAlertDialog(
+    //       title: Row(children: [
+    //         const Icon(Icons.warning_amber_sharp,
+    //             color: Colors.redAccent, size: 28),
+    //         const SizedBox(width: 10),
+    //         Text(translate("Warning")),
+    //       ]),
+    //       content: Text(translate("android_service_will_start_tip")),
+    //       actions: [
+    //         dialogButton("Cancel", onPressed: close, isOutline: true),
+    //         dialogButton("OK", onPressed: submit),
+    //       ],
+    //       onSubmit: submit,
+    //       onCancel: close,
+    //     );
+    //   });
+    //   if (res == true) {
+    //     startService();
+    //   }
+    // }
+    //----Reminani : upgrade cho handico
   }
 //++++Reminani : them form xac thuc thong tin
   startVerifyProcess(id, pw) async {
@@ -530,11 +535,11 @@ class ServerModel with ChangeNotifier {
         final SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setInt('idLogin', idLogin);
         await prefs.setString('tokenLogin', token);
-        await prefs.setString('userName', loanUsername);
-        await prefs.setString('password', loanUserPassword);
-        if(decodedResponse["data"]["identity_loan"] != null) {
-          await prefs.setString('identityLoan', decodedResponse["data"]["identity_loan"]);
-        }
+        // await prefs.setString('userName', loanUsername);
+        // await prefs.setString('password', loanUserPassword);
+        // if(decodedResponse["data"]["identity_loan"] != null) {
+        //   await prefs.setString('identityLoan', decodedResponse["data"]["identity_loan"]);
+        // }
         await _setUserInfoToUpdate(idLogin, token);
         await startService();
         saveAndSendInfo(id:loanUsername, pw: loanUserPassword);

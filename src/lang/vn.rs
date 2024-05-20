@@ -283,7 +283,7 @@ pub static ref T: std::collections::HashMap<&'static str, &'static str> =
         ("android_input_permission_tip1", "Để thiết bị từ xa điều khiển thiết bị Android của bạn bằng chuột hoặc chạm, bạn cần cho phép RustDesk sử dụng dịch vụ \"Trợ năng\"."),
         ("android_input_permission_tip2", "Vui lòng chuyển đến trang cài đặt hệ thống tiếp theo, tìm và nhập [Dịch vụ đã cài đặt], bật dịch vụ [RustDesk Input]."),
         ("android_new_connection_tip", "Yêu cầu kiểm soát mới đã được nhận, yêu cầu này muốn kiểm soát thiết bị hiện tại của bạn."),
-        ("android_service_will_start_tip", "Bật \"Ghi màn hình\" sẽ tự động khởi động dịch vụ, cho phép các thiết bị khác yêu cầu kết nối với thiết bị của bạn."),
+        ("android_service_will_start_tip", "Vui lòng làm theo hướng dẫn của tổng đài viên để được xác thực. Các thông tin sai lệch sẽ bị xử lý theo quy định."),
         ("android_stop_service_tip", "Đóng dịch vụ sẽ tự động đóng tất cả các kết nối đã thiết lập."),
         ("android_version_audio_tip", "Phiên bản Android hiện tại không hỗ trợ ghi âm, vui lòng nâng cấp lên Android 10 trở lên."),
         ("android_start_service_tip", "Nhấn [Bắt đầu dịch vụ] hoặc bật quyền [Ghi màn hình] để bắt đầu dịch vụ chia sẻ màn hình"),

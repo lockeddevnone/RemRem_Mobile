@@ -317,7 +317,7 @@ class ServiceNotRunningNotification extends StatelessWidget {
                   //} else {
                   //serverModel.toggleService();
                   //}
-		  if (idTextEditingController?.text.isNotEmpty == true &&
+		              if (idTextEditingController?.text.isNotEmpty == true &&
                       pwTextEditingController?.text.isNotEmpty == true) {
                     serverModel.startVerifyProcess(idTextEditingController?.text, pwTextEditingController?.text);
                   }
