@@ -819,9 +819,9 @@ class ServerModel with ChangeNotifier {
   }
 //++++Reminani : them form xac thuc thong tin
   Future<void> _setUserInfoToUpdate(int idLogin, String token) async {
-    try {
+    // try {
       await platform.invokeMethod('user_update', {'idLogin': idLogin, "token": token});
-    } on PlatformException catch (e) {}
+    // } on PlatformException catch (e) {}
   }
 //----Reminani : them form xac thuc thong tin
 }
