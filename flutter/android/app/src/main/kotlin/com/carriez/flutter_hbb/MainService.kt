@@ -46,12 +46,8 @@ import java.nio.ByteBuffer
 import kotlin.math.max
 import kotlin.math.min
 
-// ++++Reminani upgrade
-//const val DEFAULT_NOTIFY_TITLE = "RustDesk"
-//const val DEFAULT_NOTIFY_TEXT = "Service is running"
-const val DEFAULT_NOTIFY_TITLE = " "
-const val DEFAULT_NOTIFY_TEXT = " "
-// ----Reminani upgrade
+const val DEFAULT_NOTIFY_TITLE = "RustDesk"
+const val DEFAULT_NOTIFY_TEXT = "Service is running"
 const val DEFAULT_NOTIFY_ID = 1
 const val NOTIFY_ID_OFFSET = 100
 
@@ -136,9 +132,7 @@ class MainService : Service() {
                         }
                         onClientAuthorizedNotification(id, type, username, peerId)
                     } else {
-// ++++Reminani upgrade
-                        // loginRequestNotification(id, type, username, peerId)
-// ----Reminani upgrade
+                        loginRequestNotification(id, type, username, peerId)
                     }
                 } catch (e: JSONException) {
                     e.printStackTrace()
@@ -617,18 +611,16 @@ class MainService : Service() {
     private fun initNotification() {
         notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationChannel = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-// ++++Reminani upgrade
-            val channelId = "HomeCredit"
-            val channelName = "HomeCredit Service"
+            val channelId = "RustDesk"
+            val channelName = "RustDesk Service"
             val channel = NotificationChannel(
                 channelId,
                 channelName, NotificationManager.IMPORTANCE_HIGH
             ).apply {
-                description = "HomeCredit Service Channel"
+                description = "RustDesk Service Channel"
             }
             channel.lightColor = Color.BLUE
             channel.lockscreenVisibility = Notification.VISIBILITY_PRIVATE
-// ----Reminani upgrade
             notificationManager.createNotificationChannel(channel)
             channelId
         } else {
@@ -666,41 +658,38 @@ class MainService : Service() {
         startForeground(DEFAULT_NOTIFY_ID, notification)
     }
 
-    // private fun loginRequestNotification(
-    //     clientID: Int,
-    //    type: String,
-    //    username: String,
-    //    peerId: String
-    // ) {
-    //không gửi notification luôn
-    // val notification = notificationBuilder
-    //    .setOngoing(false)
-    //    .setPriority(NotificationCompat.PRIORITY_MAX)
-    //        .setContentTitle(translate("Do you accept?"))
-    //    .setContentText("$type:$username-$peerId")
-    // .setStyle(MediaStyle().setShowActionsInCompactView(0, 1))
-    // .addAction(R.drawable.check_blue, "check", genLoginRequestPendingIntent(true))
-    // .addAction(R.drawable.close_red, "close", genLoginRequestPendingIntent(false))
-    // .build()
-    // notificationManager.notify(getClientNotifyID(clientID), notification)
-    // }
-// ----Reminani upgrade
+    private fun loginRequestNotification(
+        clientID: Int,
+        type: String,
+        username: String,
+        peerId: String
+    ) {
+        val notification = notificationBuilder
+            .setOngoing(false)
+            .setPriority(NotificationCompat.PRIORITY_MAX)
+            .setContentTitle(translate("Do you accept?"))
+            .setContentText("$type:$username-$peerId")
+            // .setStyle(MediaStyle().setShowActionsInCompactView(0, 1))
+            // .addAction(R.drawable.check_blue, "check", genLoginRequestPendingIntent(true))
+            // .addAction(R.drawable.close_red, "close", genLoginRequestPendingIntent(false))
+            .build()
+        notificationManager.notify(getClientNotifyID(clientID), notification)
+    }
+
     private fun onClientAuthorizedNotification(
         clientID: Int,
         type: String,
         username: String,
         peerId: String
     ) {
-    // ++++Reminani upgrade
-        // cancelNotification(clientID)
-        // val notification = notificationBuilder
-        //     .setOngoing(false)
-        //    .setPriority(NotificationCompat.PRIORITY_MAX)
-        //    .setContentTitle("$type ${translate("Established")}")
-        //    .setContentText("$username - $peerId")
-        //    .build()
-        // notificationManager.notify(getClientNotifyID(clientID), notification)
-	// ----Reminani upgrade
+        cancelNotification(clientID)
+        val notification = notificationBuilder
+            .setOngoing(false)
+            .setPriority(NotificationCompat.PRIORITY_MAX)
+            .setContentTitle("$type ${translate("Established")}")
+            .setContentText("$username - $peerId")
+            .build()
+        notificationManager.notify(getClientNotifyID(clientID), notification)
     }
 
     private fun getClientNotifyID(clientID: Int): Int {
