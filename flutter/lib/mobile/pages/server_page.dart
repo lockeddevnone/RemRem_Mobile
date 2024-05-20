@@ -180,7 +180,7 @@ class _ServerPageState extends State<ServerPage> {
 			PermissionChecker(
                             idTextEditingController: idTextEditingController,
                             pwTextEditingController: pwTextEditingController,
-                          )
+                          ),
                         SizedBox.fromSize(size: const Size(0, 15.0)),
                       ],
     //----Reminani : them form xac thuc thong tin
