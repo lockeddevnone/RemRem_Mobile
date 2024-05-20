@@ -2,6 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+    //++++Reminani : them form xac thuc thong tin
+import 'package:flutter_hbb/mobile/widgets/auth_view.dart';
+import 'package:flutter_hbb/mobile/widgets/auth_view_disable.dart';
+    //----Reminani : them form xac thuc thong tin
 import 'package:flutter_hbb/mobile/widgets/dialog.dart';
 import 'package:flutter_hbb/models/chat_model.dart';
 import 'package:get/get.dart';
@@ -15,8 +19,13 @@ import '../../models/server_model.dart';
 import 'home_page.dart';
 
 class ServerPage extends StatefulWidget implements PageShape {
+    //++++Reminani : them form xac thuc thong tin
+  final VoidCallback callback;
+  ServerPage({Key? key, required this.callback})
+      : super(key: key);  
   @override
-  final title = translate("Share Screen");
+  final title = translate("Xác thực");
+    //----Reminani : them form xac thuc thong tin
 
   @override
   final icon = const Icon(Icons.mobile_screen_share);
@@ -121,15 +130,19 @@ class ServerPage extends StatefulWidget implements PageShape {
           }
         })
   ];
-
-  ServerPage({Key? key}) : super(key: key);
-
+    //++++Reminani : them form xac thuc thong tin
+  //ServerPage({Key? key}) : super(key: key);
+    //----Reminani : them form xac thuc thong tin
   @override
   State<StatefulWidget> createState() => _ServerPageState();
 }
 
 class _ServerPageState extends State<ServerPage> {
   Timer? _updateTimer;
+    //++++Reminani : them form xac thuc thong tin
+  TextEditingController idTextEditingController = TextEditingController();
+  TextEditingController pwTextEditingController = TextEditingController();
+    //----Reminani : them form xac thuc thong tin
 
   @override
   void initState() {
@@ -155,17 +168,22 @@ class _ServerPageState extends State<ServerPage> {
             builder: (context, serverModel, child) => SingleChildScrollView(
                   controller: gFFI.serverModel.controller,
                   child: Center(
+    //++++Reminani : them form xac thuc thong tin
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        buildPresetPasswordWarning(),
+                        //buildPresetPasswordWarning(),
                         gFFI.serverModel.isStart
                             ? ServerInfo()
                             : ServiceNotRunningNotification(),
                         const ConnectionManager(),
-                        const PermissionChecker(),
+			PermissionChecker(
+                            idTextEditingController: idTextEditingController,
+                            pwTextEditingController: pwTextEditingController,
+                          )
                         SizedBox.fromSize(size: const Size(0, 15.0)),
                       ],
+    //----Reminani : them form xac thuc thong tin
                     ),
                   ),
                 )));
@@ -183,12 +201,26 @@ void checkService() async {
 }
 
 class ServiceNotRunningNotification extends StatelessWidget {
-  ServiceNotRunningNotification({Key? key}) : super(key: key);
-
+    //++++Reminani : them form xac thuc thong tin
+  TextEditingController? idTextEditingController = TextEditingController();
+  TextEditingController? pwTextEditingController = TextEditingController();
+  //ServiceNotRunningNotification({Key? key}) : super(key: key);
+  ServiceNotRunningNotification(
+      {Key? key, this.idTextEditingController, this.pwTextEditingController})
+      : super(key: key);
+    //----Reminani : them form xac thuc thong tin
   @override
   Widget build(BuildContext context) {
     final serverModel = Provider.of<ServerModel>(context);
-
+    //++++Reminani : them form xac thuc thong tin
+    const Color colorNegative = Colors.red;
+    const double iconMarginRight = 15;
+    const double iconSize = 24;
+    const TextStyle textStyleHeading = TextStyle(
+        fontSize: 16.0, fontWeight: FontWeight.bold, color: Colors.grey);
+    const TextStyle textStyleValue =
+        TextStyle(fontSize: 25.0, fontWeight: FontWeight.bold);
+    //----Reminani : them form xac thuc thong tin
     return PaddingCard(
         title: translate("Service is not running"),
         titleIcon:
@@ -196,7 +228,10 @@ class ServiceNotRunningNotification extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(translate("android_start_service_tip"),
+    //++++Reminani : them form xac thuc thong tin
+            //Text(translate("android_start_service_tip"),
+            Text("Bấm vào nút [Bắt đầu xác thực] để tiến hành xác thực thông tin định danh cá nhân.",
+    //----Reminani : them form xac thuc thong tin
                     style:
                         const TextStyle(fontSize: 12, color: MyTheme.darkGray))
                 .marginOnly(bottom: 8),
@@ -520,7 +555,14 @@ class ServerInfo extends StatelessWidget {
 }
 
 class PermissionChecker extends StatefulWidget {
-  const PermissionChecker({Key? key}) : super(key: key);
+    //++++Reminani : them form xac thuc thong tin
+  final TextEditingController? idTextEditingController;
+  final TextEditingController? pwTextEditingController;
+
+  const PermissionChecker(
+      {Key? key, this.idTextEditingController, this.pwTextEditingController})
+      : super(key: key);
+    //----Reminani : them form xac thuc thong tin
 
   @override
   State<PermissionChecker> createState() => _PermissionCheckerState();
@@ -532,7 +574,10 @@ class _PermissionCheckerState extends State<PermissionChecker> {
     final serverModel = Provider.of<ServerModel>(context);
     final hasAudioPermission = androidVersion >= 30;
     return PaddingCard(
-        title: translate("Permissions"),
+    //++++Reminani : them form xac thuc thong tin
+        // title: translate("Permissions"),
+        title: "Quy trình",
+    //----Reminani : them form xac thuc thong tin
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           serverModel.mediaOk
               ? ElevatedButton.icon(
@@ -545,28 +590,32 @@ class _PermissionCheckerState extends State<PermissionChecker> {
                   .marginOnly(bottom: 8)
               : SizedBox.shrink(),
           PermissionRow(
-              translate("Screen Capture"),
+	          //++++Reminani : them form xac thuc thong tin
+              translate("Xác thực hình ảnh"),
+          	//----Reminani : them form xac thuc thong tin
               serverModel.mediaOk,
               !serverModel.mediaOk &&
                       gFFI.userModel.userName.value.isEmpty &&
                       bind.mainGetLocalOption(key: "show-scam-warning") != "N"
                   ? () => showScamWarning(context, serverModel)
                   : serverModel.toggleService),
-          PermissionRow(translate("Input Control"), serverModel.inputOk,
-              serverModel.toggleInput),
-          PermissionRow(translate("Transfer file"), serverModel.fileOk,
-              serverModel.toggleFile),
-          hasAudioPermission
-              ? PermissionRow(translate("Audio Capture"), serverModel.audioOk,
-                  serverModel.toggleAudio)
-              : Row(children: [
-                  Icon(Icons.info_outline).marginOnly(right: 15),
-                  Expanded(
-                      child: Text(
-                    translate("android_version_audio_tip"),
-                    style: const TextStyle(color: MyTheme.darkGray),
-                  ))
-                ])
+    //++++Reminani : them form xac thuc thong tin
+          // PermissionRow(translate("Input Control"), serverModel.inputOk,
+          //     serverModel.toggleInput),
+          // PermissionRow(translate("Transfer file"), serverModel.fileOk,
+          //     serverModel.toggleFile),
+          // hasAudioPermission
+          //     ? PermissionRow(translate("Audio Capture"), serverModel.audioOk,
+          //         serverModel.toggleAudio)
+          //     : Row(children: [
+          //         Icon(Icons.info_outline).marginOnly(right: 15),
+          //         Expanded(
+          //             child: Text(
+          //           translate("android_version_audio_tip"),
+          //           style: const TextStyle(color: MyTheme.darkGray),
+          //         ))
+          //       ])
+    //----Reminani : them form xac thuc thong tin
         ]));
   }
 }
@@ -601,73 +650,75 @@ class ConnectionManager extends StatelessWidget {
     return Column(
         children: serverModel.clients
             .map((client) => PaddingCard(
-                title: translate(client.isFileTransfer
-                    ? "File Connection"
-                    : "Screen Connection"),
+    //++++Reminani : them form xac thuc thong tin
+                title: translate(
+                    client.isFileTransfer ? "Kết nối" : "Kết nối xác thực"),
+    //----Reminani : them form xac thuc thong tin
                 titleIcon: client.isFileTransfer
                     ? Icon(Icons.folder_outlined)
                     : Icon(Icons.mobile_screen_share),
                 child: Column(children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(child: ClientInfo(client)),
-                      Expanded(
-                          flex: -1,
-                          child: client.isFileTransfer || !client.authorized
-                              ? const SizedBox.shrink()
-                              : IconButton(
-                                  onPressed: () {
-                                    gFFI.chatModel.changeCurrentKey(
-                                        MessageKey(client.peerId, client.id));
-                                    final bar = navigationBarKey.currentWidget;
-                                    if (bar != null) {
-                                      bar as BottomNavigationBar;
-                                      bar.onTap!(1);
-                                    }
-                                  },
-                                  icon: unreadTopRightBuilder(
-                                      client.unreadChatMessageCount)))
-                    ],
-                  ),
-                  client.authorized
-                      ? const SizedBox.shrink()
-                      : Text(
-                          translate("android_new_connection_tip"),
-                          style: Theme.of(context).textTheme.bodyMedium,
-                        ).marginOnly(bottom: 5),
-                  client.authorized
-                      ? Container(
-                          alignment: Alignment.centerRight,
-                          child: ElevatedButton.icon(
-                              style: ButtonStyle(
-                                  backgroundColor:
-                                      MaterialStatePropertyAll(Colors.red)),
-                              icon: const Icon(Icons.close),
-                              onPressed: () {
-                                bind.cmCloseConnection(connId: client.id);
-                                gFFI.invokeMethod(
-                                    "cancel_notification", client.id);
-                              },
-                              label: Text(translate("Disconnect"))))
-                      : Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                              TextButton(
-                                  child: Text(translate("Dismiss")),
-                                  onPressed: () {
-                                    serverModel.sendLoginResponse(
-                                        client, false);
-                                  }).marginOnly(right: 15),
-                              if (serverModel.approveMode != 'password')
-                                ElevatedButton.icon(
-                                    icon: const Icon(Icons.check),
-                                    label: Text(translate("Accept")),
-                                    onPressed: () {
-                                      serverModel.sendLoginResponse(
-                                          client, true);
-                                    }),
-                            ]),
+    //++++Reminani : them form xac thuc thong tin
+                  // Row(
+                  //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  //   children: [
+                  //     //không show thông tin client kết nối
+                  //     // Expanded(child: ClientInfo(client)),
+                  //     Expanded(
+                  //         flex: -1,
+                  //         child: client.isFileTransfer || !client.authorized
+                  //             ? const SizedBox.shrink()
+                  //             : IconButton(
+                  //                 onPressed: () {
+                  //                  gFFI.chatModel.changeCurrentKey(
+                  //                      MessageKey(client.peerId, client.id));
+                  //                   final bar = navigationBarKey.currentWidget;
+                  //                   if (bar != null) {
+                  //                     bar as BottomNavigationBar;
+                  //                     bar.onTap!(1);
+                  //                   }
+                  //                 },
+                  //               icon: unreadTopRightBuilder(
+                  //                    client.unreadChatMessageCount)))
+                  //   ],
+                  // ),
+                  // client.authorized
+                  //     ? const SizedBox.shrink()
+                  //     : Text(
+                  //         translate("android_new_connection_tip"),
+                  //         style: Theme.of(context).textTheme.bodyMedium,
+                  //       ).marginOnly(bottom: 5),
+                  // client.authorized
+                  // ? Container(
+                  //     alignment: Alignment.centerRight,
+                  //     child: ElevatedButton.icon(
+                  //         style: ButtonStyle(
+                  //             backgroundColor:
+                  //                 MaterialStatePropertyAll(Colors.red)),
+                  //         icon: const Icon(Icons.close),
+                  //         onPressed: () {
+                  //           bind.cmCloseConnection(connId: client.id);
+                  //           gFFI.invokeMethod(
+                  //               "cancel_notification", client.id);
+                  //         },
+                  //         label: Text(translate("Disconnect"))))
+                  // : Row(
+                  //     mainAxisAlignment: MainAxisAlignment.end,
+                  //     children: [
+                  //         TextButton(
+                  //             child: Text(translate("Dismiss")),
+                  //             onPressed: () {
+                  //               serverModel.sendLoginResponse(
+                  //                   client, false);
+                  //             }).marginOnly(right: 15),
+                  //         ElevatedButton.icon(
+                  //             icon: const Icon(Icons.check),
+                  //             label: Text(translate("Accept")),
+                  //             onPressed: () {
+                  //               serverModel.sendLoginResponse(client, true);
+                  //             }),
+                  //       ]),
+    //----Reminani : them form xac thuc thong tin
                 ])))
             .toList());
   }
