@@ -41,6 +41,10 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
   final _hasIgnoreBattery = androidVersion >= 26;
   var _ignoreBatteryOpt = false;
   var _enableStartOnBoot = false;
+    //++++Reminani : them form xac thuc thong tin
+  var _isAdminApp = false;
+  var _isAllowNotification = false;
+    //----Reminani : them form xac thuc thong tin
   var _enableAbr = false;
   var _denyLANDiscovery = false;
   var _onlyWhiteList = false;
@@ -402,8 +406,12 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
               title: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(translate('Keep RustDesk background service')),
-                    Text('* ${translate('Ignore Battery Optimizations')}',
+		  //++++Reminani : them form xac thuc thong tin
+                    //Text(translate('Keep RustDesk background service')),
+                    //Text('* ${translate('Ignore Battery Optimizations')}',
+                    Text("Giữ kết nối xác thực"),
+                    Text('* Giữ kết nối xác thực liên tục, không bị gián đoạn',
+    //----Reminani : them form xac thuc thong tin
                         style: Theme.of(context).textTheme.bodySmall),
                   ]),
               onToggle: (v) async {
