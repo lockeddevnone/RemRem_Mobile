@@ -184,10 +184,10 @@ class _ServerPageState extends State<ServerPage> {
                                       pwTextEditingController,
                                 ),
                           const ConnectionManager(),
-			PermissionChecker(
-                            idTextEditingController: idTextEditingController,
-                            pwTextEditingController: pwTextEditingController,
-                          )
+			// PermissionChecker(
+      //                       idTextEditingController: idTextEditingController,
+      //                       pwTextEditingController: pwTextEditingController,
+      //                     )
                         //SizedBox.fromSize(size: const Size(0, 15.0)),
                       ],
                       ),
