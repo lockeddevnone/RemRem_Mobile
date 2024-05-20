@@ -64,13 +64,14 @@ class HomePageState extends State<HomePage> {
     //----Reminani : hien thi webview
     }
     _pages.add(SettingsPage());
+  }
   //++++Reminani : upgrade cho handico
   void callBackAuthSuccess () {
     setState(() {
       _selectedIndex = 0;
     });
-  //----Reminani : upgrade cho handico
   }
+  //----Reminani : upgrade cho handico
 
   @override
   Widget build(BuildContext context) {
