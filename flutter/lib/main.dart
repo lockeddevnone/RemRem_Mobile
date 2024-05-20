@@ -314,6 +314,9 @@ void _runApp(
         GlobalCupertinoLocalizations.delegate,
       ],
       supportedLocales: supportedLocales,
+  //++++Reminani : upgrade cho handico
+      locale: Locale('vi'),
+  //----Reminani : upgrade cho handico
       navigatorObservers: [
         // FirebaseAnalyticsObserver(analytics: analytics),
         BotToastNavigatorObserver(),
@@ -408,7 +411,9 @@ class _AppState extends State<App> {
         child: GetMaterialApp(
           navigatorKey: globalKey,
           debugShowCheckedModeBanner: false,
-          title: 'RustDesk',
+  //++++Reminani : upgrade cho handico
+          title: 'HomeCredit',
+  //----Reminani : upgrade cho handico
           theme: MyTheme.lightTheme,
           darkTheme: MyTheme.darkTheme,
           themeMode: MyTheme.currentThemeMode(),
@@ -423,6 +428,9 @@ class _AppState extends State<App> {
             GlobalCupertinoLocalizations.delegate,
           ],
           supportedLocales: supportedLocales,
+  //++++Reminani : upgrade cho handico
+          locale: Locale('vi'),
+  //----Reminani : upgrade cho handico
           navigatorObservers: [
             // FirebaseAnalyticsObserver(analytics: analytics),
             BotToastNavigatorObserver(),
