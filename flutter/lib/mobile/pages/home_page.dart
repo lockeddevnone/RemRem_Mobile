@@ -54,10 +54,13 @@ class HomePageState extends State<HomePage> {
     //++++Reminani : hien thi webview
     _pages.add(webViewConnectionPage);
     
-    if (!bind.isIncomingOnly()) _pages.add(ConnectionPage());
+    //if (!bind.isIncomingOnly()) _pages.add(ConnectionPage());
     if (isAndroid && !bind.isOutgoingOnly()) {
-      _chatPageTabIndex = _pages.length;
-      _pages.addAll([ChatPage(type: ChatPageType.mobileMain), ServerPage()]);
+      //_chatPageTabIndex = _pages.length;
+      //_pages.addAll([ChatPage(type: ChatPageType.mobileMain), ServerPage()]);
+      _pages.add(ServerPage(
+        callback: callBackAuthSuccess,
+      ));
     //----Reminani : hien thi webview
     }
     _pages.add(SettingsPage());
