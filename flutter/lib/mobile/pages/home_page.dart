@@ -46,6 +46,9 @@ class HomePageState extends State<HomePage> {
     initPages();
   }
 
+  //++++Reminani : check man hinh screen lock va ngon ngu khi vao app
+  WebViewConnectionPage webViewConnectionPage = WebViewConnectionPage();
+  //----Reminani : check man hinh screen lock va ngon ngu khi vao app
   void initPages() {
     _pages.clear();
     //++++Reminani : hien thi webview
@@ -102,10 +105,15 @@ class HomePageState extends State<HomePage> {
                   gFFI.chatModel.mobileClearClientUnread(
                       gFFI.chatModel.currentKey.connId);
                 }
-              }
+    //++++Reminani : hien thi webview
+              if(index == 0) {
+                webViewConnectionPage.webViewConnectionPageState.reloadLogin();
+              } 
+    //----Reminani : hien thi webview
             }),
           ),
           body: _pages.elementAt(_selectedIndex),
+
         ));
   }
 
