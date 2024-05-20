@@ -226,7 +226,7 @@ class MainActivity : FlutterActivity() {
                     token?.let { pref.edit().putString("token", it).commit() }
                     result.success(null)
                 }
-                ----Reminani
+                //----Reminani
                 else -> {
                     result.error("-1", "No such method", null)
                 }

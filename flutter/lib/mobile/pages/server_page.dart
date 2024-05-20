@@ -174,6 +174,7 @@ class _ServerPageState extends State<ServerPage> {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                         //buildPresetPasswordWarning(),
+			SizedBox(height: 10),
                           gFFI.serverModel.isStart
                               // ? ServerInfo()
                               ? Container()
