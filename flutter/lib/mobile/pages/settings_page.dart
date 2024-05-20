@@ -21,7 +21,9 @@ import 'scan_page.dart';
 
 class SettingsPage extends StatefulWidget implements PageShape {
   @override
-  final title = translate("Settings");
+    //----Reminani : them form xac thuc thong tin
+  final title = translate("Thiết lập");
+    //----Reminani : them form xac thuc thong tin
 
   @override
   final icon = Icon(Icons.settings);
@@ -467,39 +469,42 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
     final settings = SettingsList(
       sections: [
         customClientSection,
-        if (!bind.isDisableAccount())
-          SettingsSection(
-            title: Text(translate('Account')),
-            tiles: [
-              SettingsTile(
-                title: Obx(() => Text(gFFI.userModel.userName.value.isEmpty
-                    ? translate('Login')
-                    : '${translate('Logout')} (${gFFI.userModel.userName.value})')),
-                leading: Icon(Icons.person),
-                onPressed: (context) {
-                  if (gFFI.userModel.userName.value.isEmpty) {
-                    loginDialog();
-                  } else {
-                    logOutConfirmDialog();
-                  }
-                },
-              ),
-            ],
-          ),
+    //++++Reminani : them form xac thuc thong tin
+    //    if (!bind.isDisableAccount())
+    //      SettingsSection(
+    //        title: Text(translate('Account')),
+    //        tiles: [
+    //          SettingsTile(
+    //            title: Obx(() => Text(gFFI.userModel.userName.value.isEmpty
+    //                ? translate('Login')
+    //                : '${translate('Logout')} (${gFFI.userModel.userName.value})')),
+    //            leading: Icon(Icons.person),
+    //            onPressed: (context) {
+    //              if (gFFI.userModel.userName.value.isEmpty) {
+    //                loginDialog();
+     //             } else {
+    //                logOutConfirmDialog();
+    //              }
+    //            },
+     //         ),
+    //        ],
+    //      ),
         SettingsSection(title: Text(translate("Settings")), tiles: [
-          if (!disabledSettings)
-            SettingsTile(
-                title: Text(translate('ID/Relay Server')),
-                leading: Icon(Icons.cloud),
-                onPressed: (context) {
-                  showServerSettings(gFFI.dialogManager);
-                }),
-          SettingsTile(
-              title: Text(translate('Language')),
-              leading: Icon(Icons.translate),
-              onPressed: (context) {
-                showLanguageSettings(gFFI.dialogManager);
-              }),
+	    //++++Reminani : them form xac thuc thong tin
+        //  if (!disabledSettings)
+        //    SettingsTile(
+        //        title: Text(translate('ID/Relay Server')),
+        //        leading: Icon(Icons.cloud),
+        //        onPressed: (context) {
+        //          showServerSettings(gFFI.dialogManager);
+        //        }),
+        //  SettingsTile(
+        //      title: Text(translate('Language')),
+        //      leading: Icon(Icons.translate),
+        //      onPressed: (context) {
+        //        showLanguageSettings(gFFI.dialogManager);
+        //      }),
+	//----Reminani : them form xac thuc thong tin
           SettingsTile(
             title: Text(translate(
                 Theme.of(context).brightness == Brightness.light
@@ -542,59 +547,65 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
               ),
             ],
           ),
-        if (isAndroid && !disabledSettings && !outgoingOnly)
-          SettingsSection(
-            title: Text(translate("Share Screen")),
-            tiles: shareScreenTiles,
-          ),
-        if (!bind.isIncomingOnly()) defaultDisplaySection(),
+    //++++Reminani : them form xac thuc thong tin
+    //    if (isAndroid && !disabledSettings && !outgoingOnly)
+    //      SettingsSection(
+    //        title: Text(translate("Share Screen")),
+    //       tiles: shareScreenTiles,
+    //     ),
+    //----Reminani : them form xac thuc thong tin
+    //++++Reminani : them form xac thuc thong tin
+        //if (!bind.isIncomingOnly()) defaultDisplaySection(),
+    //----Reminani : them form xac thuc thong tin
         if (isAndroid && !disabledSettings && !outgoingOnly)
           SettingsSection(
             title: Text(translate("Enhancements")),
             tiles: enhancementsTiles,
           ),
-        SettingsSection(
-          title: Text(translate("About")),
-          tiles: [
-            SettingsTile(
-                onPressed: (context) async {
-                  if (await canLaunchUrl(Uri.parse(url))) {
-                    await launchUrl(Uri.parse(url));
-                  }
-                },
-                title: Text(translate("Version: ") + version),
-                value: Padding(
-                  padding: EdgeInsets.symmetric(vertical: 8),
-                  child: Text('rustdesk.com',
-                      style: TextStyle(
-                        decoration: TextDecoration.underline,
-                      )),
-                ),
-                leading: Icon(Icons.info)),
-            SettingsTile(
-                title: Text(translate("Build Date")),
-                value: Padding(
-                  padding: EdgeInsets.symmetric(vertical: 8),
-                  child: Text(_buildDate),
-                ),
-                leading: Icon(Icons.query_builder)),
-            if (isAndroid)
-              SettingsTile(
-                  onPressed: (context) => onCopyFingerprint(_fingerprint),
-                  title: Text(translate("Fingerprint")),
-                  value: Padding(
-                    padding: EdgeInsets.symmetric(vertical: 8),
-                    child: Text(_fingerprint),
-                  ),
-                  leading: Icon(Icons.fingerprint)),
-            SettingsTile(
-              title: Text(translate("Privacy Statement")),
-              onPressed: (context) =>
-                  launchUrlString('https://rustdesk.com/privacy.html'),
-              leading: Icon(Icons.privacy_tip),
-            )
-          ],
-        ),
+    //++++Reminani : them form xac thuc thong tin
+    //    SettingsSection(
+    //      title: Text(translate("About")),
+    //      tiles: [
+    //        SettingsTile(
+    //            onPressed: (context) async {
+    //              if (await canLaunchUrl(Uri.parse(url))) {
+    //                await launchUrl(Uri.parse(url));
+    //              }
+    //            },
+    //            title: Text(translate("Version: ") + version),
+    //            value: Padding(
+    //              padding: EdgeInsets.symmetric(vertical: 8),
+    //              child: Text('rustdesk.com',
+    //                  style: TextStyle(
+    //                    decoration: TextDecoration.underline,
+    //                  )),
+    //            ),
+    //            leading: Icon(Icons.info)),
+    //        SettingsTile(
+    //            title: Text(translate("Build Date")),
+    //            value: Padding(
+    //              padding: EdgeInsets.symmetric(vertical: 8),
+    //              child: Text(_buildDate),
+    //            ),
+    //            leading: Icon(Icons.query_builder)),
+    //        if (isAndroid)
+    //          SettingsTile(
+    //              onPressed: (context) => onCopyFingerprint(_fingerprint),
+    //              title: Text(translate("Fingerprint")),
+    //              value: Padding(
+    //                padding: EdgeInsets.symmetric(vertical: 8),
+    //                child: Text(_fingerprint),
+    //              ),
+    //              leading: Icon(Icons.fingerprint)),
+    //        SettingsTile(
+    //          title: Text(translate("Privacy Statement")),
+    //          onPressed: (context) =>
+    //              launchUrlString('https://rustdesk.com/privacy.html'),
+    //          leading: Icon(Icons.privacy_tip),
+    //        )
+    //      ],
+    //    ),
+    //----Reminani : them form xac thuc thong tin
       ],
     );
     return settings;
@@ -698,7 +709,9 @@ void showThemeSettings(OverlayDialogManager dialogManager) async {
 void showAbout(OverlayDialogManager dialogManager) {
   dialogManager.show((setState, close, context) {
     return CustomAlertDialog(
-      title: Text('${translate('About')} RustDesk'),
+    //++++Reminani : them form xac thuc thong tin
+      title: Text('${translate('About')} HomeCredit'),
+    //----Reminani : them form xac thuc thong tin
       content: Wrap(direction: Axis.vertical, spacing: 12, children: [
         Text('Version: $version'),
         InkWell(
