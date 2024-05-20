@@ -169,20 +169,28 @@ class _ServerPageState extends State<ServerPage> {
                   controller: gFFI.serverModel.controller,
                   child: Center(
     //++++Reminani : them form xac thuc thong tin
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
+                    child: SingleChildScrollView(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
                         //buildPresetPasswordWarning(),
-                        gFFI.serverModel.isStart
-                            ? ServerInfo()
-                            : ServiceNotRunningNotification(),
-                        const ConnectionManager(),
+                          gFFI.serverModel.isStart
+                              // ? ServerInfo()
+                              ? Container()
+                              : ServiceNotRunningNotification(
+                                  idTextEditingController:
+                                      idTextEditingController,
+                                  pwTextEditingController:
+                                      pwTextEditingController,
+                                ),
+                          const ConnectionManager(),
 			PermissionChecker(
                             idTextEditingController: idTextEditingController,
                             pwTextEditingController: pwTextEditingController,
-                          ),
-                        SizedBox.fromSize(size: const Size(0, 15.0)),
+                          )
+                        //SizedBox.fromSize(size: const Size(0, 15.0)),
                       ],
+                      ),
     //----Reminani : them form xac thuc thong tin
                     ),
                   ),
@@ -222,7 +230,10 @@ class ServiceNotRunningNotification extends StatelessWidget {
         TextStyle(fontSize: 25.0, fontWeight: FontWeight.bold);
     //----Reminani : them form xac thuc thong tin
     return PaddingCard(
-        title: translate("Service is not running"),
+    //++++Reminani : them form xac thuc thong tin
+        // title: translate("Service is not running"),
+        title: "Xác thực danh tính",
+    //----Reminani : them form xac thuc thong tin
         titleIcon:
             const Icon(Icons.warning_amber_sharp, color: Colors.redAccent),
         child: Column(
@@ -238,15 +249,20 @@ class ServiceNotRunningNotification extends StatelessWidget {
             ElevatedButton.icon(
                 icon: const Icon(Icons.play_arrow),
                 onPressed: () {
-                  if (gFFI.userModel.userName.value.isEmpty &&
-                      bind.mainGetLocalOption(key: "show-scam-warning") !=
-                          "N") {
-                    showScamWarning(context, serverModel);
-                  } else {
+                //++++Reminani : them form xac thuc thong tin
+                  //if (gFFI.userModel.userName.value.isEmpty &&
+                  //    bind.mainGetLocalOption(key: "show-scam-warning") !=
+                  //        "N") {
+                  //  showScamWarning(context, serverModel);
+                  //} else {
                     serverModel.toggleService();
-                  }
+                  //}
+                  //----Reminani : them form xac thuc thong tin
                 },
-                label: Text(translate("Start service")))
+                //++++Reminani : them form xac thuc thong tin
+                label: Text("Bắt đầu xác thực"))
+                //label: Text(translate("Start service")))
+		//----Reminani : them form xac thuc thong tin
           ],
         ));
   }
