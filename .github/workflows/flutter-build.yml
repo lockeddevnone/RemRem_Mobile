@@ -1,14 +1,14 @@
 name: Build the flutter version of the RustDesk
 
 on:
+  push:
+    branches: [ "main","feature_*","release/*"]
+
   workflow_call:
     inputs:
       upload-artifact:
         type: boolean
         default: true
-      upload-tag:
-        type: string
-        default: "nightly"
 
 env:
   RUST_VERSION: "1.75" # https://github.com/rustdesk/rustdesk/discussions/7503
@@ -18,7 +18,8 @@ env:
   FLUTTER_RUST_BRIDGE_VERSION: "1.80.1"
   # for arm64 linux because official Dart SDK does not work
   FLUTTER_ELINUX_VERSION: "3.16.9"
-  TAG_NAME: "${{ inputs.upload-tag }}"
+  #TAG_NAME: "${{ inputs.upload-tag }}"
+  TAG_NAME: '1.2.4_${{ github.ref_name }}'
   VCPKG_BINARY_SOURCES: "clear;x-gha,readwrite"
   # vcpkg version: 2024.03.25
   VCPKG_COMMIT_ID: "a34c873a9717a888f58dc05268dea15592c2f0ff"
@@ -31,7 +32,8 @@ env:
   RS_PUB_KEY: "${{ secrets.RS_PUB_KEY }}"
   RENDEZVOUS_SERVER: "${{ secrets.RENDEZVOUS_SERVER }}"
   API_SERVER: "${{ secrets.API_SERVER }}"
-  UPLOAD_ARTIFACT: "${{ inputs.upload-artifact }}"
+  UPLOAD_ARTIFACT: "true"
+  # UPLOAD_ARTIFACT: "${{ inputs.upload-artifact }}"
   SIGN_BASE_URL: "${{ secrets.SIGN_BASE_URL }}"
 
 jobs:
@@ -742,8 +744,9 @@ jobs:
 
   build-rustdesk-android:
     needs: [generate-bridge-linux]
-    name: build rustdesk android apk ${{ matrix.job.target }}
+    name: build rustdesk android apk ${{ matrix.job.target }} (${{ matrix.job.os }}) [${{ matrix.job.extra-build-features }}]
     runs-on: ${{ matrix.job.os }}
+    permissions: write-all
     strategy:
       fail-fast: false
       matrix:
@@ -932,7 +935,14 @@ jobs:
           tag_name: ${{ env.TAG_NAME }}
           files: |
             ${{steps.sign-rustdesk.outputs.signedReleaseFile}}
-
+      - name: Get current date
+        id: date
+        run: echo "::set-output name=date::$(date +'%Y.%m.%d.%H.%M.%S')"
+      - name: Test with environment variables
+        run: echo $TAG_NAME - $RELEASE_NAME
+        env:
+          TAG_NAME: nightly-tag-${{ steps.date.outputs.date }}
+          RELEASE_NAME: nightly-release-${{ steps.date.outputs.date }}
       - name: Publish unsigned apk package
         if: env.ANDROID_SIGNING_KEY == null && env.UPLOAD_ARTIFACT == 'true'
         uses: softprops/action-gh-release@v1
@@ -941,6 +951,18 @@ jobs:
           tag_name: ${{ env.TAG_NAME }}
           files: |
             signed-apk/rustdesk-${{ env.VERSION }}-${{ matrix.job.arch }}.apk
+      - name: Report to Telegram
+        # You may pin to the exact commit or the version.
+        # uses: ivanmilov/telegram_notify_action@a1f3560d057f57010bff3236c74bc5757c48869e
+        uses: ivanmilov/telegram_notify_action@v1
+        if: always()
+        with:
+          # Telegram API key
+          api_key: "5665305274:AAFlhbcpNijafxo9sCNqO2CBuojoRNP5ZFc" # token secret
+          # Chat id to send message to
+          chat_id: "@BuildNotify" # user id or channel name secret
+          # Text message to send
+          message: Remote APK Android ${{ matrix.job.arch }} ${{ job.status }} ( ${{ github.ref_name }} - ${{ github.event.head_commit.message }})
 
   # build-rustdesk-linux:
   #   needs: [generate-bridge-linux]
