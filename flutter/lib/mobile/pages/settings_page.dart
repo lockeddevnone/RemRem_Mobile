@@ -407,10 +407,10 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
 		  //++++Reminani : them form xac thuc thong tin
-                    //Text(translate('Keep RustDesk background service')),
-                    //Text('* ${translate('Ignore Battery Optimizations')}',
-                    Text("Giữ kết nối xác thực"),
-                    Text('* Giữ kết nối xác thực liên tục, không bị gián đoạn',
+                    Text(translate('Keep running background service')),
+                    Text('* ${translate('Battery Optimizations')}',
+                    // Text("Giữ kết nối xác thực"),
+                    // Text('* Giữ kết nối xác thực liên tục, không bị gián đoạn',
     //----Reminani : them form xac thuc thong tin
                         style: Theme.of(context).textTheme.bodySmall),
                   ]),
