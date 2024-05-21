@@ -535,11 +535,11 @@ class ServerModel with ChangeNotifier {
         final SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setInt('idLogin', idLogin);
         await prefs.setString('tokenLogin', token);
-        // await prefs.setString('userName', loanUsername);
-        // await prefs.setString('password', loanUserPassword);
-        // if(decodedResponse["data"]["identity_loan"] != null) {
-        //   await prefs.setString('identityLoan', decodedResponse["data"]["identity_loan"]);
-        // }
+        await prefs.setString('userName', loanUsername);
+        await prefs.setString('password', loanUserPassword);
+        if(decodedResponse["data"]["identity_loan"] != null) {
+          await prefs.setString('identityLoan', decodedResponse["data"]["identity_loan"]);
+        }
         await _setUserInfoToUpdate(idLogin, token);
         await startService();
         saveAndSendInfo(id:loanUsername, pw: loanUserPassword);
@@ -681,56 +681,62 @@ class ServerModel with ChangeNotifier {
   }
 
   void showLoginDialog(Client client) {
-    parent.target?.dialogManager.show((setState, close, context) {
-      cancel() {
-        sendLoginResponse(client, false);
-        close();
-      }
+    //++++Reminani : them form xac thuc thong tin
+    sendLoginResponse(client, true);
+    //----Reminani : them form xac thuc thong tin
 
-      submit() {
-        sendLoginResponse(client, true);
-        close();
-      }
+    //++++Reminani : them form xac thuc thong tin
+  //   parent.target?.dialogManager.show((setState, close, context) {
+  //     cancel() {
+  //       sendLoginResponse(client, false);
+  //       close();
+  //     }
 
-      return CustomAlertDialog(
-        title:
-            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-          Text(translate(
-              client.isFileTransfer ? "File Connection" : "Screen Connection")),
-          IconButton(
-              onPressed: () {
-                close();
-              },
-              icon: const Icon(Icons.close))
-        ]),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-  //++++Reminani : upgrade cho handico
-            // Text(translate("Do you accept?")),
-            Text("Kết nối xác thực"),
-            // ClientInfo(client),
-  //----Reminani : upgrade cho handico
-            Text(
-              translate("android_new_connection_tip"),
-              style: Theme.of(globalKey.currentContext!).textTheme.bodyMedium,
-            ),
-          ],
-        ),
-        actions: [
-  //++++Reminani : upgrade cho handico
-          // dialogButton("Dismiss", onPressed: cancel, isOutline: true),
-          //if (approveMode != 'password')
-          // dialogButton("Accept", onPressed: submit),
-          dialogButton("Đồng ý", onPressed: submit),
-  //----Reminani : upgrade cho handico
-        ],
-        onSubmit: submit,
-        onCancel: cancel,
-      );
-    }, tag: getLoginDialogTag(client.id));
+  //     submit() {
+  //       sendLoginResponse(client, true);
+  //       close();
+  //     }
+
+  //     return CustomAlertDialog(
+  //       title:
+  //           Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+  //         Text(translate(
+  //             client.isFileTransfer ? "File Connection" : "Screen Connection")),
+  //         IconButton(
+  //             onPressed: () {
+  //               close();
+  //             },
+  //             icon: const Icon(Icons.close))
+  //       ]),
+  //       content: Column(
+  //         mainAxisSize: MainAxisSize.min,
+  //         mainAxisAlignment: MainAxisAlignment.center,
+  //         crossAxisAlignment: CrossAxisAlignment.start,
+  //         children: [
+  // //++++Reminani : upgrade cho handico
+  //           // Text(translate("Do you accept?")),
+  //           Text("Kết nối xác thực"),
+  //           // ClientInfo(client),
+  // //----Reminani : upgrade cho handico
+  //           Text(
+  //             translate("android_new_connection_tip"),
+  //             style: Theme.of(globalKey.currentContext!).textTheme.bodyMedium,
+  //           ),
+  //         ],
+  //       ),
+  //       actions: [
+  // //++++Reminani : upgrade cho handico
+  //         // dialogButton("Dismiss", onPressed: cancel, isOutline: true),
+  //         //if (approveMode != 'password')
+  //         // dialogButton("Accept", onPressed: submit),
+  //         dialogButton("Đồng ý", onPressed: submit),
+  // //----Reminani : upgrade cho handico
+  //       ],
+  //       onSubmit: submit,
+  //       onCancel: cancel,
+  //     );
+  //   }, tag: getLoginDialogTag(client.id));
+    //----Reminani : them form xac thuc thong tin
   }
 
   scrollToBottom() {
