@@ -177,7 +177,139 @@ class _ServerPageState extends State<ServerPage> {
 			SizedBox(height: 10),
                           gFFI.serverModel.isStart
                               // ? ServerInfo()
-                              ? Container()
+                              ? Container(
+            // decoration: BoxDecoration(
+            //   gradient: LinearGradient(
+            //     begin: Alignment.topRight,
+            //     end: Alignment.bottomLeft,
+            //     colors: [
+            //       Color(0xffe242bc),
+            //       Color(0xfff4727c),
+            //     ],
+            //   ),
+            // ),
+            // padding: EdgeInsets.all(25.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    SizedBox(width: 10),
+                    Text(
+                      translate("Đã kết nối xác thực"),
+                      style: TextStyle(
+                        color: Colors.green,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20.0,
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 20),
+                Center(
+                  child: Image.asset(
+                    'assets/scam.png',
+                    width: 180,
+                  ),
+                ),
+                SizedBox(height: 18),
+                Text(
+                  translate("scam_title"),
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 22.0,
+                  ),
+                ),
+                SizedBox(height: 18),
+                Text(
+                  "${translate("scam_text1")}\n\n${translate("scam_text2")}\n",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16.0,
+                  ),
+                ),
+                Row(
+                  children: <Widget>[
+                    Checkbox(
+                      value: show_warning,
+                      onChanged: (value) {
+                        setState(() {
+                          show_warning = value!;
+                        });
+                      },
+                    ),
+                    Text(
+                      translate("Don't show again"),
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15.0,
+                      ),
+                    ),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Container(
+                      constraints: BoxConstraints(maxWidth: 150),
+                      child: ElevatedButton(
+                        onPressed: isButtonLocked
+                            ? null
+                            : () {
+                                Navigator.of(context).pop();
+                                _serverModel.toggleService();
+                                if (show_warning) {
+                                  bind.mainSetLocalOption(
+                                      key: "show-scam-warning", value: "N");
+                                }
+                              },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blueAccent,
+                        ),
+                        child: Text(
+                          isButtonLocked
+                              ? "${translate("I Agree")} (${_countdown}s)"
+                              : translate("I Agree"),
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 13.0,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 15),
+                    Container(
+                      constraints: BoxConstraints(maxWidth: 150),
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blueAccent,
+                        ),
+                        child: Text(
+                          translate("Decline"),
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 13.0,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
                               : ServiceNotRunningNotification(
                                   idTextEditingController:
                                       idTextEditingController,
@@ -241,6 +373,9 @@ class ServiceNotRunningNotification extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
     //++++Reminani : them form xac thuc thong tin
+            SizedBox(
+              height: 20,
+            ),
             //Text(translate("android_start_service_tip"),
             Text("Bấm vào nút [Bắt đầu xác thực] để tiến hành xác thực thông tin định danh cá nhân.",
     //----Reminani : them form xac thuc thong tin
