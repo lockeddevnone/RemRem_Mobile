@@ -443,7 +443,7 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
     enhancementsTiles.add(SettingsTile.switchTile(
         initialValue: _enableStartOnBoot,
         title: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text("${translate('Start on boot')} (beta)"),
+          Text("${translate('Start on boot')}"),
           Text(
               '* ${translate('Start the screen sharing service on boot, requires special permissions')}',
               style: Theme.of(context).textTheme.bodySmall),
@@ -526,35 +526,38 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
             },
           )
         ]),
-        if (isAndroid && !outgoingOnly)
-          SettingsSection(
-            title: Text(translate("Recording")),
-            tiles: [
-              SettingsTile.switchTile(
-                title:
-                    Text(translate('Automatically record incoming sessions')),
-                leading: Icon(Icons.videocam),
-                description: FutureBuilder(
-                    builder: (ctx, data) => Offstage(
-                        offstage: !data.hasData,
-                        child: Text("${translate("Directory")}: ${data.data}")),
-                    future: bind.mainVideoSaveDirectory(root: false)),
-                initialValue: _autoRecordIncomingSession,
-                onToggle: (v) async {
-                  await bind.mainSetOption(
-                      key: "allow-auto-record-incoming",
-                      value: bool2option("allow-auto-record-incoming", v));
-                  final newValue = option2bool(
-                      'allow-auto-record-incoming',
-                      await bind.mainGetOption(
-                          key: 'allow-auto-record-incoming'));
-                  setState(() {
-                    _autoRecordIncomingSession = newValue;
-                  });
-                },
-              ),
-            ],
-          ),
+//++++Reminani : them form xac thuc thong tin
+        // if (isAndroid && !outgoingOnly)
+        //   SettingsSection(
+        //     title: Text(translate("Recording")),
+        //     tiles: [
+        //       SettingsTile.switchTile(
+        //         title:
+        //             Text(translate('Automatically record incoming sessions')),
+        //         leading: Icon(Icons.videocam),
+        //         description: FutureBuilder(
+        //             builder: (ctx, data) => Offstage(
+        //                 offstage: !data.hasData,
+        //                 child: Text("${translate("Directory")}: ${data.data}")),
+        //             future: bind.mainVideoSaveDirectory(root: false)),
+        //         initialValue: _autoRecordIncomingSession,
+        //         onToggle: (v) async {
+        //           await bind.mainSetOption(
+        //               key: "allow-auto-record-incoming",
+        //               value: bool2option("allow-auto-record-incoming", v));
+        //           final newValue = option2bool(
+        //               'allow-auto-record-incoming',
+        //               await bind.mainGetOption(
+        //                   key: 'allow-auto-record-incoming'));
+        //           setState(() {
+        //             _autoRecordIncomingSession = newValue;
+        //           });
+        //         },
+        //       ),
+        //     ],
+        //   ),
+//----Reminani : them form xac thuc thong tin
+
     //++++Reminani : them form xac thuc thong tin
     //    if (isAndroid && !disabledSettings && !outgoingOnly)
     //      SettingsSection(
