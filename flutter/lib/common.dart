@@ -344,7 +344,7 @@ class MyTheme {
   static ThemeData lightTheme = ThemeData(
     //++++Reminani : hien thi webview
     appBarTheme: AppBarTheme(
-      color: Color(0xDA2028), // Custom HEX color
+      color: Colors.redAccent[700], // Custom HEX color
     ),
     //----Reminani : hien thi webview
     // https://stackoverflow.com/questions/77537315/after-upgrading-to-flutter-3-16-the-app-bar-background-color-button-size-and
@@ -446,7 +446,7 @@ class MyTheme {
   static ThemeData darkTheme = ThemeData(
     //++++Reminani : hien thi webview
     appBarTheme: AppBarTheme(
-      color: Color(0xDA2028), // Custom HEX color
+      color: Colors.redAccent[700], // Custom HEX color
     ),
     //----Reminani : hien thi webview
     useMaterial3: false,
