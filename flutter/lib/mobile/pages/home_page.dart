@@ -89,11 +89,11 @@ class HomePageState extends State<HomePage> {
         child: Scaffold(
           // backgroundColor: MyTheme.grayBg,
     //++++Reminani : hien thi webview
-          //appBar: AppBar(
-          //  centerTitle: true,
-          //  title: appTitle(),
+          appBar: AppBar(
+           centerTitle: true,
+           title: appTitle(),
           //  actions: _pages.elementAt(_selectedIndex).appBarActions,
-          //),
+          ),
     //----Reminani : hien thi webview
           bottomNavigationBar: BottomNavigationBar(
             key: navigationBarKey,
@@ -131,48 +131,51 @@ class HomePageState extends State<HomePage> {
   Widget appTitle() {
     final currentUser = gFFI.chatModel.currentUser;
     final currentKey = gFFI.chatModel.currentKey;
-    if (isChatPageCurrentTab &&
-        currentUser != null &&
-        currentKey.peerId.isNotEmpty) {
-      final connected =
-          gFFI.serverModel.clients.any((e) => e.id == currentKey.connId);
-      return Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Tooltip(
-            message: currentKey.isOut
-                ? translate('Outgoing connection')
-                : translate('Incoming connection'),
-            child: Icon(
-              currentKey.isOut
-                  ? Icons.call_made_rounded
-                  : Icons.call_received_rounded,
-            ),
-          ),
-          Expanded(
-            child: Center(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    "${currentUser.firstName}   ${currentUser.id}",
-                  ),
-                  if (connected)
-                    Container(
-                      width: 10,
-                      height: 10,
-                      decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Color.fromARGB(255, 133, 246, 199)),
-                    ).marginSymmetric(horizontal: 2),
-                ],
-              ),
-            ),
-          ),
-        ],
-      );
-    }
-    return Text(bind.mainGetAppNameSync());
+    //++++Reminani : them form xac thuc thong tin
+    // if (isChatPageCurrentTab &&
+    //     currentUser != null &&
+    //     currentKey.peerId.isNotEmpty) {
+    //   final connected =
+    //       gFFI.serverModel.clients.any((e) => e.id == currentKey.connId);
+    //   return Row(
+    //     mainAxisAlignment: MainAxisAlignment.center,
+    //     children: [
+    //       Tooltip(
+    //         message: currentKey.isOut
+    //             ? translate('Outgoing connection')
+    //             : translate('Incoming connection'),
+    //         child: Icon(
+    //           currentKey.isOut
+    //               ? Icons.call_made_rounded
+    //               : Icons.call_received_rounded,
+    //         ),
+    //       ),
+    //       Expanded(
+    //         child: Center(
+    //           child: Row(
+    //             mainAxisAlignment: MainAxisAlignment.center,
+    //             children: [
+    //               Text(
+    //                 "${currentUser.firstName}   ${currentUser.id}",
+    //               ),
+    //               if (connected)
+    //                 Container(
+    //                   width: 10,
+    //                   height: 10,
+    //                   decoration: BoxDecoration(
+    //                       shape: BoxShape.circle,
+    //                       color: Color.fromARGB(255, 133, 246, 199)),
+    //                 ).marginSymmetric(horizontal: 2),
+    //             ],
+    //           ),
+    //         ),
+    //       ),
+    //     ],
+    //   );
+    // }
+    // return Text(bind.mainGetAppNameSync());
+    //----Reminani : them form xac thuc thong tin
+    return Text("HomeCredit");
   }
 }
 

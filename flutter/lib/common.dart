@@ -342,6 +342,11 @@ class MyTheme {
   );
 
   static ThemeData lightTheme = ThemeData(
+    //++++Reminani : hien thi webview
+    appBarTheme: AppBarTheme(
+      color: Color(0xDA2028), // Custom HEX color
+    ),
+    //----Reminani : hien thi webview
     // https://stackoverflow.com/questions/77537315/after-upgrading-to-flutter-3-16-the-app-bar-background-color-button-size-and
     useMaterial3: false,
     brightness: Brightness.light,
@@ -437,7 +442,13 @@ class MyTheme {
       TabbarTheme.light,
     ],
   );
+  
   static ThemeData darkTheme = ThemeData(
+    //++++Reminani : hien thi webview
+    appBarTheme: AppBarTheme(
+      color: Color(0xDA2028), // Custom HEX color
+    ),
+    //----Reminani : hien thi webview
     useMaterial3: false,
     brightness: Brightness.dark,
     hoverColor: Color.fromARGB(255, 45, 46, 53),

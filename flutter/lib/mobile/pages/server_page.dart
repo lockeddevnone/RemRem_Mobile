@@ -174,7 +174,9 @@ class _ServerPageState extends State<ServerPage> {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                         //buildPresetPasswordWarning(),
-                        SizedBox(height: 10),
+                          SizedBox(
+                            height: 40
+                          ),
                           gFFI.serverModel.isStart
                               // ? ServerInfo()
                               ? Container(
@@ -182,9 +184,9 @@ class _ServerPageState extends State<ServerPage> {
                                   mainAxisSize: MainAxisSize.min,
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
+                                    SizedBox(width: 10),
                                     Row (
                                       children: [
-                                        SizedBox(width: 10),
                                         Text(
                                           translate("Đã kết nối xác thực"),
                                           style: TextStyle(
