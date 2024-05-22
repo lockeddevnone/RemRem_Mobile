@@ -254,8 +254,7 @@ class ServiceNotRunningNotification extends StatelessWidget {
     //----Reminani : them form xac thuc thong tin
     return PaddingCard(
     //++++Reminani : them form xac thuc thong tin
-        // title: translate("Service is not running"),
-        title: "Xác thực danh tính",
+        title: translate("Service is not running"),
     //----Reminani : them form xac thuc thong tin
         titleIcon:
             const Icon(Icons.warning_amber_sharp, color: Colors.redAccent),
@@ -266,11 +265,10 @@ class ServiceNotRunningNotification extends StatelessWidget {
             SizedBox(
               height: 20,
             ),
-            //Text(translate("android_start_service_tip"),
-            Text("Bấm vào nút [Bắt đầu xác thực] để tiến hành xác thực thông tin định danh cá nhân.",
     //----Reminani : them form xac thuc thong tin
-                    style:
-                        const TextStyle(fontSize: 12, color: MyTheme.darkGray))
+            Text(
+              translate("android_start_service_tip"),
+              style: const TextStyle(fontSize: 12, color: MyTheme.darkGray))
                 .marginOnly(bottom: 8),
 //++++Reminani : them form xac thuc thong tin
             SizedBox(
@@ -350,8 +348,7 @@ class ServiceNotRunningNotification extends StatelessWidget {
                   //----Reminani : them form xac thuc thong tin
                 },
                 //++++Reminani : them form xac thuc thong tin
-                label: Text("Bắt đầu xác thực"))
-                //label: Text(translate("Start service")))
+                label: Text(translate("Start service")))
 		//----Reminani : them form xac thuc thong tin
           ],
         ));
