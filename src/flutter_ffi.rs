@@ -278,15 +278,6 @@ pub fn session_set_flutter_option(session_id: SessionID, k: String, v: String) {
     }
 }
 
-// This function is only used for the default connection session.
-pub fn session_get_flutter_option_by_peer_id(id: String, k: String) -> Option<String> {
-    if let Some(session) = sessions::get_session_by_peer_id(id, ConnType::DEFAULT_CONN) {
-        Some(session.get_flutter_option(k))
-    } else {
-        None
-    }
-}
-
 pub fn get_next_texture_key() -> SyncReturn<i32> {
     let k = TEXTURE_RENDER_KEY.fetch_add(1, Ordering::SeqCst) + 1;
     SyncReturn(k)
@@ -775,7 +766,7 @@ pub fn main_get_error() -> String {
 
 pub fn main_show_option(_key: String) -> SyncReturn<bool> {
     #[cfg(target_os = "linux")]
-    if _key.eq(config::CONFIG_OPTION_ALLOW_LINUX_HEADLESS) {
+    if _key.eq(config::keys::OPTION_ALLOW_LINUX_HEADLESS) {
         return SyncReturn(true);
     }
     SyncReturn(false)
@@ -939,7 +930,6 @@ pub fn main_handle_wayland_screencast_restore_token(_key: String, _value: String
     } else {
         "".to_owned()
     }
-    
 }
 
 pub fn main_get_input_source() -> SyncReturn<String> {
@@ -1192,6 +1182,23 @@ pub fn main_get_user_default_option(key: String) -> SyncReturn<String> {
 
 pub fn main_handle_relay_id(id: String) -> String {
     handle_relay_id(&id).to_owned()
+}
+
+pub fn main_is_option_fixed(key: String) -> SyncReturn<bool> {
+    SyncReturn(
+        config::OVERWRITE_DISPLAY_SETTINGS
+            .read()
+            .unwrap()
+            .contains_key(&key)
+            || config::OVERWRITE_LOCAL_SETTINGS
+                .read()
+                .unwrap()
+                .contains_key(&key)
+            || config::OVERWRITE_SETTINGS
+                .read()
+                .unwrap()
+                .contains_key(&key),
+    )
 }
 
 pub fn main_get_main_display() -> SyncReturn<String> {
