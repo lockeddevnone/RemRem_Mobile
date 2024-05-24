@@ -804,7 +804,6 @@ class ConnectionManager extends StatelessWidget {
                 ])))
             .toList());
   }
-}
 
 
   Widget _buildDisconnectButton(Client client) {
