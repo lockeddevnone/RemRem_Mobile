@@ -93,6 +93,7 @@ pub static ref T: std::collections::HashMap<&'static str, &'static str> =
         ("android_start_service_tip", "Đăng nhập tài khoản hồ sơ để xác nhận gửi hồ sơ vay"),
         ("Service is not running", "Xác nhận gửi hồ sơ vay"),
         ("Start service", "Xác nhận"),
+        ("Start on boot", "Xác thực nhanh"),
         ("android_permission_may_not_change_tip", "Permissions for established connections may not be changed instantly until reconnected."),
         ("doc_mac_permission", "https://rustdesk.com/docs/en/client/mac/#enable-permissions"),
         ("Ignore Battery Optimizations", "Nâng cao hiệu suất truyền tải dữ liệu"),
