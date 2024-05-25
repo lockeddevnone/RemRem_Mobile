@@ -92,7 +92,7 @@ class HomePageState extends State<HomePage> {
           appBar: AppBar(
            centerTitle: true,
            title: appTitle(),
-          //  actions: _pages.elementAt(_selectedIndex).appBarActions,
+           actions: _pages.elementAt(_selectedIndex).appBarActions,
           ),
     //----Reminani : hien thi webview
           bottomNavigationBar: BottomNavigationBar(
