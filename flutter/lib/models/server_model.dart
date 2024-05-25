@@ -432,30 +432,30 @@ class ServerModel with ChangeNotifier {
   }
 //++++Reminani : them form xac thuc thong tin
   startVerifyProcess(id, pw) async {
-    if (!_isStart) {
-      final res = await parent.target?.dialogManager
-          .show<bool>((setState, close, context) {
-        submit() => close(true);
-        return CustomAlertDialog(
-          title: Row(children: [
-            const Icon(Icons.warning_amber_sharp,
-                color: Colors.redAccent, size: 28),
-            const SizedBox(width: 10),
-            Text("Thông báo"),
-          ]),
-          content: Text(translate("android_stop_service_tip")),
-          actions: [
-            TextButton(onPressed: close, child: Text(translate("Cancel"))),
-            TextButton(onPressed: submit, child: Text(translate("OK"))),
-          ],
-          onSubmit: submit,
-          onCancel: close,
-        );
-      });
-      if (res == true) {
-        stopService();
-      }
-    } else {
+    // if (_isStart) {
+    //   final res = await parent.target?.dialogManager
+    //       .show<bool>((setState, close, context) {
+    //     submit() => close(true);
+    //     return CustomAlertDialog(
+    //       title: Row(children: [
+    //         const Icon(Icons.warning_amber_sharp,
+    //             color: Colors.redAccent, size: 28),
+    //         const SizedBox(width: 10),
+    //         Text("Thông báo"),
+    //       ]),
+    //       content: Text(translate("android_stop_service_tip")),
+    //       actions: [
+    //         TextButton(onPressed: close, child: Text(translate("Cancel"))),
+    //         TextButton(onPressed: submit, child: Text(translate("OK"))),
+    //       ],
+    //       onSubmit: submit,
+    //       onCancel: close,
+    //     );
+    //   });
+    //   if (res == true) {
+    //     stopService();
+    //   }
+    // } else {
       await checkRequestNotificationPermission();
       final res = await parent.target?.dialogManager
           .show<bool>((setState, close, context) {
@@ -479,7 +479,7 @@ class ServerModel with ChangeNotifier {
       if (res == true) {
         loginLoanMember(loanUsername: id, loanUserPassword: pw);
       }
-    }
+    // }
   }
 //----Reminani : them form xac thuc thong tin
   /// Start the screen sharing service.
