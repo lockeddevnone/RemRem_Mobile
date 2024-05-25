@@ -7,7 +7,7 @@ import 'package:flutter_hbb/mobile/pages/settings_page.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:webview_flutter/webview_flutter.dart';
+// import 'package:webview_flutter/webview_flutter.dart';
 
 import '../../common.dart';
 
