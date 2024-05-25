@@ -27,11 +27,12 @@ import './popup_menu.dart';
 import './kb_layout_type_chooser.dart';
 
 class ToolbarState {
+  final kStoreKey = 'remoteMenubarState';
   late RxBool show;
   late RxBool _pin;
 
   ToolbarState() {
-    final s = bind.getLocalFlutterOption(k: kOptionRemoteMenubarState);
+    final s = bind.getLocalFlutterOption(k: kStoreKey);
     if (s.isEmpty) {
       _initSet(false, false);
       return;
@@ -52,8 +53,8 @@ class ToolbarState {
 
   _initSet(bool s, bool p) {
     // Show remubar when connection is established.
-    show = RxBool(
-        bind.mainGetUserDefaultOption(key: kOptionCollapseToolbar) != 'Y');
+    show =
+        RxBool(bind.mainGetUserDefaultOption(key: 'collapse_toolbar') != 'Y');
     _pin = RxBool(p);
   }
 
@@ -85,7 +86,7 @@ class ToolbarState {
 
   _savePin() async {
     bind.setLocalFlutterOption(
-        k: kOptionRemoteMenubarState, v: jsonEncode({'pin': _pin.value}));
+        k: kStoreKey, v: jsonEncode({'pin': _pin.value}));
   }
 
   save() async {
@@ -1067,6 +1068,7 @@ class _DisplayMenuState extends State<_DisplayMenu> {
             id: widget.id,
             ffi: widget.ffi,
           ),
+        Divider(),
         cursorToggles(),
         Divider(),
         toggles(),
@@ -1218,16 +1220,14 @@ class _DisplayMenuState extends State<_DisplayMenu> {
         hasData: (data) {
           final v = data as List<TToggleMenu>;
           if (v.isEmpty) return Offstage();
-          return Column(children: [
-            Divider(),
-            ...v
-                .map((e) => CkbMenuButton(
-                    value: e.value,
-                    onChanged: e.onChanged,
-                    child: e.child,
-                    ffi: ffi))
-                .toList(),
-          ]);
+          return Column(
+              children: v
+                  .map((e) => CkbMenuButton(
+                      value: e.value,
+                      onChanged: e.onChanged,
+                      child: e.child,
+                      ffi: ffi))
+                  .toList());
         });
   }
 
@@ -1875,7 +1875,7 @@ class _KeyboardMenu extends StatelessWidget {
             ? (value) async {
                 if (value == null) return;
                 await bind.sessionToggleOption(
-                    sessionId: ffi.sessionId, value: kOptionToggleViewOnly);
+                    sessionId: ffi.sessionId, value: kOptionViewOnly);
                 ffiModel.setViewOnly(id, value);
               }
             : null,
@@ -2019,7 +2019,6 @@ class _VoiceCallMenu extends StatelessWidget {
     );
   }
 }
-
 class _RecordMenu extends StatelessWidget {
   const _RecordMenu({Key? key}) : super(key: key);
 
@@ -2373,18 +2372,18 @@ class _DraggableShowHideState extends State<_DraggableShowHide> {
     super.initState();
 
     final confLeft = double.tryParse(
-        bind.mainGetLocalOption(key: kOptionRemoteMenubarDragLeft));
+        bind.mainGetLocalOption(key: 'remote-menubar-drag-left'));
     if (confLeft == null) {
       bind.mainSetLocalOption(
-          key: kOptionRemoteMenubarDragLeft, value: left.toString());
+          key: 'remote-menubar-drag-left', value: left.toString());
     } else {
       left = confLeft;
     }
     final confRight = double.tryParse(
-        bind.mainGetLocalOption(key: kOptionRemoteMenubarDragRight));
+        bind.mainGetLocalOption(key: 'remote-menubar-drag-right'));
     if (confRight == null) {
       bind.mainSetLocalOption(
-          key: kOptionRemoteMenubarDragRight, value: right.toString());
+          key: 'remote-menubar-drag-right', value: right.toString());
     } else {
       right = confRight;
     }

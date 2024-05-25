@@ -327,7 +327,7 @@ Future<List<TRadioMenu<String>>> toolbarCodec(
   final alternativeCodecs =
       await bind.sessionAlternativeCodecs(sessionId: sessionId);
   final groupValue = await bind.sessionGetOption(
-          sessionId: sessionId, arg: kOptionCodecPreference) ??
+          sessionId: sessionId, arg: 'codec-preference') ??
       '';
   final List<bool> codecs = [];
   try {
@@ -349,7 +349,7 @@ Future<List<TRadioMenu<String>>> toolbarCodec(
   onChanged(String? value) async {
     if (value == null) return;
     await bind.sessionPeerOption(
-        sessionId: sessionId, name: kOptionCodecPreference, value: value);
+        sessionId: sessionId, name: 'codec-preference', value: value);
     bind.sessionChangePreferCodec(sessionId: sessionId);
   }
 
@@ -362,8 +362,7 @@ Future<List<TRadioMenu<String>>> toolbarCodec(
   }
 
   var autoLabel = translate('Auto');
-  if (groupValue == 'auto' &&
-      ffi.qualityMonitorModel.data.codecFormat != null) {
+  if (groupValue == 'auto') {
     autoLabel = '$autoLabel (${ffi.qualityMonitorModel.data.codecFormat})';
   }
   return [
@@ -381,6 +380,7 @@ Future<List<TToggleMenu>> toolbarCursor(
   List<TToggleMenu> v = [];
   final ffiModel = ffi.ffiModel;
   final pi = ffiModel.pi;
+  final perms = ffiModel.permissions;
   final sessionId = ffi.sessionId;
 
   // show remote cursor
@@ -534,15 +534,15 @@ Future<List<TToggleMenu>> toolbarDisplayToggle(
       perms['file'] != false &&
       (isSupportIfPeer_1_2_3 || isSupportIfPeer_1_2_4)) {
     final enabled = !ffiModel.viewOnly;
-    final value = bind.sessionGetToggleOptionSync(
-        sessionId: sessionId, arg: kOptionEnableFileCopyPaste);
+    final option = 'enable-file-transfer';
+    final value =
+        bind.sessionGetToggleOptionSync(sessionId: sessionId, arg: option);
     v.add(TToggleMenu(
         value: value,
         onChanged: enabled
             ? (value) {
                 if (value == null) return;
-                bind.sessionToggleOption(
-                    sessionId: sessionId, value: kOptionEnableFileCopyPaste);
+                bind.sessionToggleOption(sessionId: sessionId, value: option);
               }
             : null,
         child: Text(translate('Enable file copy and paste'))));

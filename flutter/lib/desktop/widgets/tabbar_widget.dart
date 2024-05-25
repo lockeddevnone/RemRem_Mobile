@@ -323,11 +323,11 @@ class DesktopTab extends StatelessWidget {
     return buildRemoteBlock(
         child: child,
         use: () async {
-          var access_mode = await bind.mainGetOption(key: kOptionAccessMode);
+          var access_mode = await bind.mainGetOption(key: 'access-mode');
           var option = option2bool(
-              kOptionAllowRemoteConfigModification,
+              'allow-remote-config-modification',
               await bind.mainGetOption(
-                  key: kOptionAllowRemoteConfigModification));
+                  key: 'allow-remote-config-modification'));
           return access_mode == 'view' || (access_mode.isEmpty && !option);
         });
   }
@@ -641,12 +641,14 @@ class WindowActionPanelState extends State<WindowActionPanel>
       }
       // macOS specific workaround, the window is not hiding when in fullscreen.
       if (isMacOS && await windowManager.isFullScreen()) {
+        stateGlobal.closeOnFullscreen ??= true;
         await windowManager.setFullScreen(false);
         await macOSWindowClose(
           () async => await windowManager.isFullScreen(),
           mainWindowClose,
         );
       } else {
+        stateGlobal.closeOnFullscreen ??= false;
         await mainWindowClose();
       }
     } else {
@@ -658,6 +660,7 @@ class WindowActionPanelState extends State<WindowActionPanel>
 
         if (await widget.onClose?.call() ?? true) {
           if (await controller.isFullScreen()) {
+            stateGlobal.closeOnFullscreen ??= true;
             await controller.setFullscreen(false);
             stateGlobal.setFullscreen(false, procWnd: false);
             await macOSWindowClose(
@@ -665,6 +668,7 @@ class WindowActionPanelState extends State<WindowActionPanel>
               () async => await notMainWindowClose(controller),
             );
           } else {
+            stateGlobal.closeOnFullscreen ??= false;
             await notMainWindowClose(controller);
           }
         }
@@ -808,9 +812,9 @@ Future<bool> closeConfirmDialog() async {
   var confirm = true;
   final res = await gFFI.dialogManager.show<bool>((setState, close, context) {
     submit() {
-      String value = bool2option(kOptionEnableConfirmClosingTabs, confirm);
-      bind.mainSetLocalOption(
-          key: kOptionEnableConfirmClosingTabs, value: value);
+      final opt = "enable-confirm-closing-tabs";
+      String value = bool2option(opt, confirm);
+      bind.mainSetLocalOption(key: opt, value: value);
       close(true);
     }
 

@@ -561,8 +561,7 @@ class MyTheme {
     Get.changeThemeMode(mode);
     if (desktopType == DesktopType.main || isAndroid || isIOS) {
       if (mode == ThemeMode.system) {
-        await bind.mainSetLocalOption(
-            key: kCommConfKeyTheme, value: defaultOptionTheme);
+        await bind.mainSetLocalOption(key: kCommConfKeyTheme, value: '');
       } else {
         await bind.mainSetLocalOption(
             key: kCommConfKeyTheme, value: mode.toShortString());
@@ -1419,7 +1418,7 @@ bool option2bool(String option, String value) {
     res = value != "N";
   } else if (option.startsWith("allow-") ||
       option == "stop-service" ||
-      option == kOptionDirectServer ||
+      option == "direct-server" ||
       option == "stop-rendezvous-service" ||
       option == kOptionForceAlwaysRelay) {
     res = value == "Y";
@@ -1433,13 +1432,13 @@ bool option2bool(String option, String value) {
 String bool2option(String option, bool b) {
   String res;
   if (option.startsWith('enable-')) {
-    res = b ? defaultOptionYes : 'N';
+    res = b ? '' : 'N';
   } else if (option.startsWith('allow-') ||
       option == "stop-service" ||
-      option == kOptionDirectServer ||
+      option == "direct-server" ||
       option == "stop-rendezvous-service" ||
       option == kOptionForceAlwaysRelay) {
-    res = b ? 'Y' : defaultOptionNo;
+    res = b ? 'Y' : '';
   } else {
     assert(false);
     res = b ? 'Y' : 'N';
@@ -1511,12 +1510,6 @@ Widget getPlatformImage(String platform, {double size = 50}) {
   return SvgPicture.asset('assets/$platform.svg', height: size, width: size);
 }
 
-class OffsetDevicePixelRatio {
-  Offset offset;
-  final double devicePixelRatio;
-  OffsetDevicePixelRatio(this.offset, this.devicePixelRatio);
-}
-
 class LastWindowPosition {
   double? width;
   double? height;
@@ -1578,13 +1571,16 @@ Future<void> saveWindowPosition(WindowType type, {int? windowId}) async {
   late Offset position;
   late Size sz;
   late bool isMaximized;
-  bool isFullscreen = stateGlobal.fullscreen.isTrue;
-  setPreFrame() {
-    final pos = bind.getLocalFlutterOption(k: windowFramePrefix + type.name);
-    var lpos = LastWindowPosition.loadFromString(pos);
-    position = Offset(
-        lpos?.offsetWidth ?? position.dx, lpos?.offsetHeight ?? position.dy);
-    sz = Size(lpos?.width ?? sz.width, lpos?.height ?? sz.height);
+  bool isFullscreen = stateGlobal.fullscreen.isTrue ||
+      (isMacOS && stateGlobal.closeOnFullscreen == true);
+  setFrameIfMaximized() {
+    if (isMaximized) {
+      final pos = bind.getLocalFlutterOption(k: windowFramePrefix + type.name);
+      var lpos = LastWindowPosition.loadFromString(pos);
+      position = Offset(
+          lpos?.offsetWidth ?? position.dx, lpos?.offsetHeight ?? position.dy);
+      sz = Size(lpos?.width ?? sz.width, lpos?.height ?? sz.height);
+    }
   }
 
   switch (type) {
@@ -1596,30 +1592,23 @@ Future<void> saveWindowPosition(WindowType type, {int? windowId}) async {
       // `setResizable(!bind.isIncomingOnly());` in main.dart
       isMaximized =
           bind.isIncomingOnly() ? false : await windowManager.isMaximized();
-      if (isFullscreen || isMaximized) {
-        setPreFrame();
-      } else {
-        position = await windowManager.getPosition();
-        sz = await windowManager.getSize();
-      }
+      position = await windowManager.getPosition();
+      sz = await windowManager.getSize();
+      setFrameIfMaximized();
       break;
     default:
       final wc = WindowController.fromWindowId(windowId!);
       isMaximized = await wc.isMaximized();
-      if (isFullscreen || isMaximized) {
-        setPreFrame();
-      } else {
-        final Rect frame;
-        try {
-          frame = await wc.getFrame();
-        } catch (e) {
-          debugPrint(
-              "Failed to get frame of window $windowId, it may be hidden");
-          return;
-        }
-        position = frame.topLeft;
-        sz = frame.size;
+      final Rect frame;
+      try {
+        frame = await wc.getFrame();
+      } catch (e) {
+        debugPrint("Failed to get frame of window $windowId, it may be hidden");
+        return;
       }
+      position = frame.topLeft;
+      sz = frame.size;
+      setFrameIfMaximized();
       break;
   }
   if (isWindows) {
@@ -1653,7 +1642,7 @@ Future _saveSessionWindowPosition(WindowType windowType, int windowId,
   final remoteList = await DesktopMultiWindow.invokeMethod(
       windowId, kWindowEventGetRemoteList, null);
   getPeerPos(String peerId) {
-    if (isMaximized || isFullscreen) {
+    if (isMaximized) {
       final peerPos = bind.mainGetPeerFlutterOptionSync(
           id: peerId, k: windowFramePrefix + windowType.name);
       var lpos = LastWindowPosition.loadFromString(peerPos);
@@ -1710,15 +1699,8 @@ Future<Size> _adjustRestoreMainWindowSize(double? width, double? height) async {
   return Size(restoreWidth, restoreHeight);
 }
 
-bool isPointInRect(Offset point, Rect rect) {
-  return point.dx >= rect.left &&
-      point.dx <= rect.right &&
-      point.dy >= rect.top &&
-      point.dy <= rect.bottom;
-}
-
 /// return null means center
-Future<OffsetDevicePixelRatio?> _adjustRestoreMainWindowOffset(
+Future<Offset?> _adjustRestoreMainWindowOffset(
   double? left,
   double? top,
   double? width,
@@ -1732,13 +1714,9 @@ Future<OffsetDevicePixelRatio?> _adjustRestoreMainWindowOffset(
   double? frameTop;
   double? frameRight;
   double? frameBottom;
-  double devicePixelRatio = 1.0;
 
   if (isDesktop || isWebDesktop) {
     for (final screen in await window_size.getScreenList()) {
-      if (isPointInRect(Offset(left, top), screen.visibleFrame)) {
-        devicePixelRatio = screen.scaleFactor;
-      }
       frameLeft = frameLeft == null
           ? screen.visibleFrame.left
           : min(screen.visibleFrame.left, frameLeft);
@@ -1772,7 +1750,7 @@ Future<OffsetDevicePixelRatio?> _adjustRestoreMainWindowOffset(
       top < frameTop!) {
     return null;
   } else {
-    return OffsetDevicePixelRatio(Offset(left, top), devicePixelRatio);
+    return Offset(left, top);
   }
 }
 
@@ -1798,10 +1776,15 @@ Future<bool> restoreWindowPosition(WindowType type,
   // No need to check mainGetLocalBoolOptionSync(kOptionOpenNewConnInTabs)
   // Though "open in tabs" is true and the new window restore peer position, it's ok.
   if (type == WindowType.RemoteDesktop && windowId != null && peerId != null) {
-    final peerPos = bind.mainGetPeerFlutterOptionSync(
-        id: peerId, k: windowFramePrefix + type.name);
-    if (peerPos.isNotEmpty) {
-      pos = peerPos;
+    // If the restore position is called by main window, and the peer id is not null
+    // then we may need to get the position by reading the peer config.
+    // Because the session may not be read at this time.
+    if (desktopType == DesktopType.main) {
+      pos = bind.mainGetPeerFlutterOptionSync(
+          id: peerId, k: windowFramePrefix + type.name);
+    } else {
+      pos = await bind.sessionGetFlutterOptionByPeerId(
+          id: peerId, k: windowFramePrefix + type.name);
     }
     isRemotePeerPos = pos != null;
   }
@@ -1832,47 +1815,22 @@ Future<bool> restoreWindowPosition(WindowType type,
   }
 
   final size = await _adjustRestoreMainWindowSize(lpos.width, lpos.height);
-  final offsetDevicePixelRatio = await _adjustRestoreMainWindowOffset(
+  final offset = await _adjustRestoreMainWindowOffset(
     lpos.offsetWidth,
     lpos.offsetHeight,
     size.width,
     size.height,
   );
   debugPrint(
-      "restore lpos: ${size.width}/${size.height}, offset:${offsetDevicePixelRatio?.offset.dx}/${offsetDevicePixelRatio?.offset.dy}, devicePixelRatio:${offsetDevicePixelRatio?.devicePixelRatio}, isMaximized: ${lpos.isMaximized}, isFullscreen: ${lpos.isFullscreen}");
+      "restore lpos: ${size.width}/${size.height}, offset:${offset?.dx}/${offset?.dy}");
 
   switch (type) {
     case WindowType.Main:
-      // https://github.com/rustdesk/rustdesk/issues/8038
-      // `setBounds()` in `window_manager` will use the current devicePixelRatio.
-      // So we need to adjust the offset by the scale factor.
-      // https://github.com/rustdesk-org/window_manager/blob/f19acdb008645366339444a359a45c3257c8b32e/windows/window_manager.cpp#L701
-      if (isWindows) {
-        double? curDevicePixelRatio;
-        Offset curPos = await windowManager.getPosition();
-        for (final screen in await window_size.getScreenList()) {
-          if (isPointInRect(curPos, screen.visibleFrame)) {
-            curDevicePixelRatio = screen.scaleFactor;
-          }
-        }
-        if (curDevicePixelRatio != null &&
-            curDevicePixelRatio != 0 &&
-            offsetDevicePixelRatio != null) {
-          if (offsetDevicePixelRatio.devicePixelRatio != 0) {
-            final scale =
-                offsetDevicePixelRatio.devicePixelRatio / curDevicePixelRatio;
-            offsetDevicePixelRatio.offset =
-                offsetDevicePixelRatio.offset.scale(scale, scale);
-            debugPrint(
-                "restore new offset: ${offsetDevicePixelRatio.offset.dx}/${offsetDevicePixelRatio.offset.dy}, scale:$scale");
-          }
-        }
-      }
       restorePos() async {
-        if (offsetDevicePixelRatio == null) {
+        if (offset == null) {
           await windowManager.center();
         } else {
-          await windowManager.setPosition(offsetDevicePixelRatio.offset);
+          await windowManager.setPosition(offset);
         }
       }
       if (lpos.isMaximized == true) {
@@ -1890,27 +1848,19 @@ Future<bool> restoreWindowPosition(WindowType type,
     default:
       final wc = WindowController.fromWindowId(windowId!);
       restoreFrame() async {
-        if (offsetDevicePixelRatio == null) {
+        if (offset == null) {
           await wc.center();
         } else {
-          final frame = Rect.fromLTWH(offsetDevicePixelRatio.offset.dx,
-              offsetDevicePixelRatio.offset.dy, size.width, size.height);
+          final frame =
+              Rect.fromLTWH(offset.dx, offset.dy, size.width, size.height);
           await wc.setFrame(frame);
         }
       }
       if (lpos.isFullscreen == true) {
-        if (!isMacOS) {
-          await restoreFrame();
-        }
+        await restoreFrame();
         // An duration is needed to avoid the window being restored after fullscreen.
         Future.delayed(Duration(milliseconds: 300), () async {
-          if (kWindowId == windowId) {
-            stateGlobal.setFullscreen(true);
-          } else {
-            // If is not current window, we need to send a fullscreen message to `windowId`
-            DesktopMultiWindow.invokeMethod(
-                windowId, kWindowEventSetFullscreen, 'true');
-          }
+          stateGlobal.setFullscreen(true);
         });
       } else if (lpos.isMaximized == true) {
         await restoreFrame();
@@ -2913,15 +2863,6 @@ openMonitorInNewTabOrWindow(int i, String peerId, PeerInfo pi,
       kMainWindowId, kWindowEventOpenMonitorSession, jsonEncode(args));
 }
 
-setNewConnectWindowFrame(int windowId, String peerId, Rect? screenRect) async {
-  if (screenRect == null) {
-    await restoreWindowPosition(WindowType.RemoteDesktop,
-        windowId: windowId, peerId: peerId);
-  } else {
-    await tryMoveToScreenAndSetFullscreen(screenRect);
-  }
-}
-
 tryMoveToScreenAndSetFullscreen(Rect? screenRect) async {
   if (screenRect == null) {
     return;
@@ -3351,14 +3292,3 @@ setResizable(bool resizable) {
     windowManager.setResizable(resizable);
   }
 }
-
-isOptionFixed(String key) => bind.mainIsOptionFixed(key: key);
-
-final isCustomClient = bind.isCustomClient();
-get defaultOptionLang => isCustomClient ? 'default' : '';
-get defaultOptionTheme => isCustomClient ? 'system' : '';
-get defaultOptionYes => isCustomClient ? 'Y' : '';
-get defaultOptionNo => isCustomClient ? 'N' : '';
-get defaultOptionWhitelist => isCustomClient ? ',' : '';
-get defaultOptionAccessMode => isCustomClient ? 'custom' : '';
-get defaultOptionApproveMode => isCustomClient ? 'password-click' : '';

@@ -389,7 +389,7 @@ class FfiModel with ChangeNotifier {
   _handleSyncPeerOption(Map<String, dynamic> evt, String peer) {
     final k = evt['k'];
     final v = evt['v'];
-    if (k == kOptionToggleViewOnly) {
+    if (k == kOptionViewOnly) {
       setViewOnly(peer, v as bool);
     } else if (k == 'keyboard_mode') {
       parent.target?.inputModel.updateKeyboardMode();
@@ -765,7 +765,7 @@ class FfiModel with ChangeNotifier {
       _touchMode = true;
     } else {
       _touchMode = await bind.sessionGetOption(
-              sessionId: sessionId, arg: kOptionTouchMode) !=
+              sessionId: sessionId, arg: 'touch-mode') !=
           '';
     }
     if (connType == ConnType.fileTransfer) {
@@ -797,7 +797,7 @@ class FfiModel with ChangeNotifier {
       setViewOnly(
           peerId,
           bind.sessionGetToggleOptionSync(
-              sessionId: sessionId, arg: kOptionToggleViewOnly));
+              sessionId: sessionId, arg: kOptionViewOnly));
     }
     if (connType == ConnType.defaultConn) {
       final platformAdditions = evt['platform_additions'];
