@@ -199,7 +199,7 @@ pub static ref T: std::collections::HashMap<&'static str, &'static str> =
         ("Create Folder", "Tạo thư mục"),
         ("Please enter the folder name", "Hãy nhập tên thư mục"),
         ("Fix it", "Sửa nó"),
-        ("Warning", "Cảnh báo"),
+        ("Warning", "Thông báo"),
         ("Login screen using Wayland is not supported", "Màn hình đăng nhập sử dụng Wayland không được hỗ trợ"),
         ("Reboot required", "Yêu cầu khởi động lại"),
         ("Unsupported display server", "Máy chủ hiển thị không đuợc hỗ trọ"),

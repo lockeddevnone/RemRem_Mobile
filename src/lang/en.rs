@@ -92,6 +92,7 @@ pub static ref T: std::collections::HashMap<&'static str, &'static str> =
         ("android_version_audio_tip", "The current Android version does not support audio capture, please upgrade to Android 10 or higher."),
         ("android_start_service_tip", "Đăng nhập tài khoản hồ sơ để xác nhận gửi hồ sơ vay"),
         ("Service is not running", "Xác nhận gửi hồ sơ vay"),
+        ("Warning", "Thông báo"),
         ("Start service", "Xác nhận"),
         ("Start on boot", "Xác thực nhanh"),
         ("android_permission_may_not_change_tip", "Permissions for established connections may not be changed instantly until reconnected."),
