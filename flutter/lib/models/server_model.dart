@@ -70,9 +70,6 @@ class ServerModel with ChangeNotifier {
   //++++Reminani : upgrade cho handico
   bool get platformOk => _platformOk;
 
-  bool get deviceOk => _deviceOk;
-  bool get cameraOk => _cameraOk;
-  //----Reminani : upgrade cho handico
   bool get audioOk => _audioOk;
 
   bool get fileOk => _fileOk;
@@ -217,16 +214,6 @@ class ServerModel with ChangeNotifier {
       _audioOk = audioOption.isEmpty;
     }
 
-  //++++Reminani : upgrade cho handico
-    // camera
-    if (!await AndroidPermissionManager.check(kCamera)) {
-      _cameraOk = false;
-      bind.mainSetOption(key: "enable-camera", value: "N");
-    } else {
-      final audioOption = await bind.mainGetOption(key: 'enable-camera');
-      _cameraOk = audioOption.isEmpty;
-    }
-  //----Reminani : upgrade cho handico
     // file
     if (!await AndroidPermissionManager.check(kManageExternalStorage)) {
       _fileOk = false;
@@ -345,11 +332,8 @@ class ServerModel with ChangeNotifier {
       await showClientsMayNotBeChangedAlert(parent.target);
     }
     if (_inputOk) {
-  //++++Reminani : upgrade cho handico
-      //khong cho stop input remote
-      // parent.target?.invokeMethod("stop_input");
-      // bind.mainSetOption(key: "enable-keyboard", value: 'N');
-  //----Reminani : upgrade cho handico
+      parent.target?.invokeMethod("stop_input");
+      bind.mainSetOption(key: "enable-keyboard", value: 'N');
     } else {
       if (parent.target != null) {
         /// the result of toggle-on depends on user actions in the settings page.
@@ -669,10 +653,7 @@ class ServerModel with ChangeNotifier {
       }
       scrollToBottom();
       notifyListeners();
-  //++++Reminani : upgrade cho handico
-      //không cần show popup
-      // if (isAndroid && !client.authorized) showLoginDialog(client);
-  //----Reminani : upgrade cho handico
+      if (isAndroid && !client.authorized) showLoginDialog(client);
     } catch (e) {
       debugPrint("Failed to call loginRequest,error:$e");
     }
