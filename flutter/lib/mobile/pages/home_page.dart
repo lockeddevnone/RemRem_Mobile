@@ -112,7 +112,7 @@ class HomePageState extends State<HomePage> {
           // ),
           appBar: AppBar(
             leading: IconButton(
-              icon: Icon(Icons.menu),
+              icon: Icon(Icons.home),
               onPressed: () {
                 // Handle menu button press
                 openWebviewPage();
