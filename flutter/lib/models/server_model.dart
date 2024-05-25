@@ -377,9 +377,9 @@ class ServerModel with ChangeNotifier {
   /// Toggle the screen sharing service.
   toggleService() async {
     //++++Reminani : upgrade cho handico
-    if (!_isStart) {
-    	await checkRequestNotificationPermission();
-    }
+    // if (!_isStart) {
+    // 	await checkRequestNotificationPermission();
+    // }
     // if (_isStart) {
     //   final res = await parent.target?.dialogManager
     //       .show<bool>((setState, close, context) {
