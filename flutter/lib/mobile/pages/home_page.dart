@@ -63,10 +63,18 @@ class HomePageState extends State<HomePage> {
       ));
     //----Reminani : hien thi webview
     }
-    _pages.add(SettingsPage());
+    _pages.add(SettingsPage(
+      callback: callbackClickAppBarHomeButton,
+    ));
   }
   //++++Reminani : upgrade cho handico
   void callBackAuthSuccess () {
+    openWebviewPage();
+  }
+  void callbackClickAppBarHomeButton() {
+    openWebviewPage();
+  }
+  void openWebviewPage () {
     setState(() {
       _selectedIndex = 0;
     });

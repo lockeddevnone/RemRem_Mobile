@@ -18,18 +18,15 @@ import '../../models/model.dart';
 import '../../models/platform_model.dart';
 
 class AppBarHomeButton extends StatelessWidget {
+  final VoidCallback onButtonPressed;
+
+  CustomButton({required this.onButtonPressed});
+
   @override
   Widget build(BuildContext context) {
     return IconButton(
       icon: Icon(Icons.qr_code_scanner),
-      onPressed: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (BuildContext context) => WebViewConnectionPage(),
-          ),
-        );
-      },
+      onPressed: onButtonPressed,
     );
   }
 }

@@ -24,13 +24,20 @@ class SettingsPage extends StatefulWidget implements PageShape {
   @override
     //----Reminani : them form xac thuc thong tin
   final title = translate("Thiết lập");
+    //++++Reminani : them form xac thuc thong tin
+  final VoidCallback callback;
+  SettingsPage({Key? key, required this.callback})
+      : super(key: key);  
+  @override
+  final title = translate("Xác thực");
+    //----Reminani : them form xac thuc thong tin
     //----Reminani : them form xac thuc thong tin
 
   @override
   final icon = Icon(Icons.settings);
 
   @override
-  final appBarActions = bind.isDisableSettings() ? [] : [AppBarHomeButton()];
+  final appBarActions = bind.isDisableSettings() ? [] : [AppBarHomeButton(callback: callback)];
 
   @override
   State<SettingsPage> createState() => _SettingsState();
