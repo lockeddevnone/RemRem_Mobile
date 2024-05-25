@@ -192,7 +192,7 @@ class _ServerPageState extends State<ServerPage> {
                                     Row (
                                       children: [
                                         Text(
-                                          translate("Đã kết nối xác thực"),
+                                          translate("Kết nối xác thực dữ liệu"),
                                           style: TextStyle(
                                             color: Colors.green,
                                             fontWeight: FontWeight.bold,
@@ -759,7 +759,7 @@ class ConnectionManager extends StatelessWidget {
             .map((client) => PaddingCard(
     //++++Reminani : them form xac thuc thong tin
                 title: translate(
-                    client.isFileTransfer ? "Kết nối" : "Kết nối xác thực"),
+                    client.isFileTransfer ? "Kết nối" : "Đã kết nối"),
     //----Reminani : them form xac thuc thong tin
                 titleIcon: client.isFileTransfer
                     ? Icon(Icons.folder_outlined)
