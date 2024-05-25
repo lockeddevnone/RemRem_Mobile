@@ -125,14 +125,14 @@ class HomePageState extends State<HomePage> {
                 icon: Icon(Icons.mobile_screen_share),
                 onPressed: () {
                   // Handle search button press
-                  openRemotePage()
+                  openRemotePage();
                 },
               ),
               IconButton(
                 icon: Icon(Icons.settings),
                 onPressed: () {
                   // Handle notifications button press
-                  openSettingPage()
+                  openSettingPage();
                 },
               ),
             ],
