@@ -17,7 +17,7 @@ import '../../consts.dart';
 import '../../models/model.dart';
 import '../../models/platform_model.dart';
 
-class AppBarHomeButton extends StatelessWidget {
+class AppBarSettingButton extends StatelessWidget {
   final VoidCallback onButtonPressed;
 
   CustomButton({required this.onButtonPressed});
@@ -25,7 +25,7 @@ class AppBarHomeButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return IconButton(
-      icon: Icon(Icons.home),
+      icon: Icon(Icons.settings),
       onPressed: onButtonPressed,
     );
   }
