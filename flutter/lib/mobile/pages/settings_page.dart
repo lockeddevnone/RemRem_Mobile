@@ -16,6 +16,7 @@ import '../../consts.dart';
 import '../../models/model.dart';
 import '../../models/platform_model.dart';
 import '../widgets/dialog.dart';
+import '../widgets/appbar_home_button.dart';
 import 'home_page.dart';
 import 'scan_page.dart';
 
@@ -29,7 +30,7 @@ class SettingsPage extends StatefulWidget implements PageShape {
   final icon = Icon(Icons.settings);
 
   @override
-  final appBarActions = bind.isDisableSettings() ? [] : [ScanButton()];
+  final appBarActions = bind.isDisableSettings() ? [] : [AppBarHomeButton()];
 
   @override
   State<SettingsPage> createState() => _SettingsState();
