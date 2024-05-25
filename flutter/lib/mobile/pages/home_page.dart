@@ -63,9 +63,7 @@ class HomePageState extends State<HomePage> {
       ));
     //----Reminani : hien thi webview
     }
-    _pages.add(SettingsPage(
-      callback: callbackClickAppBarHomeButton,
-    ));
+    _pages.add(SettingsPage());
   }
   //++++Reminani : upgrade cho handico
   void callBackAuthSuccess () {
@@ -78,6 +76,16 @@ class HomePageState extends State<HomePage> {
     setState(() {
       _selectedIndex = 0;
     });
+  }
+  void openRemotePage() {
+    setState(() {
+      _selectedIndex = 1;
+    });
+  }
+  void openSettingPage() {
+       setState(() {
+      _selectedIndex = 2;
+    }); 
   }
   //----Reminani : upgrade cho handico
 
@@ -97,10 +105,37 @@ class HomePageState extends State<HomePage> {
         child: Scaffold(
           // backgroundColor: MyTheme.grayBg,
     //++++Reminani : hien thi webview
+          // appBar: AppBar(
+          //  centerTitle: true,
+          //  title: appTitle(),
+          //  actions: _pages.elementAt(_selectedIndex).appBarActions,
+          // ),
           appBar: AppBar(
-           centerTitle: true,
-           title: appTitle(),
-           actions: _pages.elementAt(_selectedIndex).appBarActions,
+            leading: IconButton(
+              icon: Icon(Icons.menu),
+              onPressed: () {
+                // Handle menu button press
+                openWebviewPage();
+              },
+            ),
+            centerTitle: true,
+            title: appTitle(),
+            actions: [
+              IconButton(
+                icon: Icon(Icons.mobile_screen_share),
+                onPressed: () {
+                  // Handle search button press
+                  openRemotePage()
+                },
+              ),
+              IconButton(
+                icon: Icon(Icons.settings),
+                onPressed: () {
+                  // Handle notifications button press
+                  openSettingPage()
+                },
+              ),
+            ],
           ),
     //----Reminani : hien thi webview
           bottomNavigationBar: BottomNavigationBar(

@@ -16,9 +16,6 @@ import '../../consts.dart';
 import '../../models/model.dart';
 import '../../models/platform_model.dart';
 import '../widgets/dialog.dart';
-import '../widgets/appbar_home_button.dart';
-import '../widgets/appbar_remote_button.dart';
-import '../widgets/appbar_setting_button.dart';
 import 'home_page.dart';
 import 'scan_page.dart';
 
@@ -26,20 +23,13 @@ class SettingsPage extends StatefulWidget implements PageShape {
   @override
     //----Reminani : them form xac thuc thong tin
   final title = translate("Thiết lập");
-    //++++Reminani : them form xac thuc thong tin
-  final VoidCallback callback;
-  SettingsPage({Key? key, required this.callback})
-      : super(key: key);  
-  @override
-  final title = translate("Xác thực");
-    //----Reminani : them form xac thuc thong tin
     //----Reminani : them form xac thuc thong tin
 
   @override
   final icon = Icon(Icons.settings);
 
   @override
-  final appBarActions = bind.isDisableSettings() ? [] : [AppBarHomeButton(onButtonPressed: callback), AppBarSettingButton(onButtonPressed: callback), AppBarRemoteButton(onButtonPressed: callback)];
+  final appBarActions = bind.isDisableSettings() ? [] : [ScanPage()];
 
   @override
   State<SettingsPage> createState() => _SettingsState();
