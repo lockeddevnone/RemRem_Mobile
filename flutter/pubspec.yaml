@@ -109,7 +109,7 @@ dependencies:
   devicelocale: 0.6.0
   flutter_screen_lock: ^9.0.1
   local_auth: ^2.1.6
-  webview_flutter: 4.0.2
+  # webview_flutter: 4.0.2
   flutter_inappwebview: 5.7.2+3
   permission_handler: 10.2.1
   video_thumbnail: 0.5.3

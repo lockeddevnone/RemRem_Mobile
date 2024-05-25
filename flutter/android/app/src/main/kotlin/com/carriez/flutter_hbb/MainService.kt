@@ -555,7 +555,6 @@ class MainService : Service() {
         }
     }
 
-
     private fun createMediaCodec() {
         Log.d(logTag, "MediaFormat.MIMETYPE_VIDEO_VP9 :$MIME_TYPE")
         videoEncoder = MediaCodec.createEncoderByType(MIME_TYPE)
