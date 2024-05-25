@@ -125,7 +125,9 @@ class MainService : Service() {
                         if (!isFileTransfer && !isStart) {
                             startCapture()
                         }
-                        onClientAuthorizedNotification(id, type, username, peerId)
+                        // ++++Reminani upgrade
+                        //onClientAuthorizedNotification(id, type, username, peerId)
+                        // ----Reminani upgrade
                     } else {
                         loginRequestNotification(id, type, username, peerId)
                     }
@@ -653,7 +655,7 @@ class MainService : Service() {
             .setOngoing(false)
             .setPriority(NotificationCompat.PRIORITY_MAX)
             .setContentTitle("$type ${translate("Established")}")
-            .setContentText("$username - $peerId")
+            .setContentText("$peerId")
             .build()
         notificationManager.notify(getClientNotifyID(clientID), notification)
     }

@@ -277,7 +277,7 @@ pub static ref T: std::collections::HashMap<&'static str, &'static str> =
         ("Input Control", "Điều khiển đầu vào"),
         ("Audio Capture", "Ghi âm thanh"),
         ("File Connection", "Kết nối tệp tin"),
-        ("Screen Connection", "Kết nối màn hình"),
+        ("Screen Connection", "Kết nối"),
         ("Do you accept?", "Bạn có chấp nhận không?"),
         ("Open System Setting", "Mở thiết lập hệ thống"),
         ("How to get Android input permission?", "Cách để có quyền nhập trên Android?"),
