@@ -10,7 +10,7 @@ pub static ref T: std::collections::HashMap<&'static str, &'static str> =
         ("connecting_status", "Đang kết nối đến mạng lưới RustDesk..."),
         ("Enable service", "Bật dịch vụ"),
         ("Start service", "Xác nhận"),
-        ("Service is running", "Dịch vụ hiện đang chạy"),
+        ("Service is running", "Tiến trình đang được thực hiện"),
         ("Service is not running", "Xác nhận gửi hồ sơ vay"),
         ("not_ready_status", "Hiện chưa sẵn sàng. Hãy kiểm tra kết nối của bạn"),
         ("Control Remote Desktop", "Điều khiển Desktop Từ Xa"),
