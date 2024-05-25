@@ -138,34 +138,36 @@ class HomePageState extends State<HomePage> {
             ],
           ),
     //----Reminani : hien thi webview
-          bottomNavigationBar: BottomNavigationBar(
-            key: navigationBarKey,
-            items: _pages
-                .map((page) =>
-                    BottomNavigationBarItem(icon: page.icon, label: page.title))
-                .toList(),
-            currentIndex: _selectedIndex,
-            type: BottomNavigationBarType.fixed,
-            selectedItemColor: MyTheme.accent, //
-            unselectedItemColor: MyTheme.darkGray,
-            onTap: (index) => setState(() {
-              // close chat overlay when go chat page
-              if (_selectedIndex != index) {
-                _selectedIndex = index;
-                if (isChatPageCurrentTab) {
-                  gFFI.chatModel.hideChatIconOverlay();
-                  gFFI.chatModel.hideChatWindowOverlay();
-                  gFFI.chatModel.mobileClearClientUnread(
-                      gFFI.chatModel.currentKey.connId);
-                }
-              }
-    //++++Reminani : hien thi webview
-              if(index == 0) {
-                webViewConnectionPage.webViewConnectionPageState.reloadLogin();
-              }
-    //----Reminani : hien thi webview
-            }),
-          ),
+    //++++Reminani : an toan bo bottom bar
+    //       bottomNavigationBar: BottomNavigationBar(
+    //         key: navigationBarKey,
+    //         items: _pages
+    //             .map((page) =>
+    //                 BottomNavigationBarItem(icon: page.icon, label: page.title))
+    //             .toList(),
+    //         currentIndex: _selectedIndex,
+    //         type: BottomNavigationBarType.fixed,
+    //         selectedItemColor: MyTheme.accent, //
+    //         unselectedItemColor: MyTheme.darkGray,
+    //         onTap: (index) => setState(() {
+    //           // close chat overlay when go chat page
+    //           if (_selectedIndex != index) {
+    //             _selectedIndex = index;
+    //             if (isChatPageCurrentTab) {
+    //               gFFI.chatModel.hideChatIconOverlay();
+    //               gFFI.chatModel.hideChatWindowOverlay();
+    //               gFFI.chatModel.mobileClearClientUnread(
+    //                   gFFI.chatModel.currentKey.connId);
+    //             }
+    //           }
+    // //++++Reminani : hien thi webview
+    //           if(index == 0) {
+    //             webViewConnectionPage.webViewConnectionPageState.reloadLogin();
+    //           }
+    // //----Reminani : hien thi webview
+    //         }),
+    //       ),
+    //----Reminani : an toan bo bottom bar
           body: _pages.elementAt(_selectedIndex),
 
         ));
