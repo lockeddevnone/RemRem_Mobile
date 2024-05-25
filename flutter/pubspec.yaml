@@ -105,10 +105,10 @@ dependencies:
   device_info_plus: ^9.1.0
   qr_flutter: ^4.1.0
   #++++Reminani : upgrade handico
-  open_settings: 2.0.2
-  devicelocale: 0.6.0
-  flutter_screen_lock: ^9.0.1
-  local_auth: ^2.1.6
+  # open_settings: 2.0.2
+  # devicelocale: 0.6.0
+  # flutter_screen_lock: ^9.0.1
+  # local_auth: ^2.1.6
   # webview_flutter: 4.0.2
   flutter_inappwebview: 5.7.2+3
   permission_handler: 10.2.1
