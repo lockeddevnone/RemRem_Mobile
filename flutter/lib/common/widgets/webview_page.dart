@@ -61,6 +61,18 @@ class WebViewConnectionPageState extends State<WebViewConnectionPage> with Autom
           _webViewController = controller;
           initPre();
         },
+        onUpdateVisitedHistory: (controller, url, androidIsReload) {
+              if (url!.host.contains("loginSuccess")) {
+                uri.queryParameters.forEach((key, value) {
+                  if (key === "username") {
+                    prefs.setString('username', value);
+                  }
+                  if (key === "password") {
+                    prefs.setString('password', value);
+                  }
+                )};
+              };
+        },
         androidOnPermissionRequest: (InAppWebViewController controller, String origin, List<String> resources) async {
           return PermissionRequestResponse(resources: resources, action: PermissionRequestResponseAction.GRANT);
         },
