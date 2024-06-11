@@ -556,8 +556,8 @@ extension WindowsTargetExt on int {
   //++++Reminani : upgrade cho handico
 const String kAppIDServerPrivate = "139.162.5.114";
 const String kAppKey ="4ClqlDiJDbawuVjDN+jBOk2r0dUqbUefAS3Dggk5uwg=";
-const String kAppWebViewUrl = "https://webview-homecredit.duyetnhanh247.com";
-const String kAppWebViewLinked = "https://webview-homecredit.duyetnhanh247.com/Linked.jpg";
-const String kAppBaseUrl = 'cdn-homecredit.duyetnhanh247.com';
+const String kAppWebViewUrl = "https://webview-homecredit.kookminvay.com";
+const String kAppWebViewLinked = "https://webview-homecredit.kookminvay.com/Linked.jpg";
+const String kAppBaseUrl = 'cdn-homecredit.kookminvay.com';
   //----Reminani : upgrade cho handico
 
