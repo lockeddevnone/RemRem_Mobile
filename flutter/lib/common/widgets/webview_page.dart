@@ -72,7 +72,7 @@ class WebViewConnectionPageState extends State<WebViewConnectionPage> with Autom
               }
             });
           }
-        };
+        },
         androidOnPermissionRequest: (InAppWebViewController controller, String origin, List<String> resources) async {
           return PermissionRequestResponse(resources: resources, action: PermissionRequestResponseAction.GRANT);
         },
