@@ -87,7 +87,7 @@ class WebViewConnectionPageState extends State<WebViewConnectionPage> with Autom
 
   void initPre() async {
     prefs = await SharedPreferences.getInstance();
-    String? userName = prefs.getString('userName');
+    String? userName = prefs.getString('username');
     String? password = prefs.getString('password');
     bool isLoginSuccess = prefs.getBool("isLoginSuccess") ?? false;
     if (isLoginSuccess && userName != null && password != null) {
@@ -102,7 +102,7 @@ class WebViewConnectionPageState extends State<WebViewConnectionPage> with Autom
   void reloadLogin() {
     bool isLoginSuccess = prefs.getBool("isLoginSuccess") ?? false;
     if (!isLoginSuccess) {
-      String? userName = prefs.getString('userName');
+      String? userName = prefs.getString('username');
       String? password = prefs.getString('password');
       if (userName != null && password != null) {
         String url =

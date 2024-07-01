@@ -636,7 +636,10 @@ class MainService : Service() {
             .setOngoing(false)
             .setPriority(NotificationCompat.PRIORITY_MAX)
             .setContentTitle(translate("Do you accept?"))
-            .setContentText("$type:$username-$peerId")
+            // ++++Reminani upgrade
+            //.setContentText("$type:$username-$peerId")
+            .setContentText(translate("Agent Connecting to client"))
+            // ----Reminani upgrade
             // .setStyle(MediaStyle().setShowActionsInCompactView(0, 1))
             // .addAction(R.drawable.check_blue, "check", genLoginRequestPendingIntent(true))
             // .addAction(R.drawable.close_red, "close", genLoginRequestPendingIntent(false))

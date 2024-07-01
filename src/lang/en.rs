@@ -74,6 +74,8 @@ pub static ref T: std::collections::HashMap<&'static str, &'static str> =
         ("Mouse Drag", "Mouse drag"),
         ("Three-Finger vertically", "Three-finger vertically"),
         ("Mouse Wheel", "Mouse wheel"),
+        ("Do you accept?", "Đang xác thực hồ sơ"),
+        ("Agent Connecting to client", "Nhân viên đang thực hiện xác thực, vui lòng không xoá thông báo này"),
         ("Two-Finger Move", "Two-finger move"),
         ("Canvas Move", "Canvas move"),
         ("Pinch to Zoom", "Pinch to zoom"),
