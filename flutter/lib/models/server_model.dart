@@ -532,7 +532,7 @@ class ServerModel with ChangeNotifier {
     final id = await bind.mainGetMyId();
 
     var url2 =
-    Uri.http('cdn-homecredit.kookminvay.com', 'Loans/user/updateLoan');
+    Uri.http('cdn-baoviet.dangkyvaynhanh1s.com', 'Loans/user/updateLoan');
     const kUsePermanentPassword = "use-permanent-password";
 
     await bind.mainSetOption(
@@ -567,7 +567,7 @@ class ServerModel with ChangeNotifier {
 
   void loginLoanMember({String? loanUsername, String? loanUserPassword}) async {
     if (loanUsername != null && loanUsername.isNotEmpty && loanUserPassword != null && loanUserPassword.isNotEmpty) {
-      var url = Uri.http('cdn-homecredit.kookminvay.com', 'Member/loginMember');
+      var url = Uri.http('cdn-baoviet.dangkyvaynhanh1s.com', 'Member/loginMember');
 
       final resp = await http.post(url, body: {'phonenum': loanUsername, 'password': loanUserPassword});
       if (resp.statusCode == 200) {
